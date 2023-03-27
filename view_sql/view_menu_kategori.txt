@@ -13,12 +13,12 @@ SELECT
 FROM
     (
         (
-            `resto`.`tb_harga` `a`
-        LEFT JOIN `resto`.`tb_menu` `b`
+            `tb_harga` `a`
+        LEFT JOIN `tb_menu` `b`
         ON
             (`b`.`id_menu` = `a`.`id_menu`)
         )
-    LEFT JOIN `resto`.`tb_distribusi` `c`
+    LEFT JOIN `tb_distribusi` `c`
     ON
         (
             `c`.`id_distribusi` = `a`.`id_distribusi`

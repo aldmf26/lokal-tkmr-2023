@@ -1,29 +1,29 @@
 create view view_koki_masak as
 
 SELECT
-    `resto`.`tb_order`.`id_order` AS `id_order`,
-    `resto`.`tb_order`.`tgl` AS `tgl`,
-    `resto`.`tb_lokasi`.`id_lokasi` AS `id_lokasi`,
-    `resto`.`tb_lokasi`.`nm_lokasi` AS `nm_lokasi`,
-    `resto`.`tb_distribusi`.`nm_distribusi` AS `nm_distribusi`,
-    `resto`.`tb_order`.`no_order` AS `no_order`,
-    `resto`.`view_menu`.`nm_menu` AS `nm_menu`,
-    `resto`.`tb_order`.`qty` AS `qty`,
+    `tb_order`.`id_order` AS `id_order`,
+    `tb_order`.`tgl` AS `tgl`,
+    `tb_lokasi`.`id_lokasi` AS `id_lokasi`,
+    `tb_lokasi`.`nm_lokasi` AS `nm_lokasi`,
+    `tb_distribusi`.`nm_distribusi` AS `nm_distribusi`,
+    `tb_order`.`no_order` AS `no_order`,
+    `view_menu`.`nm_menu` AS `nm_menu`,
+    `tb_order`.`qty` AS `qty`,
     `a`.`nama` AS `koki1`,
     `b`.`nama` AS `koki2`,
     `c`.`nama` AS `koki3`,
     MINUTE(
         TIMEDIFF(
-            `resto`.`tb_order`.`j_mulai`,
-            `resto`.`tb_order`.`j_selesai`
+            `tb_order`.`j_mulai`,
+            `tb_order`.`j_selesai`
         )
     ) AS `menit`,
     MINUTE(
         TIMEDIFF(
-            `resto`.`tb_order`.`j_mulai`,
-            `resto`.`tb_order`.`j_selesai`
+            `tb_order`.`j_mulai`,
+            `tb_order`.`j_selesai`
         )
-    ) / `resto`.`tb_order`.`qty` AS `menit_bagi`
+    ) / `tb_order`.`qty` AS `menit_bagi`
 FROM
     (
         (
@@ -31,39 +31,39 @@ FROM
                 (
                     (
                         (
-                            `resto`.`tb_order`
-                        LEFT JOIN `resto`.`tb_lokasi` ON
+                            `tb_order`
+                        LEFT JOIN `tb_lokasi` ON
                             (
-                                `resto`.`tb_order`.`id_lokasi` = `resto`.`tb_lokasi`.`id_lokasi`
+                                `tb_order`.`id_lokasi` = `tb_lokasi`.`id_lokasi`
                             )
                         )
-                    LEFT JOIN `resto`.`view_menu` ON
+                    LEFT JOIN `view_menu` ON
                         (
-                            `resto`.`tb_order`.`id_harga` = `resto`.`view_menu`.`id_harga`
+                            `tb_order`.`id_harga` = `view_menu`.`id_harga`
                         )
                     )
-                LEFT JOIN `resto`.`tb_distribusi` ON
+                LEFT JOIN `tb_distribusi` ON
                     (
-                        `resto`.`tb_order`.`id_distribusi` = `resto`.`tb_distribusi`.`id_distribusi`
+                        `tb_order`.`id_distribusi` = `tb_distribusi`.`id_distribusi`
                     )
                 )
-            LEFT JOIN `resto`.`tb_karyawan` `a`
+            LEFT JOIN `tb_karyawan` `a`
             ON
                 (
-                    `resto`.`tb_order`.`id_koki1` = `a`.`id_karyawan`
+                    `tb_order`.`id_koki1` = `a`.`id_karyawan`
                 )
             )
-        LEFT JOIN `resto`.`tb_karyawan` `b`
+        LEFT JOIN `tb_karyawan` `b`
         ON
             (
-                `resto`.`tb_order`.`id_koki2` = `b`.`id_karyawan`
+                `tb_order`.`id_koki2` = `b`.`id_karyawan`
             )
         )
-    LEFT JOIN `resto`.`tb_karyawan` `c`
+    LEFT JOIN `tb_karyawan` `c`
     ON
         (
-            `resto`.`tb_order`.`id_koki3` = `c`.`id_karyawan`
+            `tb_order`.`id_koki3` = `c`.`id_karyawan`
         )
     )
 WHERE
-    `resto`.`tb_order`.`aktif` = 2 AND `resto`.`tb_order`.`void` = 0
+    `tb_order`.`aktif` = 2 AND `tb_order`.`void` = 0

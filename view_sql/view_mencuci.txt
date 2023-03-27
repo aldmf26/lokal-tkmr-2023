@@ -1,17 +1,17 @@
 create view view_mencuci as
 
 SELECT
-    `resto`.`tb_mencuci`.`id_mencuci` AS `id_mencuci`,
-    `resto`.`tb_mencuci`.`nm_karyawan` AS `nm_karyawan`,
-    `resto`.`tb_mencuci`.`id_ket` AS `id_ket`,
-    `resto`.`tb_mencuci`.`j_awal` AS `j_awal`,
-    `resto`.`tb_mencuci`.`j_akhir` AS `j_akhir`,
-    `resto`.`tb_mencuci`.`tgl` AS `tgl`,
-    `resto`.`tb_mencuci`.`admin` AS `admin`,
+    `tb_mencuci`.`id_mencuci` AS `id_mencuci`,
+    `tb_mencuci`.`nm_karyawan` AS `nm_karyawan`,
+    `tb_mencuci`.`id_ket` AS `id_ket`,
+    `tb_mencuci`.`j_awal` AS `j_awal`,
+    `tb_mencuci`.`j_akhir` AS `j_akhir`,
+    `tb_mencuci`.`tgl` AS `tgl`,
+    `tb_mencuci`.`admin` AS `admin`,
     TIMESTAMPDIFF(
         MINUTE,
-        `resto`.`tb_mencuci`.`j_awal`,
-        `resto`.`tb_mencuci`.`j_akhir`
+        `tb_mencuci`.`j_awal`,
+        `tb_mencuci`.`j_akhir`
     ) AS `lama_cuci`
 FROM
-    `resto`.`tb_mencuci`
+    `tb_mencuci`
