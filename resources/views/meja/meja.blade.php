@@ -740,6 +740,7 @@
                 $('#' + delete_row).remove();
             });
 
+            var isSubmit = false
             $(document).on('submit', '#tambah_pesanan_new', function(event) {
                 event.preventDefault();
                 $('#btn_tambah_pesanan').hide();
@@ -752,7 +753,8 @@
                 var id_harga = $("#id_harga").val()
 
                 var pesanan_new = $("#tambah_pesanan_new").serialize()
-
+                if(!isSubmit) {
+                        isSubmit = true
                 $.ajax({
                     url: "{{ route('save_pesanan_new') }}?" + pesanan_new,
                     method: 'GET',
@@ -780,11 +782,17 @@
                         $('.id_harga').trigger('change');
                         $('.row_tambah_menu').remove();
 
-                        $('#btn_tambah_pesanan').show();
+                        
 
 
                     }
+
                 });
+                setTimeout(() => {
+                            isSubmit = false
+                        }, 15000);
+                }
+                $('#btn_tambah_pesanan').show();
 
             });
 
@@ -859,6 +867,8 @@
                     }
                 });
             });
+
+            
             $(document).on('click', '.btn_tbh_majo', function() {
                 var no_order = $(this).attr('no_order');
                 var id_distribusi = $("#id_distribusi").val();
@@ -888,6 +898,7 @@
 
         });
 
+        var isSubmit = false
         $(document).on('submit', '#tambah_pesanan_new_majo', function(event) {
                 event.preventDefault();
                 $('.btn_save_majo').hide();
@@ -903,34 +914,41 @@
                 });
 
                 var id_harga_majo = $(".id_harga_majo").val()
-
+                if(!isSubmit) {
+                        isSubmit = true
                 $.ajax({
-                url: "{{ route('save_pesanan_majo') }}",
-                method: "GET",
-                data: {
-                    nota: nota,
-                    kd_order: kd_order,
-                    id_dis: id_dis,
-                    id_harga_majo: id_harga_majo,
-                    meja: meja,
-                    qty_majo: qty_majo,
-                    hrg_majo: hrg_majo,
-                },
-                success: function(data) {
-                    // console.log(data);
-                    Swal.fire({
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 3000,
-                            icon: 'success',
-                            title: 'Pesanan berhasil ditambahkan'
-                        });
-                    load_tugas();
-                    $('.btn_save_majo').show();
-                    $('#tbh_menu_majo').modal('toggle');
+                    url: "{{ route('save_pesanan_majo') }}",
+                    method: "GET",
+                    data: {
+                        nota: nota,
+                        kd_order: kd_order,
+                        id_dis: id_dis,
+                        id_harga_majo: id_harga_majo,
+                        meja: meja,
+                        qty_majo: qty_majo,
+                        hrg_majo: hrg_majo,
+                    },
+                    success: function(data) {
+                        // console.log(data);
+                        
+                        load_tugas();
+                        Swal.fire({
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 3000,
+                                icon: 'success',
+                                title: 'Pesanan berhasil ditambahkan'
+                            });
+                        $('.btn_save_majo').show();
+                        $('#tbh_menu_majo').modal('toggle');
+                    }
+                });
+                setTimeout(() => {
+                            isSubmit = false
+                        }, 15000);
                 }
-            });
+                $('.btn_save_majo').show();
             });
 
 
