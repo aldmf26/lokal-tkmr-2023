@@ -17,7 +17,7 @@
             <div class="card login-card">
                 <div class="row no-gutters">
                     <div class="col-md-5">
-                        <img src="{{ asset('public/assets') }}/tb_menu/KAKIAGE.jpg" alt="login" class="login-card-img">
+                        <img src="{{ asset('public/assets') }}/login/images/background.jpg" alt="login" class="login-card-img">
                     </div>
                     <div class="col-md-7">
                         <div class="card-body">

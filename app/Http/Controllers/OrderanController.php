@@ -638,7 +638,8 @@ class OrderanController extends Controller
             Jurnal::create($ppd);
         }
 
-        return redirect()->route('pembayaran2', ['no' => $hasil]);
+        return $hasil;
+
     }
 
     public function pembayaran2(Request $request)
