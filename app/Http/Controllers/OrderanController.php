@@ -694,6 +694,7 @@ class OrderanController extends Controller
         where   a.no_order2 = '$no'
         GROUP BY a.id_harga
         ");
+        
         $majo = DB::select("SELECT a.id_pembelian, a.tanggal, a.no_nota, c.nm_meja,
         a.nm_karyawan, b.nm_produk, a.id_karyawan, a.jumlah, a.harga, a.total
         FROM tb_pembelian AS a
