@@ -28,7 +28,7 @@ FROM
         `view_nilai_masak`.`jml_koki` AS `jml_koki`,
         'koki1' AS `ket`
     FROM
-        `resto`.`view_nilai_masak`
+        `view_nilai_masak`
     WHERE
         `view_nilai_masak`.`id_koki1` > 0
     UNION ALL
@@ -46,7 +46,7 @@ SELECT
     `view_nilai_masak`.`jml_koki` AS `jml_koki`,
     'koki2' AS `ket`
 FROM
-    `resto`.`view_nilai_masak`
+    `view_nilai_masak`
 WHERE
     `view_nilai_masak`.`id_koki2` > 0
 UNION ALL
@@ -64,7 +64,7 @@ SELECT
     `view_nilai_masak`.`jml_koki` AS `jml_koki`,
     'koki3' AS `ket`
 FROM
-    `resto`.`view_nilai_masak`
+    `view_nilai_masak`
 WHERE
     `view_nilai_masak`.`id_koki3` > 0
 ) `koki_masak`

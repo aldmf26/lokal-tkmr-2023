@@ -41,12 +41,12 @@ SELECT
 FROM
     (
         (
-            `resto`.`tb_order` `a`
-        LEFT JOIN `resto`.`view_menu` `b`
+            `tb_order` `a`
+        LEFT JOIN `view_menu` `b`
         ON
             (`b`.`id_harga` = `a`.`id_harga`)
         )
-    LEFT JOIN `resto`.`tb_meja` `c`
+    LEFT JOIN `tb_meja` `c`
     ON
         (`c`.`id_meja` = `a`.`id_meja`)
     )
