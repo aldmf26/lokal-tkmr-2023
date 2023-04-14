@@ -1,363 +1,363 @@
 @extends('template.master')
 @section('content')
-<style>
-    h6 {
-        color: #155592;
-        font-weight: bold;
-    }
-</style>
-<style>
-    .nav-pills .nav-link.active {
-        color: #fff;
-        background-color: #00A549;
-        box-shadow: 0px 10px 20px 0px rgba(50, 50, 50, 0.52)
-    }
+    <style>
+        h6 {
+            color: #155592;
+            font-weight: bold;
+        }
+    </style>
+    <style>
+        .nav-pills .nav-link.active {
+            color: #fff;
+            background-color: #00A549;
+            box-shadow: 0px 10px 20px 0px rgba(50, 50, 50, 0.52)
+        }
 
-    .nav {
-        white-space: nowrap;
-        display: block !important;
-        flex-wrap: nowrap;
-        max-width: 100%;
-        overflow-x: scroll;
-        overflow-y: hidden;
-        -webkit-overflow-scrolling: touch
-    }
+        .nav {
+            white-space: nowrap;
+            display: block !important;
+            flex-wrap: nowrap;
+            max-width: 100%;
+            overflow-x: scroll;
+            overflow-y: hidden;
+            -webkit-overflow-scrolling: touch
+        }
 
-    .nav li {
-        display: inline-block
-    }
+        .nav li {
+            display: inline-block
+        }
 
-    input[type=number] {
-        /*for absolutely positioning spinners*/
-        position: relative;
-        padding: 5px;
-        padding-right: 25px;
-    }
+        input[type=number] {
+            /*for absolutely positioning spinners*/
+            position: relative;
+            padding: 5px;
+            padding-right: 25px;
+        }
 
-    input[type=number]::-webkit-inner-spin-button,
-    input[type=number]::-webkit-outer-spin-button {
-        opacity: 1;
-    }
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            opacity: 1;
+        }
 
-    input[type=number]::-webkit-outer-spin-button,
-    input[type=number]::-webkit-inner-spin-button {
-        -webkit-appearance: inner-spin-button !important;
-        width: 25px;
-        position: absolute;
-        top: 0;
-        right: 0;
-        height: 100%;
-    }
+        input[type=number]::-webkit-outer-spin-button,
+        input[type=number]::-webkit-inner-spin-button {
+            -webkit-appearance: inner-spin-button !important;
+            width: 25px;
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: 100%;
+        }
 
-    .custom-scrollbar-js,
-    .custom-scrollbar-css {
-        height: 75px;
-    }
-
-
-    /* Custom Scrollbar using CSS */
-    .custom-scrollbar-css {
-        overflow-y: scroll;
-    }
-
-    /* scrollbar width */
-    .custom-scrollbar-css::-webkit-scrollbar {
-        width: 3px;
-    }
-
-    /* scrollbar track */
-    .custom-scrollbar-css::-webkit-scrollbar-track {
-        background: #EEE;
-    }
-
-    /* scrollbar handle */
-    .custom-scrollbar-css::-webkit-scrollbar-thumb {
-        border-radius: 1rem;
-        background: #26C784;
-        background: -webkit-linear-gradient(to right, #11998e, #26C784);
-        background: linear-gradient(to right, #11998e, #26C784);
-    }
-
-    .badge-notif {
-        position: relative;
-    }
-
-    .badge-notif[data-badge]:after {
-        content: attr(data-badge);
-        position: absolute;
-        top: 3px;
-        right: -2px;
-        font-size: .7em;
-        background: #e53935;
-        color: white;
-        width: 18px;
-        height: 18px;
-        text-align: center;
-        line-height: 18px;
-        border-radius: 50%;
-    }
-</style>
-<style>
-    /* card active */
-    .buying-selling.active {
-        background-image: linear-gradient(to right, #00B7B5 0%, #00B7B5 19%, #019392 60%, #04817F 100%);
-    }
-
-    .option1 {
-        display: none;
-    }
-
-    .buying-selling {
-        width: 123px;
-        padding: 10px;
-        position: relative;
-    }
-
-    .buying-selling-word {
-        font-size: 10px;
-        font-weight: 600;
-        margin-left: 35px;
-    }
-
-    .radio-dot:before,
-    .radio-dot:after {
-        content: "";
-        display: block;
-        position: absolute;
-        background: #fff;
-        border-radius: 100%;
-    }
-
-    .radio-dot:before {
-        width: 20px;
-        height: 20px;
-        border: 1px solid #ccc;
-        top: 10px;
-        left: 16px;
-    }
-
-    .radio-dot:after {
-        width: 12px;
-        height: 12px;
-        border-radius: 100%;
-        top: 14px;
-        left: 20px;
-    }
-
-    .buying-selling.active .buying-selling-word {
-        color: #fff;
-    }
-
-    .buying-selling.active .radio-dot:after {
-        background-image: linear-gradient(to right, #00B7B5 0%, #00B7B5 19%, #019392 60%, #04817F 100%);
-    }
-
-    .buying-selling.active .radio-dot:before {
-        background: #fff;
-        border-color: #699D17;
-    }
-
-    .buying-selling:hover .radio-dot:before {
-        border-color: #adadad;
-    }
-
-    .buying-selling.active:hover .radio-dot:before {
-        border-color: #699D17;
-    }
+        .custom-scrollbar-js,
+        .custom-scrollbar-css {
+            height: 75px;
+        }
 
 
-    /* .buying-selling.active .radio-dot:after {
-        background-image: linear-gradient(to right, #f78ca0 0%, #f9748f 19%, #fd868c 60%, #fe9a8b 100%);
-    } */
+        /* Custom Scrollbar using CSS */
+        .custom-scrollbar-css {
+            overflow-y: scroll;
+        }
 
-    /* dot */
-    .buying-selling:hover .radio-dot:after {
-        background-image: linear-gradient(to right, #00B7B5 0%, #00B7B5 19%, #019392 60%, #04817F 100%);
-    }
+        /* scrollbar width */
+        .custom-scrollbar-css::-webkit-scrollbar {
+            width: 3px;
+        }
 
-    /* .buying-selling.active:hover .radio-dot:after {
-        background-image: linear-gradient(to right, #f78ca0 0%, #f9748f 19%, #fd868c 60%, #fe9a8b 100%);
+        /* scrollbar track */
+        .custom-scrollbar-css::-webkit-scrollbar-track {
+            background: #EEE;
+        }
 
-    } */
+        /* scrollbar handle */
+        .custom-scrollbar-css::-webkit-scrollbar-thumb {
+            border-radius: 1rem;
+            background: #26C784;
+            background: -webkit-linear-gradient(to right, #11998e, #26C784);
+            background: linear-gradient(to right, #11998e, #26C784);
+        }
 
-    @media (max-width: 400px) {
+        .badge-notif {
+            position: relative;
+        }
 
-        .mobile-br {
+        .badge-notif[data-badge]:after {
+            content: attr(data-badge);
+            position: absolute;
+            top: 3px;
+            right: -2px;
+            font-size: .7em;
+            background: #e53935;
+            color: white;
+            width: 18px;
+            height: 18px;
+            text-align: center;
+            line-height: 18px;
+            border-radius: 50%;
+        }
+    </style>
+    <style>
+        /* card active */
+        .buying-selling.active {
+            background-image: linear-gradient(to right, #00B7B5 0%, #00B7B5 19%, #019392 60%, #04817F 100%);
+        }
+
+        .option1 {
             display: none;
         }
 
         .buying-selling {
-            width: 49%;
+            width: 123px;
             padding: 10px;
             position: relative;
         }
 
-    }
-</style>
-<div class="content-wrapper" style="min-height: 511px;">
-    <!-- Content Header (Page header) -->
-    <div class="content-header">
-        <div class="container">
-            <div class="row mb-2 justify-content-center">
-                <div class="col-sm-12">
-                    <center>
-                        <h4 style="color: rgb(120, 120, 120); font-weight: bold; --darkreader-inline-color:#837e75;"
-                            data-darkreader-inline-color="">Orderan</h4>
-                    </center>
-                </div><!-- /.col -->
+        .buying-selling-word {
+            font-size: 10px;
+            font-weight: 600;
+            margin-left: 35px;
+        }
 
-            </div><!-- /.row -->
-        </div><!-- /.container-fluid -->
-    </div>
-    <!-- /.content-header -->
-    <input type="hidden" id="id_distribusi" value="{{ $id }}">
-    <input type="hidden" id="jml_order" value="0">
-    <!-- Main content -->
-    <div class="content">
-        <div class="container-fluid">
-            <div class="row justify-content-center">
-                <div class="col-lg-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <div id="distribusi2">
+        .radio-dot:before,
+        .radio-dot:after {
+            content: "";
+            display: block;
+            position: absolute;
+            background: #fff;
+            border-radius: 100%;
+        }
+
+        .radio-dot:before {
+            width: 20px;
+            height: 20px;
+            border: 1px solid #ccc;
+            top: 10px;
+            left: 16px;
+        }
+
+        .radio-dot:after {
+            width: 12px;
+            height: 12px;
+            border-radius: 100%;
+            top: 14px;
+            left: 20px;
+        }
+
+        .buying-selling.active .buying-selling-word {
+            color: #fff;
+        }
+
+        .buying-selling.active .radio-dot:after {
+            background-image: linear-gradient(to right, #00B7B5 0%, #00B7B5 19%, #019392 60%, #04817F 100%);
+        }
+
+        .buying-selling.active .radio-dot:before {
+            background: #fff;
+            border-color: #699D17;
+        }
+
+        .buying-selling:hover .radio-dot:before {
+            border-color: #adadad;
+        }
+
+        .buying-selling.active:hover .radio-dot:before {
+            border-color: #699D17;
+        }
+
+
+        /* .buying-selling.active .radio-dot:after {
+            background-image: linear-gradient(to right, #f78ca0 0%, #f9748f 19%, #fd868c 60%, #fe9a8b 100%);
+        } */
+
+        /* dot */
+        .buying-selling:hover .radio-dot:after {
+            background-image: linear-gradient(to right, #00B7B5 0%, #00B7B5 19%, #019392 60%, #04817F 100%);
+        }
+
+        /* .buying-selling.active:hover .radio-dot:after {
+            background-image: linear-gradient(to right, #f78ca0 0%, #f9748f 19%, #fd868c 60%, #fe9a8b 100%);
+
+        } */
+
+        @media (max-width: 400px) {
+
+            .mobile-br {
+                display: none;
+            }
+
+            .buying-selling {
+                width: 49%;
+                padding: 10px;
+                position: relative;
+            }
+
+        }
+    </style>
+    <div class="content-wrapper" style="min-height: 511px;">
+        <!-- Content Header (Page header) -->
+        <div class="content-header">
+            <div class="container">
+                <div class="row mb-2 justify-content-center">
+                    <div class="col-sm-12">
+                        <center>
+                            <h4 style="color: rgb(120, 120, 120); font-weight: bold; --darkreader-inline-color:#837e75;"
+                                data-darkreader-inline-color="">Orderan</h4>
+                        </center>
+                    </div><!-- /.col -->
+
+                </div><!-- /.row -->
+            </div><!-- /.container-fluid -->
+        </div>
+        <!-- /.content-header -->
+        <input type="hidden" id="id_distribusi" value="{{ $id }}">
+        <input type="hidden" id="jml_order" value="0">
+        <!-- Main content -->
+        <div class="content">
+            <div class="container-fluid">
+                <div class="row justify-content-center">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <div id="distribusi2">
+
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div id="tugas_head">
+
+                                </div>
 
                             </div>
                         </div>
-                        <div class="card-body">
-                            <div id="tugas_head">
 
-                            </div>
+                    </div>
+                </div>
+                <!-- /.row -->
+            </div><!-- /.container-fluid -->
+        </div>
+        <!-- /.content -->
+    </div>
+
+    <form id="tambah_pesanan_new">
+        @csrf
+        <div class="modal fade" id="tbh_menu" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+
+                <div class="modal-content">
+                    <div class="modal-header bg-info">
+                        <h5 class="modal-title" id="exampleModalLabel">Tambah Pesanan</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+
+                        <div id="orderan">
 
                         </div>
-                    </div>
 
-                </div>
-            </div>
-            <!-- /.row -->
-        </div><!-- /.container-fluid -->
-    </div>
-    <!-- /.content -->
-</div>
+                        <div id="tambah_menu_order"></div>
 
-<form id="tambah_pesanan_new">
-    @csrf
-    <div class="modal fade" id="tbh_menu" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
+                        <div align="right" class="mt-2">
+                            <button type="button" id="tambah_form_menu" class="btn btn-sm btn-success">+</button>
+                        </div>
+                        <div class="buying-selling-group" id="buying-selling-group" data-toggle="buttons">
 
-            <div class="modal-content">
-                <div class="modal-header bg-info">
-                    <h5 class="modal-title" id="exampleModalLabel">Tambah Pesanan</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
 
-                    <div id="orderan">
-
-                    </div>
-
-                    <div id="tambah_menu_order"></div>
-
-                    <div align="right" class="mt-2">
-                        <button type="button" id="tambah_form_menu" class="btn btn-sm btn-success">+</button>
-                    </div>
-                    <div class="buying-selling-group" id="buying-selling-group" data-toggle="buttons">
+                        </div>
 
 
                     </div>
-                    
+                    <div class="modal-footer">
 
-                </div>
-                <div class="modal-footer">
-
-                    <button type="submit" class="btn btn-primary ">Edit / Save</button>
+                        <button type="submit" class="btn btn-primary ">Edit / Save</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</form>
+    </form>
 
-<form id="e_pembayaran">
-    <div class="modal fade" id="edit_pembayaran" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header bg-info">
-                    <h5 class="modal-title" id="exampleModalLabel">Edit Pembayaran</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body" id="form_edit_pembayaran">
+    <form id="e_pembayaran">
+        <div class="modal fade" id="edit_pembayaran" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header bg-info">
+                        <h5 class="modal-title" id="exampleModalLabel">Edit Pembayaran</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" id="form_edit_pembayaran">
 
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary" id="btn_e_pembayaran">Edit</button>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary" id="btn_e_pembayaran">Edit</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</form>
-<form id="tambah_pesanan_new_majo">
-    @csrf
-    <div class="modal fade" id="tbh_menu_majo" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
+    </form>
+    <form id="tambah_pesanan_new_majo">
+        @csrf
+        <div class="modal fade" id="tbh_menu_majo" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
 
-            <div class="modal-content">
-                <div class="modal-header " style="background-color: #CDE4D2; color: #745349">
-                    <h5 class="modal-title" id="exampleModalLabel">Tambah Pesanan stk</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-
-                    <div id="orderan_majo">
-
+                <div class="modal-content">
+                    <div class="modal-header " style="background-color: #CDE4D2; color: #745349">
+                        <h5 class="modal-title" id="exampleModalLabel">Tambah Pesanan stk</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
+                    <div class="modal-body">
 
-                    <br>
-                    <br>
+                        <div id="orderan_majo">
 
-                    {{-- <div id="tambah_menu_order_majo"></div>
+                        </div>
+
+                        <br>
+                        <br>
+
+                        {{-- <div id="tambah_menu_order_majo"></div>
 
                     <div align="right" class="mt-2">
                         <button type="button" id="tambah_form_menu_majo" class="btn btn-sm btn-success">+</button>
                     </div> --}}
 
-                    <div class="buying-selling-group_majo" id="buying-selling-group" data-toggle="buttons">
+                        <div class="buying-selling-group_majo" id="buying-selling-group" data-toggle="buttons">
 
+
+                        </div>
 
                     </div>
-
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn  btn_save_majo"
-                        style="background-color: #B6C7B9; color:#745349">Edit /
-                        Save</button>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn  btn_save_majo"
+                            style="background-color: #B6C7B9; color:#745349">Edit /
+                            Save</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</form>
+    </form>
 @endsection
 
 @section('script')
-<script>
-    $(document).ready(function() {
+    <script>
+        $(document).ready(function() {
             $(document).on('click', '.btn_tbh', function(event) {
                 $.ajax({
                     url: "{{ route('get_karyawan') }}",
                     method: "GET",
-                
+
                     success: function(data) {
 
-                    $('.buying-selling-group').html(data);
+                        $('.buying-selling-group').html(data);
 
                     }
                 });
             });
-            
+
             $(document).on('submit', '#e_pembayaran', function(event) {
                 event.preventDefault();
                 var no_order = $("#no_order").val();
@@ -655,29 +655,29 @@
                     cancelButtonColor: '#d33',
                     confirmButtonText: 'Clear Up'
                 }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        type: "get",
-                        url: "<?= route('clear') ?>?kode=" + kode,
-                        success: function(response) {
-                            Swal.fire({
-                                toast: true,
-                                position: 'top-end',
-                                showConfirmButton: false,
-                                timer: 3000,
-                                icon: 'success',
-                                title: 'Meja telah di clearup'
-                            });
-                            load_tugas();
-                        }
-                    });
-                    $('.scrol' + detail).hide();
-                } else {
-                    return false;
-                }
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            type: "get",
+                            url: "<?= route('clear') ?>?kode=" + kode,
+                            success: function(response) {
+                                Swal.fire({
+                                    toast: true,
+                                    position: 'top-end',
+                                    showConfirmButton: false,
+                                    timer: 3000,
+                                    icon: 'success',
+                                    title: 'Meja telah di clearup'
+                                });
+                                load_tugas();
+                            }
+                        });
+                        $('.scrol' + detail).hide();
+                    } else {
+                        return false;
+                    }
                 })
 
-                
+
 
             });
 
@@ -748,49 +748,49 @@
                 var id_dis = $('#id_dis').val()
                 var orang = $('#orang').val()
                 var meja = $('#meja').val()
-                
+
 
                 var id_harga = $("#id_harga").val()
 
                 var pesanan_new = $("#tambah_pesanan_new").serialize()
-                if(!isSubmit) {
-                        isSubmit = true
-                $.ajax({
-                    url: "{{ route('save_pesanan_new') }}?" + pesanan_new,
-                    method: 'GET',
-                    contentType: false,
-                    processData: false,
-                    success: function(data) {
-                        $('#tbh_menu').hide();
-                        setTimeout(function() {
-                            $("[data-dismiss=modal]").trigger({
-                                type: "click"
+                if (!isSubmit) {
+                    isSubmit = true
+                    $.ajax({
+                        url: "{{ route('save_pesanan_new') }}?" + pesanan_new,
+                        method: 'GET',
+                        contentType: false,
+                        processData: false,
+                        success: function(data) {
+                            $('#tbh_menu').hide();
+                            setTimeout(function() {
+                                $("[data-dismiss=modal]").trigger({
+                                    type: "click"
+                                });
+                            }, 50);
+                            Swal.fire({
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 3000,
+                                icon: 'success',
+                                title: 'Pesanan berhasil ditambahkan'
                             });
-                        }, 50);
-                        Swal.fire({
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 3000,
-                            icon: 'success',
-                            title: 'Pesanan berhasil ditambahkan'
-                        });
-                        load_tugas();
+                            load_tugas();
 
-                        $('#tambah_pesanan').trigger("reset");
-                        $('.id_harga').val('');
-                        $('.id_harga').trigger('change');
-                        $('.row_tambah_menu').remove();
-
-                        
+                            $('#tambah_pesanan').trigger("reset");
+                            $('.id_harga').val('');
+                            $('.id_harga').trigger('change');
+                            $('.row_tambah_menu').remove();
 
 
-                    }
 
-                });
-                setTimeout(() => {
-                            isSubmit = false
-                        }, 15000);
+
+                        }
+
+                    });
+                    setTimeout(() => {
+                        isSubmit = false
+                    }, 15000);
                 }
                 $('#btn_tambah_pesanan').show();
 
@@ -868,13 +868,14 @@
                 });
             });
 
-            
+
             $(document).on('click', '.btn_tbh_majo', function() {
                 var no_order = $(this).attr('no_order');
                 var id_distribusi = $("#id_distribusi").val();
                 // console.log(no_order);
                 $.ajax({
-                    url: "{{ route('tambah_pesanan_majo') }}?no=" + no_order + "&id=" + id_distribusi,
+                    url: "{{ route('tambah_pesanan_majo') }}?no=" + no_order + "&id=" +
+                        id_distribusi,
                     dataType: "html",
                     success: function(hasil) {
                         $('#orderan_majo').html(hasil);
@@ -885,26 +886,27 @@
                     }
                 });
                 $.ajax({
-                    url: "{{route('get_karyawan_majo')}}",
+                    url: "{{ route('get_karyawan_majo') }}",
                     method: "GET",
                     success: function(data) {
-                    $('.buying-selling-group_majo').html(data);
+                        $('.buying-selling-group_majo').html(data);
 
-                }
+                    }
+
+                });
+
+
 
             });
 
-
-
-        });
-
-        var isSubmit = false
-        $(document).on('submit', '#tambah_pesanan_new_majo', function(event) {
+            var isSubmit = false
+            $(document).on('submit', '#tambah_pesanan_new_majo', function(event) {
                 event.preventDefault();
                 $('.btn_save_majo').hide();
-                var kd_order = $('#kd_order').val()
-                var id_dis = $('#id_dis').val()
-                var meja = $('#meja').val()
+
+                var kd_order = $('#kd_order_majo').val()
+                var id_dis = $('#id_dis_majo').val()
+                var meja = $('#meja_majo').val()
                 var qty_majo = $('#qty_majo').val()
                 var hrg_majo = $('#hrg_majo').val()
 
@@ -914,25 +916,23 @@
                 });
 
                 var id_harga_majo = $(".id_harga_majo").val()
-                if(!isSubmit) {
-                        isSubmit = true
-                $.ajax({
-                    url: "{{ route('save_pesanan_majo') }}",
-                    method: "GET",
-                    data: {
-                        nota: nota,
-                        kd_order: kd_order,
-                        id_dis: id_dis,
-                        id_harga_majo: id_harga_majo,
-                        meja: meja,
-                        qty_majo: qty_majo,
-                        hrg_majo: hrg_majo,
-                    },
-                    success: function(data) {
-                        // console.log(data);
-                        
-                        load_tugas();
-                        Swal.fire({
+                if (!isSubmitting) {
+                    isSubmitting = true
+                    $.ajax({
+                        url: "{{ route('save_pesanan_majo') }}",
+                        method: "GET",
+                        data: {
+                            nota: nota,
+                            kd_order: kd_order,
+                            id_dis: id_dis,
+                            id_harga_majo: id_harga_majo,
+                            meja: meja,
+                            qty_majo: qty_majo,
+                            hrg_majo: hrg_majo,
+                        },
+                        success: function(data) {
+                            // console.log(data);
+                            Swal.fire({
                                 toast: true,
                                 position: 'top-end',
                                 showConfirmButton: false,
@@ -940,13 +940,14 @@
                                 icon: 'success',
                                 title: 'Pesanan berhasil ditambahkan'
                             });
-                        $('.btn_save_majo').show();
-                        $('#tbh_menu_majo').modal('toggle');
-                    }
-                });
-                setTimeout(() => {
-                            isSubmit = false
-                        }, 15000);
+                            load_tugas();
+                            $('#tbh_menu_majo').modal('toggle');
+                        }
+                    });
+                    setTimeout(() => {
+
+                        isSubmitting = false
+                    }, 15000);
                 }
                 $('.btn_save_majo').show();
             });
@@ -955,5 +956,5 @@
 
 
         });
-</script>
+    </script>
 @endsection

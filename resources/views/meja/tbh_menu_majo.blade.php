@@ -1,7 +1,7 @@
-<input type="hidden" id="kd_order" name="kd_order" value="{{ $order->no_order }}">
-<input type="hidden" id="meja" name="meja" value="{{ $order->id_meja }}  ">
-<input type="hidden" id="warna" name="warna" value="{{ $order->warna }}  ">
-<input type="hidden" id="id_dis" name="id_dis" value="{{ $order->id_distribusi }}">
+<input type="hidden" id="kd_order_majo" name="kd_order" value="{{ $order->no_order }}">
+<input type="hidden" id="meja_majo" name="meja" value="{{ $order->id_meja }}  ">
+<input type="hidden" id="warna_majo" name="warna" value="{{ $order->warna }}  ">
+<input type="hidden" id="id_dis_majo" name="id_dis" value="{{ $order->id_distribusi }}">
 <div class="row">
     <div class="col-lg-4">
         <label for="">Menu</label>
