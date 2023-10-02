@@ -50,6 +50,25 @@ class DownloadController extends Controller
         return view('download.index', $data);
     }
 
+    public function absen(Request $r)
+    {
+        $absen = Http::get("https://ptagafood.com/api/importAbsen");
+        $dt_absen = json_decode($absen, TRUE);
+        DB::table('tb_absen')->whereBetween('tgl', [date('Y-m-1'), date('Y-m-t')])->delete();
+
+        foreach ($dt_absen['absenTkmr'] as $v) {
+            $data = [
+                'id_absen' => $v['id_absen'],
+                'id_karyawan' => $v['id_karyawan'],
+                'status' => $v['status'],
+                'tgl' => $v['tgl'],
+                'id_lokasi' => $v['id_lokasi'],
+            ];
+            DB::table('tb_absen')->insert($data);
+        }
+        return redirect()->route('sukses2')->with('sukses', 'Sukses');
+    }
+
     public function voucher(Request $request)
     {
         $voucher = Http::get("https://ptagafood.com/api/voucher_tkmr");

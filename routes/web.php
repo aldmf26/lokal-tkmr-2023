@@ -263,12 +263,13 @@ Route::get('/void', [VoidController::class, 'index'])->name('void');
 
 Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan');
 Route::get('/summary', [LaporanController::class, 'summary'])->name('summary');
+Route::get('/ex_summary', [LaporanController::class, 'ex_summary'])->name('ex_summary');
 Route::get('/item', [LaporanController::class, 'item'])->name('item');
+Route::get('/item_majo', [LaporanController::class, 'item_majo'])->name('item_majo');
+Route::get('/export_itemMajo', [LaporanController::class, 'export_itemMajo'])->name('export_itemMajo');
 Route::get('/get_telat', [LaporanController::class, 'get_telat'])->name('get_telat');
 Route::get('/get_ontime', [LaporanController::class, 'get_ontime'])->name('get_ontime');
 Route::get('/export_item', [LaporanController::class, 'export_item'])->name('export_item');
-Route::get('/server', [LaporanController::class, 'server'])->name('server');
-Route::get('/get_order_server', [LaporanController::class, 'get_order_server'])->name('get_order_server');
 
 Route::get('/head', [HeadController::class, 'index'])->name('head');
 Route::get('/head2', [HeadController::class, 'head2'])->name('head2');
@@ -387,6 +388,7 @@ Route::get('/i_karyawan', [DownloadController::class, 'karyawan'])->name('i_kary
 Route::get('/i_user', [DownloadController::class, 'user'])->name('i_user');
 Route::get('/tb_voucher_hapus', [DownloadController::class, 'tb_voucher_hapus'])->name('tb_voucher_hapus');
 Route::get('/tb_majo', [DownloadController::class, 'tb_majo'])->name('tb_majo');
+Route::get('/i_absen', [DownloadController::class, 'absen'])->name('i_absen');
 
 
 Route::get('/sukses', [ApiController::class, 'sukses'])->name('sukses');

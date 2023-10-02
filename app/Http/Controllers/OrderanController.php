@@ -18,6 +18,8 @@ use Gloudemans\Shoppingcart\Facades\Cart;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
+
 
 class OrderanController extends Controller
 {
@@ -122,6 +124,9 @@ class OrderanController extends Controller
         left join tb_meja as c on c.id_meja = a.no_meja
         WHERE a.no_nota= '$no' and a.bayar = 'T'
         ");
+        $now = date('Y-m-d');
+        $disc = DB::table('tb_discount')
+            ->where([['lokasi', Session::get('id_lokasi')], ['dari', '<=', $now], ['expired', '>=', $now], ['aktif', '>=', 'Y']])->first();
 
         $data = [
             'title' => 'Pembayaran',
@@ -134,7 +139,8 @@ class OrderanController extends Controller
             'nav' => '2',
             'ongkir_bayar' => DB::select("SELECT SUM(a.rupiah) AS rupiah
             FROM tb_ongkir AS a"),
-            'majo' => $majo
+            'majo' => $majo,
+            'disc' => $disc
 
         ];
 

@@ -83,6 +83,17 @@
                     </center>
                 </div>
                 <div class="col-lg-3 mt-4">
+                    <h3 class="text-bold text-center">Absen</h3>
+                    <center>
+                        <br>
+                        <a href="{{route('i_absen')}}" class="btn btn-info" id="export7">import</a>
+                        <button class="btn btn-info save_loading7" type="button" disabled>
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            Loading...
+                        </button>
+                    </center>
+                </div>
+                <div class="col-lg-3 mt-4">
                     <h3 class="text-bold text-center">User</h3>
                     <center>
                         <br>
@@ -124,6 +135,7 @@
         $('.save_loading4').hide();
         $('.save_loading5').hide();
         $('.save_loading6').hide();
+        $('.save_loading7').hide();
         $('.save_loadingStk').hide();
         $(document).on('click', '#export1', function() {
             //   event.preventDefault();
@@ -165,6 +177,13 @@
 
             $('#export6').hide();
             $('.save_loading6').show();
+
+        });
+        $(document).on('click', '#export7', function() {
+            //   event.preventDefault();
+
+            $('#export7').hide();
+            $('.save_loading7').show();
 
         });
         $(document).on('click', '#stk', function() {

@@ -299,6 +299,83 @@
 
    
 <?php endif ?>
+<?php if (empty($majo)) : ?>
+<?php else : ?>
+<div style="font-size: 14px;page-break-before: always">
+    <hr>
+    <table align="center" class="table" style="font-size: 14px;">
+        <tbody>
+            <tr>
+                <td>
+                    invoice #
+                    <?= $no_order; ?><br>
+                    Server :
+                    {{Session::get('id_lokasi') == 1 ? 'TAKEMORI' : 'SOONDOBU'}}
+                </td>
+                <td>
+                    {{--
+                    <?php
+                        $Weddingdate = new DateTime($pesan_3->j_mulai);
+                        echo $Weddingdate->format("M j, h:i:s a");
+                        ?>
+                    <br> --}}
+                </td>
+
+            </tr>
+            <tr>
+            <tr>
+                <td colspan="2" align="center" style="font-size: 16px; font-weight: bold">
+                    {{$meja->nm_meja }} {{$meja->warna}}
+                </td>
+            </tr>
+            </tr>
+        </tbody>
+    </table>
+    <hr>
+    <table class="table" align="center" style="font-size: 14px;">
+        <thead style="font-family: Footlight MT Light;">
+            <tr>
+                <th colspan="3" style="text-align: left">STK</th>
+            </tr>
+            <tr>
+                <th>QTY :
+                    {{$majo_ttl->sum_qty}}
+                </th>
+                <th>NAMA MENU :
+                    {{$majo_ttl->sum_qty}}
+                </th>
+                <th>Time: </th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($majo  as $m) : ?>
+            <tr>
+                <td align="center">
+                    {{$m->jumlah}}
+                </td>
+                <td>
+                    {{$m->nm_produk}} <br> ***
+                </td>
+                <td>
+
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2"></td>
+            </tr>
+            <?php endforeach ?>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3"></td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <input type="hidden" id="kode" value="{{ $no_order }}">
+
+</div>
+<?php endif ?>
 <!-- ======================================================== conten ======================================================= -->
 <script>
     window.print();

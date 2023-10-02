@@ -899,7 +899,7 @@
 
             });
 
-            var isSubmit = false
+            var isSubmitting = false
             $(document).on('submit', '#tambah_pesanan_new_majo', function(event) {
                 event.preventDefault();
                 $('.btn_save_majo').hide();

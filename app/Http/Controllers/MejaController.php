@@ -10,6 +10,8 @@ use App\Models\Transaksi;
 use App\Models\Pembelian;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
+
 
 class MejaController extends Controller
 {
@@ -299,8 +301,11 @@ class MejaController extends Controller
         $majo = DB::select("SELECT a.tanggal, a.no_nota, a.nm_karyawan, b.nm_produk, a.id_karyawan,  a.jumlah, a.harga, a.total
         FROM tb_pembelian AS a
         LEFT JOIN tb_produk AS b ON b.id_produk = a.id_produk
-        WHERE a.no_nota= '$id'
+        WHERE a.no_nota = '$id' AND a.lokasi = '1'
         ");
+        $now = date('Y-m-d');
+        $disc = DB::table('tb_discount')
+            ->where([['lokasi', Session::get('id_lokasi')], ['dari', '<=', $now], ['expired', '>=', $now], ['aktif', '=', 'Y']])->first();
         $data = [
             'order' => $order,
             'no_order' => $id,
@@ -315,7 +320,8 @@ class MejaController extends Controller
                 ->first(),
             'batas' => DB::table('tb_batas_ongkir')
                 ->first(),
-            'majo' => $majo
+            'majo' => $majo,
+            'disc' => $disc
         ];
         return view('meja.bill', $data);
     }
@@ -560,6 +566,23 @@ class MejaController extends Controller
                 ->where('a.checker_tamu', 'T')
                 ->groupBy('a.no_order')
                 ->first(),
+                'majo' => DB::select("SELECT a.tanggal, a.no_nota, a.nm_karyawan, b.nm_produk, a.id_karyawan,  a.jumlah, a.harga, a.total
+                FROM tb_pembelian AS a
+                LEFT JOIN tb_produk AS b ON b.id_produk = a.id_produk
+                WHERE a.no_nota= '$id'
+                "),
+                
+            'majo_ttl' => DB::selectOne("SELECT a.tanggal, a.no_nota, a.nm_karyawan, b.nm_produk, a.id_karyawan,  sum(a.jumlah) as sum_qty, a.harga, a.total
+                        FROM tb_pembelian AS a
+                        LEFT JOIN tb_produk AS b ON b.id_produk = a.id_produk
+                        WHERE a.no_nota= '$id'
+                        group by a.no_nota
+                        "),
+            'meja' => DB::selectOne("SELECT a.warna, b.nm_meja
+                        FROM tb_order AS a
+                        LEFT JOIN tb_meja AS b ON b.id_meja = a.id_meja
+                        WHERE a.no_order = '$id'
+                        GROUP BY a.no_order ")
         ];
 
         $data1 = [
@@ -669,6 +692,24 @@ class MejaController extends Controller
                 ->where('a.copy_checker_tamu', 'T')
                 ->groupBy('a.no_order')
                 ->first(),
+
+                'majo' => DB::select("SELECT a.tanggal, a.no_nota, a.nm_karyawan, b.nm_produk, a.id_karyawan,  a.jumlah, a.harga, a.total
+                FROM tb_pembelian AS a
+                LEFT JOIN tb_produk AS b ON b.id_produk = a.id_produk
+                WHERE a.no_nota= '$id'
+                "),
+                
+            'majo_ttl' => DB::selectOne("SELECT a.tanggal, a.no_nota, a.nm_karyawan, b.nm_produk, a.id_karyawan,  sum(a.jumlah) as sum_qty, a.harga, a.total
+                        FROM tb_pembelian AS a
+                        LEFT JOIN tb_produk AS b ON b.id_produk = a.id_produk
+                        WHERE a.no_nota= '$id'
+                        group by a.no_nota
+                        "),
+            'meja' => DB::selectOne("SELECT a.warna, b.nm_meja
+                        FROM tb_order AS a
+                        LEFT JOIN tb_meja AS b ON b.id_meja = a.id_meja
+                        WHERE a.no_order = '$id'
+                        GROUP BY a.no_order ")
         ];
 
         $data1 = [

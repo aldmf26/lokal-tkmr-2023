@@ -78,7 +78,7 @@
                             <input type="hidden" name="_token" id="token" value="{{ csrf_token() }}">
                             @if ($data->status == 'M')
                                 <div class="dropdown">
-                                    <button class="btnHapus btn btn-block btn-success" id="dropdownMenuButton1"
+                                    <button disabled class="btnHapus btn btn-block btn-success" id="dropdownMenuButton1"
                                         data-bs-toggle="dropdown" aria-expanded="false">
                                         M
                                     </button>
@@ -108,7 +108,7 @@
                                 @endphp
                             @elseif($data->status == 'E')
                                 <div class="dropdown">
-                                    <button class="btnHapus btn btn-block btn-warning" id="dropdownMenuButton1"
+                                    <button disabled class="btnHapus btn btn-block btn-warning" id="dropdownMenuButton1"
                                         data-bs-toggle="dropdown" aria-expanded="false">
                                         E
                                     </button>
@@ -135,7 +135,7 @@
                                 @endphp
                             @elseif($data->status == 'SP')
                                 <div class="dropdown">
-                                    <button href="javascript:void(0)" class="btnHapus btn btn-block btn-primary"
+                                    <button disabled href="javascript:void(0)" class="btnHapus btn btn-block btn-primary"
                                         id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                                         SP
                                     </button>
@@ -160,9 +160,9 @@
                                     $totalSP++;
                                 @endphp
                             @else
-                            <a href="javascript:void(0)" class="btn btn-block  btn-info">
+                            <button disabled href="javascript:void(0)" class="btn btn-block  btn-info">
                                 OFF
-                            </a>
+                            </button>
                             @php
                             $totalOff++;
                         @endphp
@@ -173,12 +173,12 @@
                    
                     <?php }else { ?>
                     <td class="bg-info m">
-                        <a href="javascript:void(0)" id="input{{ $d->id_karyawan }}"
+                        <button disabled id="input{{ $d->id_karyawan }}"
                             class="btnInput btn btn-block  btn-info" status="M" id_karyawan="{{ $d->id_karyawan }}"
                             page="3" tahun="{{ $tahun_2 }}" bulan="{{ $bulan }}"
                             tanggal="{{ $tahun_2 . '-' . $bulan . '-' . $i }}">
                             OFF
-                        </a>
+                        </button>
                     </td>
                     @php
                         $totalOff++;

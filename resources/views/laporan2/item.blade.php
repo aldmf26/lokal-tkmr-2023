@@ -30,7 +30,7 @@
 
 </div>
 <script src="{{ asset('assets') }}/plugins/jquery/jquery.min.js"></script>
-<script src="{{ asset('assets') }}/plugins/sweetalert2/sweetalert2.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="{{ asset('assets') }}/plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="{{ asset('assets') }}/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
 <script src="{{ asset('assets') }}/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>

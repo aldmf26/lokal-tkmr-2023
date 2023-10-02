@@ -69,7 +69,7 @@
                                         <tr>
                                             @if ($o->nm_menu == '')
 
-                                        @else
+                                            @else
                                             <td>
                                                 <?= $i++ ?>
                                             </td>
@@ -153,14 +153,7 @@
                                             </td>
                                             <td></td>
                                         </tr>
-                                        <tr>
-                                            <td colspan="2">Discount</td>
-                                            <td></td>
-                                            <td></td>
-                                            <td>-</td>
-                                            <td width="20%"><?= number_format($transaksi->discount, 0) ?> %</td>
-                                            <td></td>
-                                        </tr>
+
                                         <tr>
                                             <td colspan="2">Voucher</td>
                                             <td></td>
@@ -209,6 +202,19 @@
                                             <td></td>
                                         </tr>
                                         <?php endif; ?>
+                                        <?php $total = $total2 + $total_majo - $transaksi->voucher + $transaksi->service + $transaksi->tax + $transaksi->ongkir; ?>
+                                        <?php
+                                            $a = $total;
+                                            $b = number_format(substr($a, -3), 0);
+                                            
+                                            if ($b == '00') {
+                                                $c = $a;
+                                                $round = '00';
+                                            } elseif ($b < 1000) {
+                                                $c = $a - $b + 1000;
+                                                $round = 1000 - $b;
+                                            }
+                                        ?>
 
                                         <tr>
                                             <td style="font-weight: bold; background-color: #C8E1F3; font-weight: bold;"
@@ -220,13 +226,24 @@
                                             <td width="20%" style="background-color: #C8E1F3;font-weight: bold;"></td>
                                             <td width="20%" style="background-color: #C8E1F3;font-weight: bold;">
                                                 {{-- @php
-                                                    $totO = $total2 * (100 - $transaksi->discount) / 100 - $transaksi->voucher;
-                                                    $to = $totO + $transaksi->service + $transaksi->tax + $transaksi->ongkir + $transaksi->round;
+                                                $totO = $total2 * (100 - $transaksi->discount) / 100 -
+                                                $transaksi->voucher;
+                                                $to = $totO + $transaksi->service + $transaksi->tax + $transaksi->ongkir
+                                                + $transaksi->round;
                                                 @endphp
                                                 <?= number_format($to < 1 ? 0 : $to, 0) ?> --}}
-                                                <?= number_format($transaksi->total_bayar, 0) ?>
+                                                <?= number_format($c, 0) ?>
                                             </td>
                                             <td style="background-color: #C8E1F3;font-weight: bold;"></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2">Discount</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td>-</td>
+                                            <td width="20%">{{number_format($c *($transaksi->discount/100),0)}}
+                                                ({{$transaksi->discount}}%)</td>
+                                            <td></td>
                                         </tr>
 
                                         <tr>

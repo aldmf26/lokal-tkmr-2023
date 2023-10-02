@@ -85,22 +85,7 @@
 
                     </center>
                 </div>
-                <div class="col-lg-4 mt-4">
-                    <h3 class="text-bold text-center">Absen</h3>
-                    <center>
-                        <br>
-                        <?php if(empty($tb_absen->import)): ?>
-                        <p class="text-success">Data sudah di export <i class="fas fa-check"></i></p>
-                        <?php else: ?>
-                        <a href="{{route('tb_absen')}}" class="btn btn-info" id="export4">export</a>
-                        <button class="btn btn-info save_loading4" type="button" disabled>
-                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                            Loading...
-                        </button>
-                        <?php endif ?>
 
-                    </center>
-                </div>
                 <div class="col-lg-4 mt-4">
                     <h3 class="text-bold text-center">Jurnal Pemasukan</h3>
                     <center>

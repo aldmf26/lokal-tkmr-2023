@@ -210,6 +210,54 @@
                     {{number_format($c , 0)}}
                 </td>
             </tr>
+            @if (empty($disc->jenis))
+                
+            @else
+            <tr>
+                <td style="text-align: left;" width="6%"></td>
+                <td>Discount</td>
+                <td>
+                    @if ($c < $disc->minimum_rp)
+                        0
+                    @else
+                    ({{ $disc->jenis == 'Persen' ? $disc->disc . '%' : 'Rp.' . $disc->disc }})
+                    @endif
+                    
+
+                </td>
+            </tr>
+            <tr style="font-weight: bold; font-size: 20px;">
+                <?php
+                if ($c < $disc->minimum_rp) {
+                    $gran_total = $c;
+                    }else {
+                        if ($disc->jenis == 'Persen') {
+                            $gran_total = $c * ((100 - $disc->disc) / 100);
+                        } else {
+                            $gran_total = $c * $disc->disc;
+                        }
+                    }
+
+                    $d = $gran_total;
+                    $e = number_format(substr($d, -3), 0);
+
+                    if ($e == '00') {
+                        $f = $d;
+                        $round = '00';
+                    } elseif ($b < 1000) {
+                        $f = $d - $e + 1000;
+                        $round = 1000 - $e;
+                }
+                ?>
+                <td style="text-align: left;" width="6%"></td>
+                <td>GRAND TOTAL</td>
+                <td>
+                    {{number_format($f , 0)}}
+                </td>
+            </tr>
+            @endif
+            
+            
         </tfoot>
     </table>
 

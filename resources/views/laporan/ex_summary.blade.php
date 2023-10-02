@@ -1,4 +1,21 @@
-<!-- CSS only -->
+<?php
+
+$file = "LAPORAN SUMMARY RESTO.xls";
+header("Content-type: application/vnd-ms-excel");
+header("Content-Disposition: attachment; filename=$file");
+?>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <!-- CSS only -->
 <?php
 $pb1_gojek = ($total_gojek->total + $majo_gojek->bayar_majo * 0.8) / 11;
 
@@ -12,11 +29,6 @@ $total_total = $total_gojek->total + $total_not_gojek->total + $service_charge +
 ?>
 
 <div class="card">
-    <div class="card-header">
-        <a href="{{ route('ex_summary',['tgl1' => $tgl1,'tgl2'=>" $tgl2"]) }}"
-            class="btn btn-info btn-sm float-right">Export
-            Excel</a>
-    </div>
     <div class="card-body">
         <h5 style="font-weight: bold; text-align: center;">== {{ $lokasi == '1' ? 'TAKEMORI' : 'SOONDOBU' }} ==</h5>
         <table width="100%">
@@ -66,27 +78,24 @@ $total_total = $total_gojek->total + $total_not_gojek->total + $service_charge +
                 <td>Jumlah pesanan telat masak telat masak 25 Menit</td>
                 <td width="1%">:</td>
                 <td></td>
-                <td style="text-align: right;"><a href="#koki_masak" id="btn_telat" data-toggle="modal"
-                        tgl1="<?= $tgl1 ?>" tgl2="<?= $tgl2 ?>"><?= number_format($jml_telat->jml_telat, 0) ?> /
-                        <?= $jml_telat->jml_telat > 0 ? number_format(($jml_telat->jml_telat * 100) / ($jml_telat->jml_telat + $jml_ontime->jml_ontime), 0) : 0 ?>%</a>
+                <td style="text-align: right;"><?= number_format($jml_telat->jml_telat, 0) ?> /
+                        <?= $jml_telat->jml_telat > 0 ? number_format(($jml_telat->jml_telat * 100) / ($jml_telat->jml_telat + $jml_ontime->jml_ontime), 0) : 0 ?>%
                 </td>
             </tr>
             <tr>
                 <td>Jumlah pesanan telat masak 20 Menit</td>
                 <td width="1%">:</td>
                 <td></td>
-                <td style="text-align: right;"><a href="#koki_masak" id="btn_telat" data-toggle="modal"
-                        tgl1="<?= $tgl1 ?>" tgl2="<?= $tgl2 ?>"><?= number_format($jml_telat20->jml_telat, 0) ?> /
-                        <?= $jml_telat->jml_telat > 0 ? number_format(($jml_telat20->jml_telat * 100) / ($jml_telat20->jml_telat + $jml_ontime->jml_ontime), 0) : 0 ?>%</a>
+                <td style="text-align: right;"><?= number_format($jml_telat20->jml_telat, 0) ?> /
+                        <?= $jml_telat->jml_telat > 0 ? number_format(($jml_telat20->jml_telat * 100) / ($jml_telat20->jml_telat + $jml_ontime->jml_ontime), 0) : 0 ?>%
                 </td>
             </tr>
             <tr>
                 <td>Jumlah pesanan ontime masak</td>
                 <td width="1%">:</td>
                 <td></td>
-                <td style="text-align: right;"><a href="#koki_masak" id="btn_ontime" data-toggle="modal"
-                        tgl1="<?= $tgl1 ?>" tgl2="<?= $tgl2 ?>"><?= number_format($jml_ontime->jml_ontime, 0) ?> /
-                        <?= $jml_ontime->jml_ontime > 0 ? number_format(($jml_ontime->jml_ontime * 100) / ($jml_telat->jml_telat + $jml_ontime->jml_ontime), 0) : 0 ?>%</a>
+                <td style="text-align: right;"><?= number_format($jml_ontime->jml_ontime, 0) ?> /
+                        <?= $jml_ontime->jml_ontime > 0 ? number_format(($jml_ontime->jml_ontime * 100) / ($jml_telat->jml_telat + $jml_ontime->jml_ontime), 0) : 0 ?>%
                 </td>
             </tr>
              <tr>
@@ -354,3 +363,7 @@ $total_total = $total_gojek->total + $total_not_gojek->total + $service_charge +
     </div>
 
 </div>
+
+</body>
+
+</html>
