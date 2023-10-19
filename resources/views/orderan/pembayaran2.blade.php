@@ -279,7 +279,7 @@
                                             </td>
                                             <td style="background-color: #C8E1F3;font-weight: bold;"></td>
                                         </tr>
-                                        <?php if ($transaksi->cash == '0') : ?>
+                                        {{-- <?php if ($transaksi->cash == '0') : ?>
                                         <?php else : ?>
                                         <tr>
                                             <td colspan="2">Cash</td>
@@ -343,7 +343,26 @@
                                             </td>
                                             <td></td>
                                         </tr>
-                                        <?php endif ?>
+                                        <?php endif ?> --}}
+
+                                        @php
+                                                $total_p = 0;
+                                            @endphp
+                                            @foreach ($pembayaran as $p)
+                                                <tr>
+                                                    <td colspan="2">{{ $p->nm_akun }} {{ $p->nm_klasifikasi }}</td>
+                                                    <td>{{ empty($p->pengirim) ? '' : 'Pengirim:' . $p->pengirim }}</td>
+                                                    <td></td>
+                                                    <td>-</td>
+                                                    <td width="20%">
+                                                        <?= number_format($p->nominal, 0) ?>
+                                                    </td>
+                                                    <td></td>
+                                                </tr>
+                                                @php
+                                                    $total_p += $p->nominal;
+                                                @endphp
+                                            @endforeach
 
                                         <tr>
                                             <td colspan="2">Total Bayar</td>
@@ -351,7 +370,7 @@
                                             <td></td>
                                             <td>-</td>
                                             <td width="20%">
-                                                <?= number_format($transaksi->cash + $transaksi->d_bca + $transaksi->k_bca + $transaksi->d_mandiri + $transaksi->k_mandiri, 0) ?>
+                                                <?= number_format($total_p, 0) ?>
                                             </td>
                                             <td></td>
                                         </tr>
@@ -364,7 +383,7 @@
                                                 @if ($transaksi->kembalian > 0)
                                                 <?= number_format($transaksi->kembalian, 0) ?>
                                                 @else
-                                                <?= number_format($transaksi->cash + $transaksi->d_bca + $transaksi->k_bca + $transaksi->d_mandiri + $transaksi->k_mandiri - $transaksi->total_bayar, 0) ?>
+                                                <?= number_format($total_p - $transaksi->total_bayar, 0) ?>
                                                 @endif
                                             </td>
                                             <td style="background-color: #BCF9BC;"> <a class="btn btn-sm btn-primary"

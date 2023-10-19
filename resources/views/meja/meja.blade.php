@@ -278,7 +278,8 @@
         </div>
     </form>
 
-    <form id="e_pembayaran">
+    <form action="{{ route('edit_pembayaran') }}" method="post">
+        @csrf
         <div class="modal fade" id="edit_pembayaran" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">

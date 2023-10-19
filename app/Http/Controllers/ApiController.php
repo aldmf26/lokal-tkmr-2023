@@ -195,6 +195,26 @@ class ApiController extends Controller
 
     public function tb_transaksi()
     {
+
+        // pembayaran baru
+        $pembayaran = DB::table('pembayaran')->where('import', 'T')->get();
+        $id_pembayaran = [];
+        $data_pembayaran = [];
+        foreach ($pembayaran as $t) {
+            $id_pembayaran[] = $t->id_pembayaran;
+            array_push($data_pembayaran, [
+                'id_akun_pembayaran' => $t->id_akun_pembayaran,
+                'no_nota' => $t->no_nota,
+                'nominal' => $t->nominal,
+                'pengirim' => $t->pengirim,
+                'tgl' => $t->tgl,
+                'tgl_waktu' => $t->tgl_waktu,
+                'id_lokasi' => $t->id_lokasi,
+            ]);
+        }
+        $response = Http::acceptJson()->post('https://ptagafood.com/api/pembayaran', $data_pembayaran);
+        DB::table('pembayaran')->whereIn('id_pembayaran', $id_pembayaran)->update(['import' => 'Y']);
+        // end pembayaran baru
         // tb produk majo
         $tb_produk_majo = DB::table('tb_produk')->where([['id_lokasi' , 1]])->get();
         $id_produk_majo = [];

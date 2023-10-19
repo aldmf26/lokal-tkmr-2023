@@ -2,15 +2,14 @@
 @section('content')
     <style>
         /* .icon-menu:hover{
-                background: #C8BED8;
-                border-radius: 50px;
-            } */
+                                                                                                                                                                                        background: #C8BED8;
+                                                                                                                                                                                        border-radius: 50px;
+                                                                                                                                                                                    } */
 
         h6 {
             color: #155592;
             font-weight: bold;
         }
-
     </style>
     <div class="content-wrapper">
         <!-- Content Header (Page header) -->
@@ -55,6 +54,7 @@
                                                 <option value="1">SUMMARY</option>
                                                 <option value="2">PER-ITEM</option>
                                                 <option value="3">PER-ITEM MAJO</option>
+                                                <option value="4">CLOSING</option>
                                             </select>
                                         </div>
 
@@ -78,6 +78,12 @@
                         <div id="data-server">
 
                         </div>
+
+                    </div>
+                    <div class="col-lg-12">
+                        <div id="cek-nota">
+
+                        </div>
                     </div>
                 </div>
                 <!-- /.row -->
@@ -95,7 +101,6 @@
         .modal-lg-max {
             max-width: 900px;
         }
-
     </style>
 
     <div class="modal fade" id="koki_masak" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -111,9 +116,9 @@
 
                 </div>
                 <!-- <div class="modal-footer">
-                                <button type="button" class="btn btn-costume" data-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-costume">Edit/Save</button>
-                            </div> -->
+                                                                                                                                                                                                        <button type="button" class="btn btn-costume" data-dismiss="modal">Close</button>
+                                                                                                                                                                                                        <button type="submit" class="btn btn-costume">Edit/Save</button>
+                                                                                                                                                                                                    </div> -->
             </div>
         </div>
     </div>
@@ -137,19 +142,30 @@
                     $('#data-laporan').load(url);
                     $('#data-item').hide();
                     $('#data-server').hide();
-                } else if(kat == 2) {
+                    $('#cek-nota').hide();
+                } else if (kat == 2) {
                     var url = "<?= route('item') ?>?tgl1=" + tgl1 + '&tgl2=' + tgl2;
                     $('#data-item').show();
                     $('#data-item').load(url);
                     $('#data-laporan').hide();
                     $('#data-server').hide();
-                } else if(kat == 3) {
+                    $('#cek-nota').hide();
+                } else if (kat == 3) {
                     var url = "<?= route('item_majo') ?>?tgl1=" + tgl1 + '&tgl2=' + tgl2;
                     $('#data-server').show();
                     $('#data-server').load(url);
                     $('#data-laporan').hide();
                     $('#data-item').hide();
+                    $('#cek-nota').hide();
+                } else if (kat == 4) {
+                    var url = "<?= route('cek_invoice') ?>?tgl1=" + tgl1 + '&tgl2=' + tgl2;
+                    $('#cek-nota').show();
+                    $('#cek-nota').load(url);
+                    $('#data-server').hide();
+                    $('#data-laporan').hide();
+                    $('#data-item').hide();
                 }
+
 
             });
 

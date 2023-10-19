@@ -541,16 +541,23 @@
                                         $('.servis1').val(service);
                                         $('.tax1').val(tax);
 
-
-                                        var cash = parseInt($("#cash").val());
-                                        var mandiri_kredit = parseInt($("#mandiri_kredit")
-                                            .val());
-                                        var mandiri_debit = parseInt($("#mandiri_debit").val());
-                                        var bca_kredit = parseInt($("#bca_kredit").val());
-                                        var bca_debit = parseInt($("#bca_debit").val());
+                                        var total_pembayaran = 0;
+                                        $(".pembayaran").each(function() {
+                                            total_pembayaran += parseFloat($(this).val());
+                                        });
                                         var total = parseInt($("#total1").val());
-                                        var bayar = mandiri_kredit + mandiri_debit + cash +
-                                            bca_kredit + bca_debit;
+                                        var bayar = total_pembayaran;
+
+
+                                        // var cash = parseInt($("#cash").val());
+                                        // var mandiri_kredit = parseInt($("#mandiri_kredit")
+                                        //     .val());
+                                        // var mandiri_debit = parseInt($("#mandiri_debit").val());
+                                        // var bca_kredit = parseInt($("#bca_kredit").val());
+                                        // var bca_debit = parseInt($("#bca_debit").val());
+                                        // var total = parseInt($("#total1").val());
+                                        // var bayar = mandiri_kredit + mandiri_debit + cash +
+                                        //     bca_kredit + bca_debit;
                                         // alert(mandiri_kredit);
                                         if (total <= bayar) {
                                             $('#btn_bayar').removeAttr('disabled');
@@ -729,13 +736,17 @@
 
             $(document).on('keyup', '.pembayaran', function() {
                 // var diskon = parseInt($("#diskon").val());
-                var cash = parseInt($("#cash").val());
-                var mandiri_kredit = parseInt($("#mandiri_kredit").val());
-                var mandiri_debit = parseInt($("#mandiri_debit").val());
-                var bca_kredit = parseInt($("#bca_kredit").val());
-                var bca_debit = parseInt($("#bca_debit").val());
+                var total_pembayaran = 0;
+                $(".pembayaran").each(function() {
+                    total_pembayaran += parseFloat($(this).val());
+                });
                 var total = parseInt($("#total1").val());
-                var bayar = mandiri_kredit + mandiri_debit + cash + bca_kredit + bca_debit;
+                var bayar = total_pembayaran;
+
+                
+                
+
+                
                 // alert(mandiri_kredit);
                 if (total <= bayar) {
                     $('#btn_bayar').removeAttr('disabled');

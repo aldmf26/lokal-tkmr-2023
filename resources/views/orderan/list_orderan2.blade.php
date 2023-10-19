@@ -1,4 +1,7 @@
-<table class="table">
+<table class="table" x-data="{
+    @foreach ($klasifikasi_pembayaran as $k)
+    {{ $k->nm_klasifikasi }}: false, @endforeach
+}">
     <thead>
         <th>No</th>
         <th>Meja</th>
@@ -389,42 +392,47 @@
             <tr>
                 <td style="font-weight: bold;" colspan="3">Cash</td>
                 <td>:</td>
-                <td colspan="2"><input type="number" id="cash" name="cash" value="0" class="form-control pembayaran">
+                <td colspan="2"><input type="number" id="cash" name="pembayaran[]" value="0"
+                        class="form-control pembayaran">
+                    <input type="hidden" name="id_akun[]" value="13">
+                    <input type="hidden" class="form-control" placeholder="Nama pengirim" name="nm_pengirim[]">
                 </td>
                 <td><button id="btn_bayar" class="btn btn-info btn-sm save_btn" disabled><i
                             class="fas fa-cash-register"></i> Save</button></td>
-
+    
             </tr>
-            <tr>
-                <td style="font-weight: bold;" colspan="3">Debit BCA</td>
-                <td>:</td>
-                <td colspan="2"><input type="number" id="bca_debit" value="0" name="d_bca"
-                        class="form-control pembayaran">
-                </td>
-                <td></td>
-            </tr>
-            <tr>
-                <td style="font-weight: bold;" colspan="3">Kredit BCA</td>
-                <td>:</td>
-                <td colspan="2"><input type="number" id="bca_kredit" value="0" name="k_bca"
-                        class="form-control pembayaran">
-                </td>
-                <td></td>
-            </tr>
-            <tr>
-                <td style="font-weight: bold;" colspan="3">Debit Mandiri</td>
-                <td>:</td>
-                <td colspan="2"><input type="number" value="0" id="mandiri_debit" name="d_mandiri"
-                        class="form-control pembayaran"></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td style="font-weight: bold;" colspan="3">Kredit Mandiri</td>
-                <td>:</td>
-                <td colspan="2"><input type="number" value="0" id="mandiri_kredit" name="k_mandiri"
-                        class="form-control pembayaran"></td>
-                <td></td>
-            </tr>
+            @foreach ($klasifikasi_pembayaran as $k)
+                <tr>
+                    <td style="font-weight: bold;" colspan="6">
+                        {{ $k->nm_klasifikasi }}
+                        <button type="button" class="btn btn-info btn-sm btn-buka float-right"
+                            @click="{{ $k->nm_klasifikasi }} = ! {{ $k->nm_klasifikasi }}">
+                            <i class="fas fa-caret-down"></i>
+                        </button>
+                    </td>
+                </tr>
+                @php
+                    $akun = DB::table('akun_pembayaran')
+                        ->where('id_klasifikasi', $k->id_klasifikasi_pembayaran)
+                        ->get();
+                @endphp
+    
+                @foreach ($akun as $a)
+                    <tr x-show="{{ $k->nm_klasifikasi }}">
+                        <td colspan="3">{{ $a->nm_akun }}</td>
+                        <td>:</td>
+                        <td colspan="2"><input type="number" value="0" name="pembayaran[]"
+                                class="form-control pembayaran">
+                        </td>
+                        <td>
+                            <input type="hidden" name="id_akun[]" value="{{ $a->id_akun_pembayaran }}">
+                            <input type="text" class="form-control "
+                                {{ $k->id_klasifikasi_pembayaran == '4' ? '' : 'hidden' }} placeholder="Nama pengirim"
+                                name="nm_pengirim[]">
+                        </td>
+                    </tr>
+                @endforeach
+            @endforeach
 
     </tbody>
 

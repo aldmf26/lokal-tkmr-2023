@@ -242,20 +242,25 @@ class MejaController extends Controller
 
     public function edit_pembayaran(Request $request)
     {
-        $no_order = $request->no_order;
+        DB::table('pembayaran')->where('no_nota', $request->no_order)->delete();
+        $lokasi = $request->session()->get('id_lokasi');
+        for ($i = 0; $i < count($request->id_akun); $i++) {
 
-        $data = [
-            'cash' => $request->cash,
-            'd_bca' => $request->d_bca,
-            'k_bca' => $request->k_bca,
-            'd_mandiri' => $request->d_mandiri,
-            'k_mandiri' => $request->k_mandiri,
-            'total_bayar' => $request->cash + $request->d_bca + $request->k_bca + $request->d_mandiri + $request->k_mandiri,
-        ];
-
-        Transaksi::where('no_order', $no_order)->update($data);
-
-        echo 'success';
+            if ($request->pembayaran[$i] == 0) {
+                # code...
+            } else {
+                $data = [
+                    'id_akun_pembayaran' => $request->id_akun[$i],
+                    'no_nota' => $request->no_order,
+                    'nominal' => $request->pembayaran[$i],
+                    // 'pengirim' => $request->nm_pengirim[$i],
+                    'tgl' => date('Y-m-d'),
+                    'id_lokasi' => $lokasi
+                ];
+                DB::table('pembayaran')->insert($data);
+            }
+        }
+        return redirect()->route('meja');
     }
 
     public function get_pembayaran(Request $request)
@@ -263,7 +268,8 @@ class MejaController extends Controller
         $no_order = $request->no_order;
         $data = [
             'dt_pembayaran' => Transaksi::where('no_order', $no_order)->first(),
-            'no_order' => $no_order
+            'no_order' => $no_order,
+            'klasifikasi_pembayaran' => DB::table('klasifikasi_pembayaran')->get(),
         ];
         return view('meja.edit_pembayaran', $data);
     }

@@ -315,7 +315,7 @@
         <tr>
             <td style="text-align: left;" width="6%"></td>
             <td style="font-size: 20px;">
-                <?php if (empty($transaksi->cash)) : ?>
+                {{-- <?php if (empty($transaksi->cash)) : ?>
                 <?php else : ?>
                 Cash <div style="margin-top: 5px;"></div>
                 <?php endif ?>
@@ -334,10 +334,14 @@
                 <?php if (empty($transaksi->k_mandiri)) : ?>
                 <?php else : ?>
                 Kredit MANDIRI <div style="margin-top: 5px;"></div>
-                <?php endif ?>
+                <?php endif ?> --}}
+
+                @foreach ($pembayaran as $p)
+                    {{ $p->nm_akun }} {{ $p->nm_klasifikasi }} <div style="margin-top: 5px;"></div>
+                @endforeach
             </td>
             <td width="22%" style="font-size: 20px;">
-                <?php if (empty($transaksi->cash)) : ?>
+                {{-- <?php if (empty($transaksi->cash)) : ?>
                 <?php else : ?>
                 <?= number_format($transaksi->cash) ?>
                 <div style="margin-top: 5px;"></div>
@@ -361,7 +365,16 @@
                 <?php else : ?>
                 <?= number_format($transaksi->k_mandiri) ?>
                 <div style="margin-top: 5px;"></div>
-                <?php endif ?>
+                <?php endif ?> --}}
+                @php
+                    $total_p = 0;
+                @endphp
+                @foreach ($pembayaran as $p)
+                    {{ number_format($p->nominal, 0) }}<div style="margin-top: 5px;"></div>
+                    @php
+                        $total_p += $p->nominal;
+                    @endphp
+                @endforeach
             </td>
             <td width="15%" align="right">
 
@@ -373,7 +386,7 @@
                 TOTAL BAYAR
             </td>
             <td style="font-weight: bold; font-size: 20px" width="22%">
-                <?= number_format($transaksi->cash + $transaksi->d_bca + $transaksi->k_bca + $transaksi->d_mandiri + $transaksi->k_mandiri, 0) ?>
+                <?= number_format($total_p, 0) ?>
             </td>
 
             <td width="15%" align="right">
@@ -391,7 +404,7 @@
                 @if ($transaksi->kembalian > 0)
                 <?= number_format($transaksi->kembalian, 0) ?>
                 @else
-                <?= number_format($transaksi->cash + $transaksi->d_bca + $transaksi->k_bca + $transaksi->d_mandiri + $transaksi->k_mandiri - $transaksi->total_bayar, 0) ?>
+                <?= number_format($total_p - $transaksi->total_bayar, 0) ?>
                 @endif
             </td>
 

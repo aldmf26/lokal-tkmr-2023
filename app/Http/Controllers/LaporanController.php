@@ -121,8 +121,15 @@ group by d.id_order) as e on e.id_order = a.id_order
                         left join tb_kategori as c on b.id_kategori = c.kd_kategori
                         WHERE a.tgl BETWEEN '$tgl1' AND '$tgl2' AND a.void = 1 AND id_lokasi = '$loc'
                         GROUP BY c.kd_kategori"),
+                        'pembayaran' => DB::select("SELECT b.nm_akun, c.nm_klasifikasi, sum(a.nominal) as nominal, a.pengirim
+                        FROM pembayaran as a 
+                        left join akun_pembayaran as b on b.id_akun_pembayaran = a.id_akun_pembayaran
+                        left join klasifikasi_pembayaran as c on c.id_klasifikasi_pembayaran = b.id_klasifikasi
+                        where a.tgl between '$tgl1' and '$tgl2' 
+                        group by a.id_akun_pembayaran
+                        "),
         ];
-        return view('laporan.summary', $data);
+        return view('laporan.summary2', $data);
     }
     public function ex_summary(Request $request)
     {
@@ -508,5 +515,64 @@ group by d.id_order) as e on e.id_order = a.id_order
 
         $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
         $writer->save('php://output');
+    }
+
+    function cek_invoice(Request $r)
+    {
+        $data = [
+            'invoice' => DB::select("SELECT a.tgl, a.id_akun_pembayaran, a.no_nota, b.nm_akun, c.nm_klasifikasi, a.nominal, d.id_distribusi, d.id_lokasi, a.pengirim
+            FROM pembayaran as a
+            left JOIN akun_pembayaran as b on b.id_akun_pembayaran = a.id_akun_pembayaran
+            left join klasifikasi_pembayaran as c on c.id_klasifikasi_pembayaran = b.id_klasifikasi
+            left join(
+                SELECT d.no_order2 , d.id_distribusi, d.id_lokasi
+                FROM tb_order2 as d
+                GROUP by d.no_order2
+            ) as d on d.no_order2 = a.no_nota
+            where a.tgl BETWEEN '$r->tgl1' and '$r->tgl2';"),
+            'tgl1' => $r->tgl1,
+            'tgl2' => $r->tgl2
+        ];
+
+        return view('laporan.cek_invoice', $data);
+    }
+
+    function print_cek_invoice(Request $r)
+    {
+        $data = [
+            'invoice' => DB::select("SELECT a.tgl, a.id_akun_pembayaran, a.no_nota, b.nm_akun, c.nm_klasifikasi, a.nominal, d.id_distribusi, d.id_lokasi
+            FROM pembayaran as a
+            left JOIN akun_pembayaran as b on b.id_akun_pembayaran = a.id_akun_pembayaran
+            left join klasifikasi_pembayaran as c on c.id_klasifikasi_pembayaran = b.id_klasifikasi
+            left join(
+                SELECT d.no_order2 , d.id_distribusi, d.id_lokasi
+                FROM tb_order2 as d
+                GROUP by d.no_order2
+            ) as d on d.no_order2 = a.no_nota
+            where a.tgl BETWEEN '$r->tgl1' and '$r->tgl2';"),
+            'tgl1' => $r->tgl1,
+            'tgl2' => $r->tgl2
+        ];
+
+        return view('laporan.print_cek_invoice', $data);
+    }
+    function excel_cek_invoice(Request $r)
+    {
+        $data = [
+            'invoice' => DB::select("SELECT a.tgl, a.id_akun_pembayaran, a.no_nota, b.nm_akun, c.nm_klasifikasi, a.nominal, d.id_distribusi, d.id_lokasi
+            FROM pembayaran as a
+            left JOIN akun_pembayaran as b on b.id_akun_pembayaran = a.id_akun_pembayaran
+            left join klasifikasi_pembayaran as c on c.id_klasifikasi_pembayaran = b.id_klasifikasi
+            left join(
+                SELECT d.no_order2 , d.id_distribusi, d.id_lokasi
+                FROM tb_order2 as d
+                GROUP by d.no_order2
+            ) as d on d.no_order2 = a.no_nota
+            where a.tgl BETWEEN '$r->tgl1' and '$r->tgl2';"),
+            'tgl1' => $r->tgl1,
+            'tgl2' => $r->tgl2
+        ];
+
+        return view('laporan.excel_cek_invoice', $data);
     }
 }

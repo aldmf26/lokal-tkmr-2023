@@ -270,6 +270,9 @@ Route::get('/export_itemMajo', [LaporanController::class, 'export_itemMajo'])->n
 Route::get('/get_telat', [LaporanController::class, 'get_telat'])->name('get_telat');
 Route::get('/get_ontime', [LaporanController::class, 'get_ontime'])->name('get_ontime');
 Route::get('/export_item', [LaporanController::class, 'export_item'])->name('export_item');
+Route::get('/cek_invoice', [LaporanController::class, 'cek_invoice'])->name('cek_invoice');
+Route::get('/print_cek_invoice', [LaporanController::class, 'print_cek_invoice'])->name('print_cek_invoice');
+Route::get('/excel_cek_invoice', [LaporanController::class, 'excel_cek_invoice'])->name('excel_cek_invoice');
 
 Route::get('/head', [HeadController::class, 'index'])->name('head');
 Route::get('/head2', [HeadController::class, 'head2'])->name('head2');

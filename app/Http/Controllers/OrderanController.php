@@ -140,7 +140,8 @@ class OrderanController extends Controller
             'ongkir_bayar' => DB::select("SELECT SUM(a.rupiah) AS rupiah
             FROM tb_ongkir AS a"),
             'majo' => $majo,
-            'disc' => $disc
+            'disc' => $disc,
+            'klasifikasi_pembayaran' => DB::table('klasifikasi_pembayaran')->get()
 
         ];
 
@@ -260,11 +261,11 @@ class OrderanController extends Controller
             'round' => $request->round,
             'total_orderan' => $request->sub,
             'total_bayar' => $request->total_dibayar,
-            'cash' => $request->cash,
-            'd_bca' => $request->d_bca,
-            'k_bca' => $request->k_bca,
-            'd_mandiri' => $request->d_mandiri,
-            'k_mandiri' => $request->k_mandiri,
+            // 'cash' => $request->cash,
+            // 'd_bca' => $request->d_bca,
+            // 'k_bca' => $request->k_bca,
+            // 'd_mandiri' => $request->d_mandiri,
+            // 'k_mandiri' => $request->k_mandiri,
             'admin' => Auth::user()->nama,
             'id_lokasi' => $lokasi,
             'ongkir' => $request->ongkir,
@@ -273,6 +274,25 @@ class OrderanController extends Controller
             'kembalian' => $request->kembalian1,
         ];
         DB::table('tb_transaksi')->insert($data);
+
+        for ($i = 0; $i < count($request->id_akun); $i++) {
+
+            if ($request->pembayaran[$i] == 0) {
+                # code...
+            } else {
+
+                $data = [
+                    'id_akun_pembayaran' => $request->id_akun[$i],
+                    'no_nota' => $hasil,
+                    'nominal' => $request->pembayaran[$i],
+                    'pengirim' => $request->nm_pengirim[$i],
+                    'tgl' => date('Y-m-d'),
+                    'id_lokasi' => $lokasi,
+                    'tgl_waktu' => now()
+                ];
+                DB::table('pembayaran')->insert($data);
+            }
+        }
 
         $data2 = [
             'terpakai' => 'sudah',
@@ -684,6 +704,11 @@ class OrderanController extends Controller
             'nav' => '2',
             'ongkir_bayar' => DB::select("SELECT SUM(a.rupiah) AS rupiah
             FROM tb_ongkir AS a"),
+            'pembayaran' => DB::select("SELECT b.nm_akun, c.nm_klasifikasi, a.nominal, a.pengirim
+            FROM pembayaran as a 
+            left join akun_pembayaran as b on b.id_akun_pembayaran = a.id_akun_pembayaran
+            left join klasifikasi_pembayaran as c on c.id_klasifikasi_pembayaran = b.id_klasifikasi
+            where a.no_nota ='$no';"),
         ];
 
         return view('orderan.pembayaran2', $data);
@@ -725,6 +750,11 @@ class OrderanController extends Controller
             LEFT JOIN tb_order AS c ON c.id_order = a.id_order1
             where a.no_order2 = '$no' 
             group by a.no_order2"),
+            'pembayaran' => DB::select("SELECT b.nm_akun, c.nm_klasifikasi, a.nominal, a.pengirim
+            FROM pembayaran as a 
+            left join akun_pembayaran as b on b.id_akun_pembayaran = a.id_akun_pembayaran
+            left join klasifikasi_pembayaran as c on c.id_klasifikasi_pembayaran = b.id_klasifikasi
+            where a.no_nota ='$no';"),
         ];
 
         return view('orderan.print_nota', $data);
