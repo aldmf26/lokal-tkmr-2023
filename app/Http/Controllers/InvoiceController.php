@@ -106,6 +106,7 @@ class InvoiceController extends Controller
                 Jurnal::where('kd_gabungan', $id_invoice)->delete();
                 DB::table('pembayaran')->where('no_nota',$id_invoice)->delete();
                 DB::table('tb_invoice')->where('no_nota',$id_invoice)->delete();
+                DB::table('tb_pembelian')->where('no_nota2',$id_invoice)->update(['bayar' => 'T']);
 
                 return redirect()->route('invoice')->with('sukses', 'Data berhasil dihapus');
             } else {

@@ -245,6 +245,16 @@
                                                 ({{$transaksi->discount}}%)</td>
                                             <td></td>
                                         </tr>
+                                        <tr>
+                                            <td colspan="2">Promo Bank</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td>-</td>
+                                            <td width="20%">
+                                                {{number_format($transaksi->diskon_bank,0)}}
+                                            </td>
+                                            <td></td>
+                                        </tr>
 
                                         <tr>
                                             <td colspan="2">Dp</td>

@@ -5,7 +5,6 @@
             color: #155592;
             font-weight: bold;
         }
-
     </style>
 
 
@@ -23,12 +22,15 @@
                         <a href=""></a>
                         <div class="card mb-2" style="background-color: #25C584;">
                             <div class="card-body">
-                                <h3 style="text-align: center; color:white"><?= $no ?></h3>
+                                <h3 style="text-align: center; color:white">
+                                    <?= $no ?>
+                                </h3>
                             </div>
                         </div>
                         <div class="card">
                             <div class="card-body">
-                                <form action="<?= route('save_transaksi') ?>" method="post" class="form_save">
+                                <form class="form_save">
+                                    {{-- <form action="{{ route('save_transaksi') }}" method="post"> --}}
                                     @csrf
                                     <input type="hidden" name="no_order" id="no_order" value="<?= $no ?>">
                                     <div id="orderan">
@@ -55,12 +57,24 @@
         .modal-lg-max {
             max-width: 900px;
         }
-
     </style>
 @endsection
 @section('script')
     <script>
         $(document).ready(function() {
+            $(document).on('keyup', '.pembayaranPromo', function(){
+                var id_akun = $(this).attr('id_akun')
+                var ttl_sub = $(this).attr('ttl_sub')
+                // $.ajax({
+                //     type: "GET",
+                //     url: "{{route('getPromoBank')}}",
+                //     data: {id_akun:id_akun},
+                //     success: function (r) {
+                        
+                //     }
+                // });
+            })
+
             load_order();
 
             function load_order() {
@@ -109,7 +123,15 @@
                     ttl_rp1 += parseFloat($(this).val());
 
                 });
-                var number2 = ttl_rp1.toFixed(0).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
+                var ttl_rp2 = 0;
+                $(".tl_majo").each(function() {
+                    ttl_rp2 += parseFloat($(this).val());
+
+                });
+
+                var sub_total = ttl_rp1 + ttl_rp2;
+
+                var number2 = sub_total.toFixed(0).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
                 $('.total_qty').text(qty1);
                 $('.total_hrg').text(number2);
                 $('.ttl_hrg').val(ttl_rp1);
@@ -139,9 +161,9 @@
                     var service = 0;
                 }
                 if (a_ser == 'Y') {
-                    var tax = (ttl_rp1 + service + ongkir) * 0.1;
+                    var tax = (ttl_rp1 + +ttl_rp2 + service + ongkir) * 0.1;
                 } else {
-                    var tax = (ttl_rp1 + ongkir) * 0.1;
+                    var tax = (ttl_rp1 + +ttl_rp2 + ongkir) * 0.1;
                 }
 
                 var number3 = ongkir.toFixed(0).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
@@ -156,7 +178,7 @@
                 $('.tax').text(tax1);
                 $('.tax1').val(tax);
 
-                var total = ttl_rp1 + service + tax + ongkir;
+                var total = ttl_rp1 + ttl_rp2 + service + tax + ongkir;
 
 
                 var a = Math.round(total);
@@ -185,35 +207,83 @@
                 var url = "<?= route('perhitungan') ?>?order=" + order + '&ttl=' + ttl_harga;
                 $('#perhitungan').load(url);
             });
+            var isSubmitting = false;
+            $(document).on('submit', '.form_save', function(e) {
+                if (!isSubmitting) {
+                    isSubmitting = true
+                    $.ajax({
+                        type: "POST",
+                        url: "{{ route('save_transaksi') }}",
+                        data: $(".form_save").serialize(),
+                        success: function(r) {
+                            document.location.href = "{{ route('pembayaran2') }}?no=" + r
+                        }
+                    });
 
-            $(document).on('submit', '.form_save', function(event) {
-                //   event.preventDefault();
+                    setTimeout(() => {
 
+                        isSubmitting = false
+                    }, 15000);
+                }
+                e.preventDefault();
                 $('.save_btn').hide();
                 // $('.save_loading').show();
 
             });
-            function reset(){
+
+            function reset() {
                 var ttl_hrg2 = $('#ttl_hrg2').val();
+                var ttl_majo = $('#ttl_majo').val();
                 var tax2 = $('.tax2').val();
                 var round2 = $('.round2').val();
                 var service2 = $('.servis2').val();
-                var ttl = parseInt(ttl_hrg2) + parseInt(tax2) + parseInt(service2) + parseInt(round2)
+                var ttl = parseInt(ttl_hrg2) + parseInt(ttl_majo) + parseInt(tax2) + parseInt(service2) + parseInt(
+                    round2);
+                var minimum_rp = $("#minimum_rp").val();
+                var jenis_discount = $("#jenis_discount").val();
+                var disc = $("#disc").val();
+                var hidden_ttl_ttp_sebelum = $("#hidden_ttl_ttp_sebelum").val();
+
+                if (ttl < minimum_rp) {
+                    var grand_total = ttl;
+                } else {
+                    if (jenis_discount === 'Persen') {
+                        var grand_total = ttl * ((100 - parseInt(disc)) / 100);
+                    } else {
+                        var grand_total = ttl - parseInt(disc);
+                    }
+
+                }
+
+                var a = Math.round(grand_total);
+                var a_format = a.toFixed(0).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
+
+                var b = a_format.substr(-3);
+                if (b == '000') {
+                    grand = a;
+                    round = '000';
+                } else if (b < 1000) {
+                    grand = a - b + 1000;
+                    round = 1000 - b;
+                }
+
 
 
                 $('#view_discount').val('');
                 $('#data_discount').val(0);
-                $('#total1').val(ttl);
-                $('#totalTetap').val(ttl);
+                $('#total1').val(grand);
+                $('#totalTetap').val(grand);
                 $('.sDiskon').val(round2);
                 $('.round').val(round2);
                 $('.servis1').val(service2);
-                $('.servis').html(service2);  
+                $('.servis').html(service2);
                 $('.tax1').val(tax2);
-                $('.tax').html(tax2);  
+                $('.tax').html(tax2);
+                $('.ttl_ttp_sebelum').text(hidden_ttl_ttp_sebelum);
+
 
                 $('.kd_voucher').val('');
-                $('#rupiah').val(0);  
+                $('#rupiah').val(0);
                 $("#view_dp").val(0);
                 $("#data_dp").val(0);
                 $("#id_dp").val(0);
@@ -221,9 +291,10 @@
                 $('.vDiskon').val(0);
                 $("#jumlah_dp").val(0);
             }
-            $(document).on('change', '#data_discount', function(){
+            $(document).on('change', '#data_discount', function() {
                 var id_disc = $(this).val();
                 var ttl_hrg = $('#ttl_hrg').val();
+                var ttl_majo = $('#ttl_majo').val();
                 var ttl_hrg2 = $('#ttl_hrg2').val();
                 var view_discount = $('#view_discount').val();
                 var tax = $('#tax').val();
@@ -236,68 +307,91 @@
                 var ttl = parseInt(ttl_hrg2) + parseInt(tax2) + parseInt(service2) + parseInt(round2)
                 var voucher = $('#rupiah').val();
                 var jumlahDp = $("#jumlah_dp").val();
-                if(id_disc == 0) {
+                if (id_disc == 0) {
                     reset()
-                    // $('#view_discount').val('');
-                    // $('#total1').val(ttl);
-                    // $('.sDiskon').val(round2);
-                    // $('.round').val(round2);
-                    // $('.servis1').val(service2);
-                    // $('.servis').html(service2);  
-                    // $('.tax1').val(tax2);
-                    // $('.tax').html(tax2);  
-                                         
+
                 } else {
                     $.ajax({
                         url: "<?= route('get_discount') ?>?id_discount=" + id_disc,
                         method: "GET",
                         dataType: "json",
                         success: function(data) {
-                            if(jumlahDp > 0) {
+                            if (jumlahDp > 0) {
                                 $("#data_dp").val(0);
                                 $("#jumlah_dp").val('');
                                 $("#kode_dp").val('');
                                 $("#view_dp").val('');
-                                
+
                             }
                             $("#jumlah_discount").val(data.disc);
-                            var tHarga = parseInt(ttl_hrg) * (100 - parseInt(data.disc)) / 100 - voucher
+                            var tHarga = (parseInt(ttl_hrg) + parseInt(ttl_majo)) - voucher
                             var service = tHarga * 0.07;
                             var tax = (tHarga + service) * 0.1;
                             var t = tHarga + service + tax;
+
                             var a = Math.round(t);
-                            var a_format = a.toFixed(0).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
+                            var a_format = a.toFixed(0).replace(/(\d)(?=(\d\d\d)+(?!\d))/g,
+                                "$1,");
 
                             var b = a_format.substr(-3);
                             if (b == '000') {
-                                c = a;
+                                ttl_naik = a;
                                 round = '000';
                             } else if (b < 1000) {
-                                c = a - b + 1000;
+                                ttl_naik = a - b + 1000;
                                 round = 1000 - b;
                             }
-                            if(c < 0) {
-                                c = 0
-                                tax = 0
-                                service = 0
+
+
+
+                            if (ttl_naik < data.minimum_rp) {
+                                Swal.fire({
+                                    toast: true,
+                                    position: 'top-end',
+                                    showConfirmButton: false,
+                                    timer: 3000,
+                                    icon: 'error',
+                                    title: "Diskon berlaku minimal pembelanjaan " + data
+                                        .minimum_rp
+                                });
                             } else {
-                                c = c 
-                                tax = tax
-                                service = service
+                                var diskon = ttl_naik * ((100 - parseInt(data.disc)) / 100);
+                                var a = Math.round(diskon);
+                                var a_format = a.toFixed(0).replace(/(\d)(?=(\d\d\d)+(?!\d))/g,
+                                    "$1,");
+
+                                var b = a_format.substr(-3);
+                                if (b == '000') {
+                                    c = a;
+                                    round = '000';
+                                } else if (b < 1000) {
+                                    c = a - b + 1000;
+                                    round = 1000 - b;
+                                }
+                                if (c < 0) {
+                                    c = 0
+                                    tax = 0
+                                    service = 0
+                                } else {
+                                    c = c
+                                    tax = tax
+                                    service = service
+                                }
+
+                                $('#total1').val(c);
+                                $('#totalTetap').val(c);
+                                $('.round').val(round);
+                                $('.round2').val(round2);
+                                // $('.sDiskon').val(tHarga);
+                                // $('.servis').html(service);
+                                // $('.servis1').val(service);
+                                // $('.tax').html(tax);
+                                // $('.tax1').val(tax);
+                                $('#jumlah_discount').val($("#jumlah_discount").val());
+                                $("#view_discount").val($("#jumlah_discount").val() + ' %');
+                                $(".vDiskon").val($("#jumlah_discount").val());
                             }
-                                      
-                            $('#total1').val(c);
-                            $('#totalTetap').val(c);
-                            $('.round').val(round);
-                            $('.round2').val(round2);
-                            $('.sDiskon').val(tHarga);
-                            $('.servis').html(service);
-                            $('.servis1').val(service);   
-                            $('.tax').html(tax);
-                            $('.tax1').val(tax);   
-                            $('#jumlah_discount').val($("#jumlah_discount").val());   
-                            $("#view_discount").val($("#jumlah_discount").val()+' %');
-                            $(".vDiskon").val($("#jumlah_discount").val());
+
                         }
                     })
                 }
@@ -310,11 +404,16 @@
                 var view_discount = $('#view_discount').val()
                 var gosen = $('#gosen').val();
                 var ttl_hrg = $('#ttl_hrg').val();
+                var ttl_majo = $('#ttl_majo').val();
                 var ttl_hrg2 = $('#ttl_hrg2').val();
                 var sDiskon = $('.sDiskon').val();
                 var vDiskon = $('.vDiskon').val();
                 var jumlahDp = $("#jumlah_dp").val();
                 var total_tetap = $('#totalTetap').val();
+                var minimum_rp = $("#minimum_rp").val();
+                var jenis_discount = $("#jenis_discount").val();
+                var disc = $("#disc").val();
+                
                 if (kode == '') {
                     Swal.fire({
                         toast: true,
@@ -350,7 +449,7 @@
                                         icon: 'error',
                                         title: 'Voucher sudah terpakai'
                                     });
-                                } if(data == 'expired') {
+                                } else if (data == 'expired') {
                                     Swal.fire({
                                         toast: true,
                                         position: 'top-end',
@@ -359,8 +458,7 @@
                                         icon: 'error',
                                         title: 'Voucher sudah expired'
                                     });
-                                }
-                                else {
+                                } else {
                                     if (data == 'off') {
                                         Swal.fire({
                                             toast: true,
@@ -371,24 +469,26 @@
                                             title: 'Voucher non-aktif'
                                         });
                                     } else {
-                                        
-                                        if(jumlahDp > 0) {
+
+                                        if (jumlahDp > 0) {
                                             $("#data_dp").val(0);
                                             $("#jumlah_dp").val('');
                                             $("#kode_dp").val('');
                                             $("#view_dp").val('');
                                         }
                                         $('#rupiah').val(data);
-                                        
-                                        if(sDiskon == parseInt($('.round').val())) {
-                                            var tot_orderan = ttl_hrg - data;
-                                        
+                                        var subTotalMajo = parseInt(ttl_hrg) + parseInt(
+                                            ttl_majo)
+                                        if (sDiskon == parseInt($('.round').val())) {
+                                            var tot_orderan = subTotalMajo - data;
+
                                         } else {
-                                           
+                                            alert(2)
+
                                             var tot_orderan = parseInt(sDiskon) - data;
                                         }
-                                    
-                                        if(tot_orderan < 1) {
+
+                                        if (tot_orderan < 1) {
                                             tot_orderan = 0
                                             var service = 0;
                                             var tax = 0;
@@ -402,7 +502,8 @@
                                             var t = tot_orderan + service + tax - view_dp +
                                                 parseFloat(gosen);
                                             var a = Math.round(t);
-                                            var a_format = a.toFixed(0).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
+                                            var a_format = a.toFixed(0).replace(
+                                                /(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
 
                                             var b = a_format.substr(-3);
                                             if (b == '000') {
@@ -412,7 +513,7 @@
                                                 c = a - b + 1000;
                                                 round = 1000 - b;
                                             }
-                                            if(c < 1) {
+                                            if (c < 1) {
                                                 c = 0
                                                 tax = 0
                                                 service = 0
@@ -422,14 +523,38 @@
                                                 tax = tax
                                                 service = service
                                             }
+
+                                            if (c < minimum_rp) {
+                                                var grand_total = c;
+                                            } else {
+                                                if (jenis_discount === 'Persen') {
+                                                    var grand_total = c * ((100 - parseInt(
+                                                        disc)) / 100);
+                                                } else {
+                                                    var grand_total = c - parseInt(disc);
+                                                }
+                                            }
+
+
+
+
                                         }
-                                       
-                                            
-                                            
-                                            
-                                      
-                                        $('#total1').val(c);
-                                        $('#totalTetap').val(c);
+
+                                        if (grand_total === undefined) {
+                                            x = 0
+
+                                        } else {
+                                            x = grand_total
+
+                                        }
+
+
+
+
+
+                                        $('#total1').val(x);
+                                        $('#totalTetap').val(x);
+                                        $('.ttl_ttp_sebelum').text(c);
                                         $('#tvoucher').val(c);
                                         $('.servis').html(service);
                                         $('.tax').html(tax);
@@ -437,16 +562,24 @@
                                         $('.servis1').val(service);
                                         $('.tax1').val(tax);
 
-
-                                        var cash = parseInt($("#cash").val());
-                                        var mandiri_kredit = parseInt($("#mandiri_kredit")
+                                        var total_pembayaran = 0;
+                                        $(".pembayaran").each(function() {
+                                            total_pembayaran += parseFloat($(this)
                                             .val());
-                                        var mandiri_debit = parseInt($("#mandiri_debit").val());
-                                        var bca_kredit = parseInt($("#bca_kredit").val());
-                                        var bca_debit = parseInt($("#bca_debit").val());
+                                        });
                                         var total = parseInt($("#total1").val());
-                                        var bayar = mandiri_kredit + mandiri_debit + cash +
-                                            bca_kredit + bca_debit;
+                                        var bayar = total_pembayaran;
+
+
+                                        // var cash = parseInt($("#cash").val());
+                                        // var mandiri_kredit = parseInt($("#mandiri_kredit")
+                                        //     .val());
+                                        // var mandiri_debit = parseInt($("#mandiri_debit").val());
+                                        // var bca_kredit = parseInt($("#bca_kredit").val());
+                                        // var bca_debit = parseInt($("#bca_debit").val());
+                                        // var total = parseInt($("#total1").val());
+                                        // var bayar = mandiri_kredit + mandiri_debit + cash +
+                                        //     bca_kredit + bca_debit;
                                         // alert(mandiri_kredit);
                                         if (total <= bayar) {
                                             $('#btn_bayar').removeAttr('disabled');
@@ -479,7 +612,7 @@
                 var kode = $('.kd_voucher').val();
                 var ttl1 = $('#total1').val();
                 var ttl2 = $('#total2').val();
-                
+
                 var ttl_hrg2 = $('#ttl_hrg2').val();
                 var view_dp = $('#view_dp').val();
                 var view_discount = $('#view_discount').val();
@@ -524,7 +657,7 @@
 
             });
 
-            
+
 
             $(document).on("change", "#data_dp", function() {
                 var id_dp = $(this).val();
@@ -537,7 +670,7 @@
                 var voucher = $('#rupiah').val();
                 var vDiskon = $('.vDiskon').val();
                 var totalTetap = $('#totalTetap').val();
-             
+
                 if (id_dp == 0) {
                     // var tb = 0
                     // if(rupiah != '') {
@@ -546,44 +679,44 @@
                     //     tb = val1 - rupiah + parseFloat(gosen);
                     // }
                     reset()
-                        // $("#total1").val(tb);
-                        // $("#view_dp").val(0);
-                        // $("#id_dp").val(0);
-                        // $("#kembalian1").val(0);
-                    
+                    // $("#total1").val(tb);
+                    // $("#view_dp").val(0);
+                    // $("#id_dp").val(0);
+                    // $("#kembalian1").val(0);
+
                 } else {
                     $.ajax({
                         url: "<?= route('get_dp') ?>?id_dp=" + id_dp,
                         method: "GET",
                         dataType: "json",
                         success: function(data) {
-                         
-                            
+
+
                             var kembali = 0
-                            
+
                             $("#jumlah_dp").val(data.jumlah);
                             $("#kode_dp").val(data.kd_dp);
                             $("#id_dp").val(data.id_dp);
                             // if(rupiah != '' || vDiskon != '') {
-                                
+
                             // } else {
                             //     var total_bayar = ttl1 - rupiah + parseFloat(gosen) - parseInt($("#jumlah_dp").val())
                             // }
-                           
+
                             var total_bayar = totalTetap - parseInt($("#jumlah_dp").val())
-                         
-                            if(total_bayar < 0) {
-                                kembali =- total_bayar
+
+                            if (total_bayar < 0) {
+                                kembali = -total_bayar
                                 total_bayar = 0
-                             
+
                             } else {
                                 kembali = 0
                                 total_bayar = total_bayar
-                                
+
                             }
-                        
-                    
-                            
+
+
+
                             // if(total_bayar < 0) {
                             //     total_bayar = 0
                             //     var kembali = parseInt($("#jumlah_dp").val()) - parseInt(total_bayar);
@@ -598,7 +731,7 @@
                             // } else {
                             //     kembali = 0
                             // }
-                          
+
                             $("#total1").val(total_bayar);
                             $("#kembalian1").val(kembali);
                             $("#view_dp").val($("#jumlah_dp").val());
@@ -625,13 +758,17 @@
 
             $(document).on('keyup', '.pembayaran', function() {
                 // var diskon = parseInt($("#diskon").val());
-                var cash = parseInt($("#cash").val());
-                var mandiri_kredit = parseInt($("#mandiri_kredit").val());
-                var mandiri_debit = parseInt($("#mandiri_debit").val());
-                var bca_kredit = parseInt($("#bca_kredit").val());
-                var bca_debit = parseInt($("#bca_debit").val());
+                var total_pembayaran = 0;
+                $(".pembayaran").each(function() {
+                    total_pembayaran += parseFloat($(this).val());
+                });
                 var total = parseInt($("#total1").val());
-                var bayar = mandiri_kredit + mandiri_debit + cash + bca_kredit + bca_debit;
+                var bayar = total_pembayaran;
+
+
+
+
+
                 // alert(mandiri_kredit);
                 if (total <= bayar) {
                     $('#btn_bayar').removeAttr('disabled');

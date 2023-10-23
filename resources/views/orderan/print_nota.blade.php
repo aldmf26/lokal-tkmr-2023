@@ -56,23 +56,22 @@
             $dis = $d->id_distribusi;
         ?>
         @if ($d->nm_menu == '')
-
         @else
-        <tr>
-            <td style="text-align: left;" width="6%">
-                <?= $d->qty_produk ?>
-            </td>
-            <td style="font-size: 20px;">
-                <?= ucwords(strtolower($d->nm_menu)) ?>
-            </td>
-            <td width="23%" style="font-size: 20px;">
-                <?= number_format($d->harga * $d->qty_produk) ?>
-            </td>
+            <tr>
+                <td style="text-align: left;" width="6%">
+                    <?= $d->qty_produk ?>
+                </td>
+                <td style="font-size: 20px;">
+                    <?= ucwords(strtolower($d->nm_menu)) ?>
+                </td>
+                <td width="23%" style="font-size: 20px;">
+                    <?= number_format($d->harga * $d->qty_produk) ?>
+                </td>
 
-            <td width="15%" align="right" style="white-space: nowrap;">
-                <?= $d->selisih . ' / ' . $d->selisih2 ?>
-            </td>
-        </tr>
+                <td width="15%" align="right" style="white-space: nowrap;">
+                    <?= $d->selisih . ' / ' . $d->selisih2 ?>
+                </td>
+            </tr>
         @endif
         <?php endforeach ?>
 
@@ -139,7 +138,7 @@
         </tr>
         <?php endif; ?>
         @php
-        $totO = ($s_total + $s_total_majo) - $transaksi->voucher
+            $totO = $s_total + $s_total_majo - $transaksi->voucher;
         @endphp
         <tr>
             <td style="text-align: left;" width="6%"></td>
@@ -211,18 +210,18 @@
         </tr>
         <?php endif; ?>
 
-        <?php $totalan = $s_total + $s_total_majo - $transaksi->voucher + $transaksi->service + $transaksi->tax + $transaksi->ongkir  ?>
+        <?php $totalan = $s_total + $s_total_majo - $transaksi->voucher + $transaksi->service + $transaksi->tax + $transaksi->ongkir; ?>
         <?php
         $a = $totalan;
         $b = number_format(substr($a, -3), 0);
-                                        
-            if ($b == '00') {
-                $c = $a;
-                $round = '00';
-            } elseif ($b < 1000) {
-                $c = $a - $b + 1000;
-                $round = 1000 - $b;
-            }
+        
+        if ($b == '00') {
+            $c = $a;
+            $round = '00';
+        } elseif ($b < 1000) {
+            $c = $a - $b + 1000;
+            $round = 1000 - $b;
+        }
         ?>
         <tr>
             <td style="text-align: left;" width="6%"></td>
@@ -247,7 +246,22 @@
             </td>
         </tr> -->
 
+        @if ($transaksi->diskon_bank)
+            <tr>
+                <td style="text-align: left;" width="6%"></td>
+                <td style="font-size: 20px;">
+                    Promo Bank
+                </td>
+                <td width="22%" style="font-size: 20px;">
+                    ({{ number_format($transaksi->diskon_bank, 0) }})
 
+                </td>
+
+                <td width="15%" align="right">
+
+                </td>
+            </tr>
+        @endif
 
 
         <?php if ($transaksi->discount) : ?>
@@ -257,7 +271,7 @@
                 Discount
             </td>
             <td width="22%" style="font-size: 20px;">
-                ({{number_format($c *($transaksi->discount/100),0)}})
+                ({{ number_format($c * ($transaksi->discount / 100), 0) }})
                 {{--
                 <?= number_format($transaksi->discount) ?> % --}}
             </td>
@@ -402,9 +416,9 @@
             </td>
             <td width="22%">
                 @if ($transaksi->kembalian > 0)
-                <?= number_format($transaksi->kembalian, 0) ?>
+                    <?= number_format($transaksi->kembalian, 0) ?>
                 @else
-                <?= number_format($total_p - $transaksi->total_bayar, 0) ?>
+                    <?= number_format($total_p - $transaksi->total_bayar, 0) ?>
                 @endif
             </td>
 

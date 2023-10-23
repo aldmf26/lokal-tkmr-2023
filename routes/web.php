@@ -327,6 +327,7 @@ Route::get('/komisi_server', [Kom_server::class, 'komisi_server'])->name('komisi
 Route::get('/check_pembayaran', [OrderanController::class, 'check_pembayaran'])->name('check_pembayaran');
 Route::get('/list_orderan', [OrderanController::class, 'list_orderan'])->name('list_orderan');
 Route::post('/save_transaksi', [OrderanController::class, 'save_transaksi'])->name('save_transaksi');
+Route::get('/getPromoBank', [OrderanController::class, 'getPromoBank'])->name('getPromoBank');
 Route::get('/get_dp', [OrderanController::class, 'get_dp'])->name('get_dp');
 Route::get('/get_discount', [OrderanController::class, 'get_discount'])->name('get_discount');
 Route::get('/perhitungan', [OrderanController::class, 'perhitungan'])->name('perhitungan');
