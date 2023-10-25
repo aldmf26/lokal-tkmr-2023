@@ -158,7 +158,7 @@ class OrderanController extends Controller
             ['max_order', '>=', $pembayaran],
         ];
 
-        $diskon = DB::table('tb_paket_diskon')
+        $diskon = DB::table('tb_diskon_bank_pembayaran')
             ->where($whereDiskon)
             ->first();
         if ($diskon) {
