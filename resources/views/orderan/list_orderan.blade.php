@@ -29,8 +29,8 @@
                         </div>
                         <div class="card">
                             <div class="card-body">
-                                {{-- <form class="form_save"> --}}
-                                    <form action="{{ route('save_transaksi') }}" method="post">
+                                <form class="form_save">
+                                    {{-- <form action="{{ route('save_transaksi') }}" method="post"> --}}
                                     @csrf
                                     <input type="hidden" name="no_order" id="no_order" value="<?= $no ?>">
                                     <div id="orderan">
@@ -96,22 +96,22 @@
             })
 
             $(document).on('click', '.cek_promo', function() {
+                $('.pembayaranTr').addClass('d-none');
                 var diskonPromo = $('.diskonPromoInt').val()
                 var ttl_sub = $('#ttl_hrg2').val();
                 var ttl_majo = $('#ttl_majo').val();
                 var diskonVoucher = $('#rupiah').val();
                 var sub_total = parseFloat(ttl_sub) + parseFloat(ttl_majo) - parseFloat(diskonVoucher)
-                var ttl_promo = parseFloat(sub_total) - parseFloat(diskonPromo)
-                var ttl_promoRound = Math.ceil(ttl_promo / 1000) * 1000;
+                var ttl_promoRound = parseFloat(sub_total) - parseFloat(diskonPromo)
+                // var ttl_promoRound = Math.ceil(ttl_promo / 1000) * 1000;
                 $('#diskonPromoInfo').val(ttl_promoRound);
 
                 // hitung
                 var service = ttl_promoRound * 0.07
                 var tax = (ttl_promoRound + service) * 0.1
-                var round = parseFloat(ttl_promoRound) - parseFloat(ttl_promo)
+                
                 $('.servis').html(service);
                 $('.tax').html(tax);
-                $('.round').val(round);
                 $('.servis1').val(service);
                 $('.tax1').val(tax);
 
@@ -120,11 +120,13 @@
                 $('#total1').val(grand_totalRound);
                 $('#totalTetap').val(grand_totalRound);
 
+                var round = parseFloat(grand_totalRound) - parseFloat(grand_total)
+                $('.round').val(round);
 
             })
             $(document).on('click', '.batal_promo', function() {
                 reset()
-                
+                $('.pembayaranTr').removeClass('d-none');
             })
 
             load_order();
@@ -261,8 +263,14 @@
                         type: "POST",
                         url: "{{ route('save_transaksi') }}",
                         data: $(".form_save").serialize(),
+                        dataType:'json',
                         success: function(r) {
-                            document.location.href = "{{ route('pembayaran2') }}?no=" + r
+                            if(r.code === 'error') {
+                                alert('Ada yang error')
+                                document.location.href = "{{ route('list_orderan') }}?no="+r.nota
+                            } else {
+                                document.location.href = "{{ route('pembayaran2') }}?no=" + r.nota
+                            }
                         }
                     });
 

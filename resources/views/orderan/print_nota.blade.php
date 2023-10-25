@@ -1,3 +1,4 @@
+
 <style>
     .invoice {
         margin: auto;
@@ -137,8 +138,23 @@
             </td>
         </tr>
         <?php endif; ?>
+        <?php if ($transaksi->diskon_bank) : ?>
+        <tr>
+            <td style="text-align: left;" width="6%"></td>
+            <td style="font-size: 20px;">
+                Promo Bank
+            </td>
+            <td width="22%" style="font-size: 20px;">
+                <?= number_format($transaksi->diskon_bank) ?>
+            </td>
+
+            <td width="15%" align="right">
+
+            </td>
+        </tr>
+        <?php endif; ?>
         @php
-            $totO = $s_total + $s_total_majo - $transaksi->voucher;
+            $totO = $s_total + $s_total_majo - $transaksi->voucher - $transaksi->diskon_bank;
         @endphp
         <tr>
             <td style="text-align: left;" width="6%"></td>
@@ -209,20 +225,21 @@
             </td>
         </tr>
         <?php endif; ?>
+        @php
+            // $totalan = $s_total + $s_total_majo - $transaksi->voucher + $transaksi->service + $transaksi->tax + $transaksi->ongkir;
+            // $a = $totalan;
+            // $b = number_format(substr($a, -3), 0);
 
-        <?php $totalan = $s_total + $s_total_majo - $transaksi->voucher + $transaksi->service + $transaksi->tax + $transaksi->ongkir; ?>
-        <?php
-        $a = $totalan;
-        $b = number_format(substr($a, -3), 0);
-        
-        if ($b == '00') {
-            $c = $a;
-            $round = '00';
-        } elseif ($b < 1000) {
-            $c = $a - $b + 1000;
-            $round = 1000 - $b;
-        }
-        ?>
+            // if ($b == '00') {
+            //     $c = $a;
+            //     $round = '00';
+            // } elseif ($b < 1000) {
+            //     $c = $a - $b + 1000;
+            //     $round = 1000 - $b;
+            // }
+            $c = $totO + $transaksi->service + $transaksi->tax + $transaksi->ongkir + $transaksi->round
+        @endphp
+      
         <tr>
             <td style="text-align: left;" width="6%"></td>
             <td style="font-size: 20px; font-weight: bold;">
@@ -246,22 +263,7 @@
             </td>
         </tr> -->
 
-        @if ($transaksi->diskon_bank)
-            <tr>
-                <td style="text-align: left;" width="6%"></td>
-                <td style="font-size: 20px;">
-                    Promo Bank
-                </td>
-                <td width="22%" style="font-size: 20px;">
-                    ({{ number_format($transaksi->diskon_bank, 0) }})
 
-                </td>
-
-                <td width="15%" align="right">
-
-                </td>
-            </tr>
-        @endif
 
 
         <?php if ($transaksi->discount) : ?>
@@ -351,7 +353,7 @@
                 <?php endif ?> --}}
 
                 @foreach ($pembayaran as $p)
-                    {{ $p->nm_akun }} {{ $p->nm_klasifikasi }} <div style="margin-top: 5px;"></div>
+                    {{ $p->nm_akun }} {{ $p->nm_klasifikasi }} <div style="margin-top: 5px;"></div> 
                 @endforeach
             </td>
             <td width="22%" style="font-size: 20px;">
@@ -393,6 +395,22 @@
             <td width="15%" align="right">
 
             </td>
+        </tr>
+        <tr>
+            <td style="text-align: left;" width="6%"></td>
+            <td style="font-size: 20px;">
+                @foreach ($pembayaran as $p)
+                    {{ $p->pengirim }} <div style="margin-top: 5px;"></div> 
+                @endforeach
+            </td>
+           
+            <td width="22%" style="font-size: 20px;">
+                
+            </td>
+            <td width="15%" align="right">
+
+            </td>
+            
         </tr>
         <tr>
             <td style="text-align: left;" width="6%"></td>

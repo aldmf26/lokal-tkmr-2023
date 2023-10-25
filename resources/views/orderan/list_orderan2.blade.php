@@ -275,30 +275,30 @@
                                 name="nm_pengirim[]">
                         </td> --}}
             </tr>
-            <tr>
-                <td colspan="3">&nbsp;</td>
-                <td></td>
-                <td>-</td>
-                <td width="20%">
-                    Potongan Promo <br>
-
-                    <input readonly type="text" value="0" class="form-control diskonPromo">
-                    <input type="hidden" name="diskonPromo[]" class="diskonPromoInt">
-                </td>
-
-                <td>
-                    Disc Bank <br>
-                    <input type="text" class="form-control" id="diskonPromoInfo" readonly>
-                </td>
-                {{-- <td>
-                            <input type="hidden" name="id_akun[]" value="{{ $a->id_akun_pembayaran }}">
-                            <input type="text" class="form-control "
-                                {{ in_array($k->id_klasifikasi_pembayaran, [4,5]) ? '' : 'hidden' }} placeholder="Nama pengirim"
-                                name="nm_pengirim[]">
-                        </td> --}}
-            </tr>
+            
         @endforeach
+        <tr>
+            <td colspan="3">&nbsp;</td>
+            <td></td>
+            <td>-</td>
+            <td width="20%">
+                Potongan Promo <br>
 
+                <input readonly type="text" value="0" class="form-control diskonPromo">
+                <input type="hidden" name="diskonPromo" class="diskonPromoInt">
+            </td>
+
+            <td>
+                Disc Bank <br>
+                <input type="text" class="form-control" id="diskonPromoInfo" readonly>
+            </td>
+            {{-- <td>
+                        <input type="hidden" name="id_akun[]" value="{{ $a->id_akun_pembayaran }}">
+                        <input type="text" class="form-control "
+                            {{ in_array($k->id_klasifikasi_pembayaran, [4,5]) ? '' : 'hidden' }} placeholder="Nama pengirim"
+                            name="nm_pengirim[]">
+                    </td> --}}
+        </tr>
         {{-- <tr>
                 <td colspan="2">Promo Bank</td>
                 <td></td>
@@ -495,7 +495,7 @@
 
         </tr>
         @foreach ($klasifikasi_pembayaran as $i => $k)
-            <tr>
+            <tr class="{{ $k->id_klasifikasi_pembayaran == 5 ? 'pembayaranPromoTr' : 'pembayaranTr' }}">
                 <td style="font-weight: bold;" colspan="6">
                     {{ $k->nm_klasifikasi }}
                     <button type="button" class="btn btn-info btn-sm btn-buka float-right"
@@ -514,7 +514,7 @@
                 <tr x-show="openRows.includes({{ $i }})">
                     <td colspan="3">{{ $a->nm_akun }}</td>
                     <td>:</td>
-                    <td colspan="2"><input type="number" value="0" name="pembayaran[]"
+                    <td><input type="number" value="0" name="pembayaran[]"
                             class="form-control pembayaran">
                     </td>
                     <td>

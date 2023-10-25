@@ -310,7 +310,7 @@ Route::get('/checker', [MejaController::class, 'checker'])->name('checker');
 Route::get('/copy_checker', [MejaController::class, 'copy_checker'])->name('copy_checker');
 Route::get('/checker_tamu', [MejaController::class, 'checker_tamu'])->name('checker_tamu');
 Route::get('/copy_checker_tamu', [MejaController::class, 'copy_checker_tamu'])->name('copy_checker_tamu');
-Route::get('/edit_pembayaran', [MejaController::class, 'edit_pembayaran'])->name('edit_pembayaran');
+Route::post('/edit_pembayaran', [MejaController::class, 'edit_pembayaran'])->name('edit_pembayaran');
 Route::get('/get_pembayaran', [MejaController::class, 'get_pembayaran'])->name('get_pembayaran');
 Route::get('/check_pembayaran', [MejaController::class, 'check_pembayaran'])->name('check_pembayaran');
 Route::get('/clear', [MejaController::class, 'clear'])->name('clear');

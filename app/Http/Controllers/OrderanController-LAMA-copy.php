@@ -152,10 +152,11 @@ class OrderanController extends Controller
         $id_akun = $r->id_akun;
         $ttl_sub = $r->ttl_sub;
         $pembayaran = $r->total_pembayaran;
+
         $whereDiskon = [
             ['id_jenis_pembayaran', $id_akun],
-            ['min_order', '<=', $pembayaran],
-            ['max_order', '>=', $pembayaran],
+            ['min_order', '<=', $ttl_sub],
+            ['max_order', '>=', $ttl_sub],
         ];
 
         $diskon = DB::table('tb_paket_diskon')
@@ -174,6 +175,7 @@ class OrderanController extends Controller
             $jumlah_diskon = 0;
             $total_pesanan_setelah_diskon = $ttl_sub;
         }
+
         return json_encode([
             'jumlah_diskon' => $jumlah_diskon,
             'persentase_diskon' => $diskon->persen_diskon,
@@ -199,39 +201,175 @@ class OrderanController extends Controller
             $lokasi = $request->session()->get('id_lokasi');
             $voucher = $request->voucher;
             $disc = $request->disc;
-
-            // Memperoleh data distribusi
             $dis = DB::table('tb_distribusi')->where('id_distribusi', $id_distribusi)->first();
             $kode = substr($dis->nm_distribusi, 0, 2);
 
-            // Membangun nomor invoice
-            $kd = $this->generateInvoiceNumber($lokasi, $id_distribusi);
-            $no_invoice = date('ymd') . $kd;
-            $hasil = $this->buildInvoiceNumber($lokasi, $kode, $no_invoice);
 
-            // Membuat Invoice2
+
+            $q = DB::select(
+                DB::raw("SELECT MAX(RIGHT(a.no_order2,4)) AS kd_max FROM tb_order2 AS a
+                WHERE DATE(a.tgl)=CURDATE() AND a.id_lokasi = '$lokasi' AND a.id_distribusi = '$id_distribusi'"),
+            );
+            $kd = '';
+            if (count($q) > 0) {
+                foreach ($q as $k) {
+                    $tmp = ((int) $k->kd_max) + 1;
+                    $kd = sprintf('%04s', $tmp);
+                }
+            } else {
+                $kd = '0001';
+            }
+            date_default_timezone_set('Asia/Makassar');
+            $no_invoice = date('ymd') . $kd;
+
+            $dis = DB::table('tb_distribusi')
+                ->where('id_distribusi', $id_distribusi)
+                ->first();
+            $kode = substr($dis->nm_distribusi, 0, 2);
+            if ($lokasi == '1') {
+                $hasil = "T$kode-$no_invoice";
+            } else {
+                $hasil = "S$kode-$no_invoice";
+            }
             $data = [
                 'no_invoice' => $hasil,
-                'tanggal' => now()->format('Y-m-d'),
+                'tanggal' => date('Y-m-d'),
             ];
+
+
+
             Invoice2::create($data);
 
-            // Memproses data order
-            $this->processOrderData($id_order, $no_order, $hasil, $id_harga, $qty, $harga, $lokasi, $id_distribusi, $id_meja);
+            for ($x = 0; $x < sizeof($id_order); $x++) {
+                if ($qty[$x] == '' || $qty[$x] == '0') {
+                } else {
+                    // $ada = Order2::where([
+                    //     ['id_order1' => $id_order[$x]],
+                    //     ['created_at' => date('Y-m-d H:i:s')]
+                    // ]);
+                    $data = [
+                        'id_order1' => $id_order[$x],
+                        'no_order' => $no_order,
+                        'no_order2' => $hasil,
+                        'id_harga' => $id_harga[$x],
+                        'qty' => $qty[$x],
+                        'harga' => $harga[$x],
+                        'tgl' => date('Y-m-d'),
+                        'id_lokasi' => $lokasi,
+                        'admin' => Auth::user()->nama,
+                        'id_distribusi' => $id_distribusi,
+                        'id_meja' => $id_meja[$x]
+                    ];
+                    Order2::create($data);
+                }
+            }
+            if (empty($id_pembelian)) {
+            } else {
+                for ($x = 0; $x < sizeof($id_pembelian); $x++) {
+                    if ($qty_majo[$x] == '' || $qty_majo[$x] == '0') {
+                    } else {
+                        $data = [
+                            'bayar' => 'Y',
+                            'no_nota2' => $hasil
+                        ];
+                        Pembelian::where('id_pembelian', $request->id_pembelian[$x])->update($data);
+                    }
+                }
+                if ($request->total_dibayar < $total_majo) {
+                } else {
+                    $data6 = [
+                        'bayar' => $request->total_dibayar < 1 ? 0 : $total_majo,
+                        'no_nota' => $hasil,
+                        'total' => $request->total_dibayar < 1 ? 0 : $total_majo,
+                        'tgl_jam' => date('Y-m-d'),
+                        'tgl_input' => date('Y-m-d H:i:s'),
+                        'admin' => Auth::user()->nama,
+                        'lokasi' => $lokasi,
+                        'id_distribusi' => $id_distribusi
+                    ];
+                    DB::table('tb_invoice')->insert($data6);
+                }
+            }
 
-            // Memproses data pembelian
-            $this->processPembelianData($id_pembelian, $qty_majo, $hasil, $request->total_dibayar, $total_majo, $lokasi, $id_distribusi);
 
-            // Memproses pembayaran
-            $this->processPayments($request->id_akun, $request->pembayaran, $request->sub, $request->nm_pengirim, $request->diskonPromo, $lokasi, $hasil);
 
-            // Memproses data transaksi
-            $this->processTransactionData($request, $lokasi, $hasil);
 
-            // Menandai penggunaan voucher dan DP
-            $this->markVoucherAsUsed($request->kd_voucher);
-            $this->markDPAsUsed($request->id_dp);
 
+            for ($i = 0; $i < count($request->id_akun); $i++) {
+
+                if ($request->pembayaran[$i] == 0) {
+                    # code...
+                } else {
+                    $id_akunBayar = $request->id_akun[$i];
+                    $pembayaran = $request->pembayaran[$i];
+                    $jumlah_diskon = 0;
+                    $ttl_sub = $request->sub;
+                    $getAkunPembayaran = DB::table('akun_pembayaran as a')
+                        ->where('a.id_akun_pembayaran', $id_akunBayar)
+                        ->first();
+                    
+                    $data = [
+                        'id_akun_pembayaran' => $id_akunBayar,
+                        'no_nota' => $hasil,
+                        'nominal' => $pembayaran,
+                        'pengirim' => $request->nm_pengirim[$i],
+                        'diskon_bank' => $request->diskonPromo ?? 0,
+                        'tgl' => date('Y-m-d'),
+                        'id_lokasi' => $lokasi,
+                        'tgl_waktu' => now()
+                    ];
+                    DB::table('pembayaran')->insert($data);
+                }
+            }
+
+            $data = [
+                'tgl_transaksi' => date('Y-m-d'),
+                'no_order' => $hasil,
+                'voucher' => ($request->voucher == '' ? 0 : $request->voucher),
+                'discount' => $request->discount == '' ? 0 : $request->discount,
+                'dp' => ($request->dp == '' ? 0 : $request->dp),
+                'gosen' => $request->gosen,
+                'diskon_bank' => $request->diskonPromo ?? 0,
+                'round' => $request->round,
+                'total_orderan' => $request->sub,
+                'total_bayar' => $request->total_dibayar,
+                // 'cash' => $request->cash,
+                // 'd_bca' => $request->d_bca,
+                // 'k_bca' => $request->k_bca,
+                // 'd_mandiri' => $request->d_mandiri,
+                // 'k_mandiri' => $request->k_mandiri,
+                'admin' => Auth::user()->nama,
+                'id_lokasi' => $lokasi,
+                'ongkir' => $request->ongkir,
+                'service' => $request->service,
+                'tax' => $request->tax,
+                'kembalian' => $request->kembalian1,
+            ];
+            DB::table('tb_transaksi')->insert($data);
+
+            $data2 = [
+                'terpakai' => 'sudah',
+                'status' => 'off'
+            ];
+
+            Voucher::where('kode', $request->kd_voucher)->update($data2);
+            $data3 = [
+                'status' => '1'
+            ];
+            Dp::where('id_dp', $request->id_dp)->update($data3);
+
+            $order = DB::table('tb_order')->select('pengantar')->where('no_order', $no_order)->groupBy('no_order')->first();
+            $ongkir = DB::table('tb_ongkir')->select('rupiah')->where('id_ongkir', '1')->first();
+            if ($id_distribusi == '3') {
+                $data4 = [
+                    'no_order' => $hasil,
+                    'nm_driver' => $order->pengantar,
+                    'nominal' =>  $ongkir->rupiah,
+                    'tgl' => date('Y-m-d'),
+                    'admin' => Auth::user()->nama
+                ];
+                Ctt_driver::create($data4);
+            }
             // Jika tidak ada kesalahan, Anda dapat melakukan commit secara manual
             DB::commit();
 
@@ -240,160 +378,15 @@ class OrderanController extends Controller
                 'code' => 'berhasil',
             ]);
         } catch (\Exception $e) {
+            // Jika terjadi kesalahan, Anda dapat melakukan rollback secara manual
             DB::rollBack();
-            
             return json_encode([
                 'nota' => $hasil,
                 'code' => 'error',
             ]);
+            // Anda dapat menangani kesalahan atau logging di sini
         }
-    }
-
-    // Fungsi untuk menghasilkan nomor invoice
-    function generateInvoiceNumber($lokasi, $id_distribusi)
-    {
-        $kd = '';
-        $q = DB::select(
-            DB::raw("SELECT MAX(RIGHT(a.no_order2,4)) AS kd_max FROM tb_order2 AS a
-        WHERE DATE(a.tgl) = CURDATE() AND a.id_lokasi = '$lokasi' AND a.id_distribusi = '$id_distribusi'")
-        );
-
-        if (count($q) > 0) {
-            foreach ($q as $k) {
-                $tmp = ((int) $k->kd_max) + 1;
-                $kd = sprintf('%04s', $tmp);
-            }
-        } else {
-            $kd = '0001';
-        }
-
-        return $kd;
-    }
-
-    // Fungsi untuk membangun nomor invoice
-    function buildInvoiceNumber($lokasi, $kode, $no_invoice)
-    {
-        if ($lokasi == '1') {
-            return "T$kode-$no_invoice";
-        } else {
-            return "S$kode-$no_invoice";
-        }
-    }
-
-    // Fungsi untuk memproses data order
-    function processOrderData($id_order, $no_order, $hasil, $id_harga, $qty, $harga, $lokasi, $id_distribusi, $id_meja)
-    {
-        foreach ($id_order as $x => $order) {
-            if ($qty[$x] != '' && $qty[$x] != '0') {
-                $data = [
-                    'id_order1' => $order,
-                    'no_order' => $no_order,
-                    'no_order2' => $hasil,
-                    'id_harga' => $id_harga[$x],
-                    'qty' => $qty[$x],
-                    'harga' => $harga[$x],
-                    'tgl' => now()->format('Y-m-d'),
-                    'id_lokasi' => $lokasi,
-                    'admin' => Auth::user()->nama,
-                    'id_distribusi' => $id_distribusi,
-                    'id_meja' => $id_meja[$x]
-                ];
-                Order2::create($data);
-            }
-        }
-    }
-
-    // Fungsi untuk memproses data pembelian
-    function processPembelianData($id_pembelian, $qty_majo, $hasil, $total_dibayar, $total_majo, $lokasi, $id_distribusi)
-    {
-        if (!empty($id_pembelian)) {
-            foreach ($id_pembelian as $x => $pembelian) {
-                if ($qty_majo[$x] != '' && $qty_majo[$x] != '0') {
-                    $data = [
-                        'bayar' => 'Y',
-                        'no_nota2' => $hasil
-                    ];
-                    Pembelian::where('id_pembelian', $pembelian)->update($data);
-                }
-            }
-            if ($total_dibayar >= $total_majo) {
-                $data6 = [
-                    'bayar' => $total_dibayar < 1 ? 0 : $total_majo,
-                    'no_nota' => $hasil,
-                    'total' => $total_dibayar < 1 ? 0 : $total_majo,
-                    'tgl_jam' => now()->format('Y-m-d H:i:s'),
-                    'admin' => Auth::user()->nama,
-                    'lokasi' => $lokasi,
-                    'id_distribusi' => $id_distribusi
-                ];
-                DB::table('tb_invoice')->insert($data6);
-            }
-        }
-    }
-
-    // Fungsi untuk memproses pembayaran
-    function processPayments($id_akun, $pembayaran, $ttl_sub, $nm_pengirim, $diskonPromo, $lokasi, $hasil)
-    {
-        foreach ($id_akun as $i => $id_akunBayar) {
-            if ($pembayaran[$i] != 0) {
-                $jumlah_diskon = 0;
-                $ttl_sub = $ttl_sub; // Anda mungkin ingin menghitung total ini terlebih dahulu
-                $data = [
-                    'id_akun_pembayaran' => $id_akunBayar,
-                    'no_nota' => $hasil,
-                    'nominal' => $pembayaran[$i],
-                    'pengirim' => $nm_pengirim[$i],
-                    'diskon_bank' => $diskonPromo ?? 0,
-                    'tgl' => now()->format('Y-m-d'),
-                    'id_lokasi' => $lokasi,
-                    'tgl_waktu' => now()
-                ];
-                DB::table('pembayaran')->insert($data);
-            }
-        }
-    }
-
-    // Fungsi untuk memproses data transaksi
-    function processTransactionData($request, $lokasi, $hasil)
-    {
-        $data = [
-            'tgl_transaksi' => now()->format('Y-m-d'),
-            'no_order' => $hasil,
-            'voucher' => ($request->voucher == '' ? 0 : $request->voucher),
-            'discount' => $request->discount == '' ? 0 : $request->discount,
-            'dp' => ($request->dp == '' ? 0 : $request->dp),
-            'gosen' => $request->gosen,
-            'diskon_bank' => $request->diskonPromo ?? 0,
-            'round' => $request->round,
-            'total_orderan' => $request->sub,
-            'total_bayar' => $request->total_dibayar,
-            'admin' => Auth::user()->nama,
-            'id_lokasi' => $lokasi,
-            'ongkir' => $request->ongkir,
-            'service' => $request->service,
-            'tax' => $request->tax,
-            'kembalian' => $request->kembalian1,
-        ];
-        DB::table('tb_transaksi')->insert($data);
-    }
-
-    // Fungsi untuk menandai voucher sebagai sudah digunakan
-    function markVoucherAsUsed($kd_voucher)
-    {
-        $data2 = [
-            'terpakai' => 'sudah',
-            'status' => 'off'
-        ];
-        Voucher::where('kode', $kd_voucher)->update($data2);
-    }
-
-    // Fungsi untuk menandai DP sebagai sudah digunakan
-    function markDPAsUsed($id_dp)
-    {
-        $data3 = [
-            'status' => '1'
-        ];
-        Dp::where('id_dp', $id_dp)->update($data3);
+        
     }
 
     public function pembayaran2(Request $request)
