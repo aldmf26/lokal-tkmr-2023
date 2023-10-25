@@ -239,6 +239,36 @@
                 <input type="text" class="form-control" id="DiscVoucher" name="disc_voucher" readonly>
             </td>
         </tr>
+        {{-- diskon --}}
+        <tr>
+            <td colspan="2">Discount</td>
+            <td></td>
+            <td></td>
+            <td>-</td>
+            <td width="20%">
+                <input type="hidden" id="jenis_discount" value="{{ $disc->jenis ?? '' }}">
+                <input type="hidden" id="minimum_rp" value="{{ $disc->minimum_rp ?? 0 }}">
+                <input type="hidden" id="disc" value="{{ $disc->disc ?? 0 }}">
+                @if (empty($disc->minimum_rp))
+                    <input type="text" value="" class="form-control" readonly>
+                    <input type="hidden" name="discount" value="0" class="form-control" readonly>
+                @else
+                    @if ($c < $disc->minimum_rp)
+                        <input type="text" value="" class="form-control" readonly>
+                        <input type="hidden" name="discount" value="0" class="form-control" readonly>
+                    @else
+                        <input type="text"
+                            value="{{ $disc->jenis == 'Persen' ? $disc->disc . '%' : 'Rp.' . $disc->disc }}"
+                            class="form-control" readonly>
+                        <input type="hidden" name="discount" value="{{ $disc->disc }}" class="form-control"
+                            readonly>
+                    @endif
+                @endif
+
+
+            </td>
+            <td></td>
+        </tr>
         {{-- promo bank --}}
         @php
             $klasifikasiPromoBank = DB::table('akun_pembayaran')
@@ -331,36 +361,7 @@
             </tr> --}}
         {{-- end promo bank --}}
 
-        {{-- diskon --}}
-        <tr>
-            <td colspan="2">Discount</td>
-            <td></td>
-            <td></td>
-            <td>-</td>
-            <td width="20%">
-                <input type="hidden" id="jenis_discount" value="{{ $disc->jenis ?? '' }}">
-                <input type="hidden" id="minimum_rp" value="{{ $disc->minimum_rp ?? 0 }}">
-                <input type="hidden" id="disc" value="{{ $disc->disc ?? 0 }}">
-                @if (empty($disc->minimum_rp))
-                    <input type="text" value="" class="form-control" readonly>
-                    <input type="hidden" name="discount" value="0" class="form-control" readonly>
-                @else
-                    @if ($c < $disc->minimum_rp)
-                        <input type="text" value="" class="form-control" readonly>
-                        <input type="hidden" name="discount" value="0" class="form-control" readonly>
-                    @else
-                        <input type="text"
-                            value="{{ $disc->jenis == 'Persen' ? $disc->disc . '%' : 'Rp.' . $disc->disc }}"
-                            class="form-control" readonly>
-                        <input type="hidden" name="discount" value="{{ $disc->disc }}" class="form-control"
-                            readonly>
-                    @endif
-                @endif
-
-
-            </td>
-            <td></td>
-        </tr>
+        
 
         {{-- --}}
         <?php if ($tb_dis->service == 'Y') : ?>
