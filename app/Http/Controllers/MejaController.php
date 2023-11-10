@@ -97,14 +97,14 @@ class MejaController extends Controller
             $waitress = DB::select(
                 DB::raw(
                     "SELECT a.* , b.nama FROM tb_absen as a left join tb_karyawan as b on a.id_karyawan = b.id_karyawan
-                     WHERE a.tgl = '$tgl' and b.id_posisi not in(5,15,16,17,18) and a.id_lokasi = '$loc'",
+                     WHERE a.tgl = '$tgl' and b.id_status = 2  and a.id_lokasi = '$loc'",
                 ),
             );
         } else {
             $waitress = DB::select(
                 DB::raw(
                     "SELECT a.* , b.nama FROM tb_absen as a left join tb_karyawan as b on a.id_karyawan = b.id_karyawan
-                     WHERE a.tgl = '$tgl' and b.id_posisi in(5,15,16,17,18) and a.id_lokasi = '$loc'",
+                     WHERE a.tgl = '$tgl' and b.id_status = 2  and a.id_lokasi = '$loc'",
                 ),
             );
         }
