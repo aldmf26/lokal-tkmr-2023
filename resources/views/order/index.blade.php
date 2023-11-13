@@ -662,6 +662,8 @@
                 var id_menu = $("#id_menu").val();
                 var req = $("#req").val();
                 var tipe = $("#tipe").val();
+                var dis = "{{request()->get('dis')}}";
+
                 $.ajax({
                     url: "{{ route('cart') }}",
                     method: 'GET',
@@ -673,6 +675,7 @@
                         req: req,
                         id_menu: id_menu,
                         tipe: tipe,
+                        dis: dis,
                     },
                     success: function(data) {
                         if (data == 'berhasil') {

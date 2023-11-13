@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Discount;
 use App\Models\Distribusi;
 use App\Models\Order;
 use App\Models\Orderan;
@@ -67,8 +68,8 @@ class OrderController extends Controller
                 'id_distri' => DB::table('tb_distribusi')
                     ->where('id_distribusi', $id_me)
                     ->first(),
-                    'admin' => Auth::user()->nama,
-                    'absen' => DB::select("SELECT b.nama FROM tb_absen as a left join tb_karyawan as b on a.id_karyawan = b.id_karyawan where a.tgl = '$tgl' and a.id_lokasi = '$id_lokasi' and b.id_status = '2' group by a.id_karyawan  ")
+                'admin' => Auth::user()->nama,
+                'absen' => DB::select("SELECT b.nama FROM tb_absen as a left join tb_karyawan as b on a.id_karyawan = b.id_karyawan where a.tgl = '$tgl' and a.id_lokasi = '$id_lokasi' and b.id_status = '2' group by a.id_karyawan  ")
             ];
             Cart::destroy();
             return view('order.index', $data);
@@ -250,7 +251,10 @@ class OrderController extends Controller
         $id_menu = $request->id_menu;
         $tipe = $request->tipe;
         $id_karyawan = [0 => '1'];
-
+        $dis = $request->dis;
+        $potongan = Discount::diskonPeritem($id_menu, $dis, $price);
+        $potonganJumlah = $potongan['potongan'];
+        $potonganJenis = $potongan['jenis'];
         foreach ($id_karyawan as $id_kr) {
             $kry = DB::table('tb_karyawan_majo')->where('kd_karyawan', $id_kr)->first();
             $karyawan[] = preg_replace("/[^a-zA-Z0-9]/", " ", $kry->nm_karyawan);
@@ -272,7 +276,28 @@ class OrderController extends Controller
         if ($dt_limit->batas_limit > 0 && $dt_limit->jml_jual + $qty > $dt_limit->batas_limit) {
             echo $dt_limit->batas_limit - $dt_limit->jml_jual;
         } else {
-            Cart::add(['id' => $id, 'name' => $nama, 'price' => $price, 'qty' => $qty, 'options' => ['req' => $req,'nm_karyawan' => [$karyawan], 'program' => 'resto', 'id_menu' => $id_menu, 'tipe' => $tipe]]);
+            if ($potonganJumlah > 0) {
+                $pricePotongan = $potonganJenis == 'rp' ? $price - $potonganJumlah : ($price * $potonganJumlah) / 100;
+            } else {
+                $pricePotongan = $price;
+            }
+            Cart::add(
+                [
+                    'id' => $id,
+                    'name' => $nama,
+                    'price' => $pricePotongan,
+                    'qty' => $qty,
+                    'options' => [
+                        'req' => $req,
+                        'nm_karyawan' => [$karyawan],
+                        'program' => 'resto',
+                        'id_menu' => $id_menu,
+                        'tipe' => $tipe,
+                        'hargaNormal' => $price,
+                        'potongan' => $potonganJumlah
+                    ]
+                ]
+            );
             echo 'berhasil';
         }
     }
@@ -431,37 +456,15 @@ class OrderController extends Controller
                 # code...
             }
 
-            if($c->options->program == 'resto') {
+            if ($c->options->program == 'resto') {
 
                 if ($c->qty > 1) {
                     for ($x = 0; $x < $c->qty; $x++) {
-                        
-                            $data2 = [
-                                'no_order' => $hasil,
-                                'id_harga' => $c->id,
-                                'qty' => 1,
-                                'harga' => $c->price,
-                                'request' => $c->options->req,
-                                'id_meja' => $last_meja->id_meja,
-                                'id_distribusi' => $id_dis,
-                                'selesai' => 'dimasak',
-                                'id_lokasi' => $lokasi,
-                                'tgl' => date('Y-m-d'),
-                                'admin' => $admin,
-                                'j_mulai' => date('Y-m-d H:i:s'),
-                                'aktif' => '1',
-                                'ongkir' => $ongkir,
-                                'orang' => $orang,
-                                'warna' => $warna
-                            ];
-                            Orderan::create($data2);   
-                    }
-                } else {
-                    
+
                         $data2 = [
                             'no_order' => $hasil,
                             'id_harga' => $c->id,
-                            'qty' => $c->qty,
+                            'qty' => 1,
                             'harga' => $c->price,
                             'request' => $c->options->req,
                             'id_meja' => $last_meja->id_meja,
@@ -477,7 +480,28 @@ class OrderController extends Controller
                             'warna' => $warna
                         ];
                         Orderan::create($data2);
-                
+                    }
+                } else {
+
+                    $data2 = [
+                        'no_order' => $hasil,
+                        'id_harga' => $c->id,
+                        'qty' => $c->qty,
+                        'harga' => $c->price,
+                        'request' => $c->options->req,
+                        'id_meja' => $last_meja->id_meja,
+                        'id_distribusi' => $id_dis,
+                        'selesai' => 'dimasak',
+                        'id_lokasi' => $lokasi,
+                        'tgl' => date('Y-m-d'),
+                        'admin' => $admin,
+                        'j_mulai' => date('Y-m-d H:i:s'),
+                        'aktif' => '1',
+                        'ongkir' => $ongkir,
+                        'orang' => $orang,
+                        'warna' => $warna
+                    ];
+                    Orderan::create($data2);
                 }
             } else {
                 $nm_karyawan = '';
