@@ -29,27 +29,4 @@
     </div>
 </div>
 
-<script>
-    $(document).ready(function() {
-        $(document).on("change", ".id_harga", function() {
 
-            var id_harga = $(this).val();
-            var detail = $(this).attr('detail')
-            $.ajax({
-                url: "{{ route('get_harga') }}?id_harga=" + id_harga,
-                method: "GET",
-                dataType: "json",
-                success: function(data) {
-                    $(".harga" + detail).val(data);
-
-                }
-            });
-
-        });
-
-
-        // disini 
-
-
-    });
-</script>

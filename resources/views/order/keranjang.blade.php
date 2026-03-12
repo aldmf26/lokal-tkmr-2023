@@ -31,11 +31,6 @@
 <input type="hidden" value="{{ $id_distri->id_distribusi }}">
 <input type="hidden" value="{{ number_format($batas->rupiah, 0) }}">
 <div class="row">
-    <style>
-        .hargaPotongan {
-            text-decoration: line-through;
-        }
-    </style>
     <div class="col-lg-12">
         <div class="table-responsive">
             <table class="table">
@@ -63,17 +58,22 @@
                                         class="form-control">
                                 </strong>
                             </td>
-                            
+                            <style>
+                                .hargaPotongan {
+                                    text-decoration: line-through;
+                                }
+                            </style>
+
                             <td>
-                                
                                 <strong class="{{ $c->options->potongan > 0 ? 'hargaPotongan' : '' }}">
                                     {{ number_format($c->options->hargaNormal, 0) }}
                                 </strong>
                                 @if ($c->options->potongan > 0)
                                     <strong>
-                                        {{ number_format($c->price , 0) }}
+                                        {{ number_format($c->price, 0) }}
                                     </strong>
                                 @endif
+
                             </td>
                             <td align="center">
                                 @php
@@ -117,7 +117,7 @@
                             </td>
                         </tr>
                     @else
-                        <tr>
+                        {{-- <tr>
                             <td colspan="4">
                                 @foreach ($c->options->nm_karyawan as $key => $nm_karyawan)
                                     @foreach ($nm_karyawan as $k)
@@ -126,7 +126,7 @@
                                 @endforeach
                             </td>
 
-                        </tr>
+                        </tr> --}}
                         <tr>
 
                             <td>
@@ -266,16 +266,6 @@
                     <th style="font-size: 16px;" colspan="3" class="text-right">Rp.
                         {{ number_format($c) }}</th>
                 </tr>
-
-
-
-
-
-
-
-
-
-
             </table>
             <button type="submit" class="btn btn-success bg-gradient btn-block">SEND TO KITCHEN</button>
         </div>

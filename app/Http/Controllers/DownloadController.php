@@ -49,11 +49,14 @@ class DownloadController extends Controller
         ];
         return view('download.index', $data);
     }
-
+    
+    
     public function absen(Request $r)
     {
+        
         $absen = Http::get("https://ptagafood.com/api/importAbsen");
-        $dt_absen = json_decode($absen, TRUE);
+        $dt_absen = json_decode($absen,TRUE);
+       
         DB::table('tb_absen')->whereBetween('tgl', [date('Y-m-1'), date('Y-m-t')])->delete();
 
         foreach ($dt_absen['absenTkmr'] as $v) {
@@ -225,16 +228,26 @@ class DownloadController extends Controller
 
         $tb_jumlah_orang = Http::get("https://ptagafood.com/api/tb_jumlah_orang");
         $dt_tb_jumlah_orang = json_decode($tb_jumlah_orang, TRUE);
-        Jumlah_orang::truncate();
+
         foreach ($dt_tb_jumlah_orang['tb_jumlah_orang'] as $v) {
+            // Tentukan kondisi yang digunakan untuk mengecek keberadaan data
+            $conditions = [
+                'id_orang' => $v['id_orang'],
+                'id_lokasi' => $v['id_lokasi']
+            ];
+
+            // Data yang akan di-update atau di-insert
             $data = [
                 'id_orang' => $v['id_orang'],
                 'ket_karyawan' => $v['ket_karyawan'],
                 'jumlah' => $v['jumlah'],
                 'id_lokasi' => $v['id_lokasi']
             ];
-            Jumlah_orang::create($data);
+
+            // Gunakan updateOrInsert untuk melakukan upsert
+            Jumlah_orang::updateOrInsert($conditions, $data);
         }
+
 
         $tb_persentase = Http::get("https://ptagafood.com/api/persentase_komisi");
         $dt_tb_persentase = json_decode($tb_persentase, TRUE);

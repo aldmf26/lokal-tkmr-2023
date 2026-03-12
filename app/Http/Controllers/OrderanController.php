@@ -108,7 +108,7 @@ class OrderanController extends Controller
         $transaksi = DB::table('tb_transaksi')->where('no_order', $no)->get();
         $order = DB::select("SELECT a.id_order, a.id_harga, b.nm_menu, a.qty, a.request, c.nama AS koki1 , d.nama AS koki2, e.nama AS koki3, a.id_distribusi,
         a.pengantar, a.id_meja, a.j_mulai, a.j_selesai, a.wait, a.selesai, a.harga,
-        timestampdiff(MINUTE, a.j_mulai,a.wait) AS selisih, if(f.qty IS NULL ,0,f.qty) AS qty2, g.nm_meja
+        timestampdiff(MINUTE, a.j_mulai,a.wait) AS selisih, if(f.qty IS NULL ,0,f.qty) AS qty2, a.no_meja as nm_meja
         FROM tb_order as a 
         left join view_menu as b on a.id_harga = b.id_harga 
         left join tb_karyawan as c on c.id_karyawan = a.id_koki1
@@ -157,19 +157,20 @@ class OrderanController extends Controller
             ['min_order', '<=', $pembayaran],
             ['max_order', '>=', $pembayaran],
         ];
-
+        
         $diskon = DB::table('tb_diskon_bank_pembayaran')
             ->where($whereDiskon)
             ->first();
-        if ($diskon) {
-            $persentase_diskon = $diskon->persen_diskon / 100;
-            $maksimal_jumlah_diskon = $diskon->max_diskon_rp;
+            if ($diskon) {
+                $persentase_diskon = $diskon->persen_diskon / 100;
+                $maksimal_jumlah_diskon = $diskon->max_diskon_rp;
 
             // Menghitung jumlah diskon
             $jumlah_diskon = min($pembayaran * $persentase_diskon, $maksimal_jumlah_diskon);
-
+            
             // Mengurangkan jumlah diskon dari total pesanan
             $total_pesanan_setelah_diskon = $pembayaran - $jumlah_diskon;
+            // dd($total_pesanan_setelah_diskon, $pembayaran * $persentase_diskon);
         } else {
             $jumlah_diskon = 0;
             $total_pesanan_setelah_diskon = $ttl_sub;

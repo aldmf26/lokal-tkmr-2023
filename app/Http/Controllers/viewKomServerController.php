@@ -21,7 +21,8 @@ class viewKomServerController extends Controller
       'tgl2' => $tgl2,
     ];
 
-    return view('allKomisiServer.viewKomServer', $data);
+    return redirect()->back();
+    // return view('allKomisiServer.viewKomServer', $data);
   }
 
   public function loadTakemori(Request $r)

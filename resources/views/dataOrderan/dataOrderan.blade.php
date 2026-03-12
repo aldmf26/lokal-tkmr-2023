@@ -2,15 +2,14 @@
 @section('content')
     <style>
         /* .icon-menu:hover{
-                                                                                                                                                background: #C8BED8;
-                                                                                                                                                border-radius: 50px;
-                                                                                                                                            } */
+                                                                                                                                                            background: #C8BED8;
+                                                                                                                                                            border-radius: 50px;
+                                                                                                                                                        } */
 
         h6 {
             color: #155592;
             font-weight: bold;
         }
-
     </style>
     <div class="content-wrapper">
         <!-- Content Header (Page header) -->
@@ -57,36 +56,37 @@
                                     </thead>
                                     <tbody>
                                         <?php $i = 1;
-                                    foreach ($tb_order as $t) : ?>
+                                        foreach ($tb_order as $t) : ?>
                                         <tr>
                                             <td><?= $i++ ?></td>
-                                            <td><?= $t->no_order ?></td>
-                                            <td><?= $t->nm_meja ?></td>
-                                            <td><?= $t->nm_menu ?></td>
-                                            <td><?= $t->qty ?></td>
-                                            <td><?= number_format($t->qty * $t->harga, 0) ?></td>
+                                            <td>{{ $t->no_order }}</td>
+                                            <td>Meja {{ $t->nm_meja }}</td>
+                                            <td>{{ $t->nm_menu }}</td>
+                                            <td>{{ $t->qty }}</td>
+                                            <td>{{ number_format($t->qty * $t->harga, 0) }}</td>
                                             <?php $waktu1 = new DateTime($t->j_mulai); ?>
-                                            <td><?= $waktu1->format('h.i A') ?></td>
-                                            <td><?= $t->admin ?></td>
+                                            <td>{{ $waktu1->format('h.i A') }}</td>
+                                            <td>{{ $t->admin }}</td>
                                             <td style="white-space: nowrap;">
-                                                <?= $t->koki1 ?>,<?= $t->koki2 ?>,<?= $t->koki3 ?></td>
-                                            <td><?= $t->pengantar ?></td>
-                                            <td><?= number_format($t->selisih, 0) ?></td>
-                                            <td><?= $t->selesai ?></td>
+                                                {{ $t->koki1 }},{{ $t->koki2 }},{{ $t->koki3 }}</td>
+                                            <td>{{ $t->pengantar }}</td>
+                                            <td>{{ number_format($t->selisih, 0) }}</td>
+                                            <td>{{ $t->selesai }}</td>
                                             <td style="white-space: nowrap;">
-                                                
-                                                <?php if ($t->selesai == 'dimasak'){ ?>
-                                                <button class="btn btn-xs btn-info" data-target="#edit<?= $t->id_order ?>"
-                                                    data-toggle="modal"><i class="fas fa-edit"></i></button>
-                                                    <a href="<?= route('drop', ['id' => $t->id_order]) ?>"
-                                                    onclick="return confirm('Apakah anda yakin ingn menghapus pesanan?')"
-                                                    class="btn btn-xs btn-danger"><i class="fas fa-trash-alt"></i></a>
-                                                <?php }else { ?>
-                                                <?php if(Auth::user()->id_posisi != 5 && $t->aktif == 1){ ?>
-                                                <button class="btn btn-xs btn-danger" data-target="#void<?= $t->id_order ?>"
-                                                    data-toggle="modal">Void</button>
-                                                <?php } ?>
-                                                <?php } ?>
+                                                @if ($t->selesai == 'dimasak')
+                                                    <button class="btn btn-xs btn-info"
+                                                        data-target="#edit{{ $t->id_order }}" data-toggle="modal"><i
+                                                            class="fas fa-edit"></i></button>
+                                                    <a href="{{ route('drop', ['id' => $t->id_order]) }}"
+                                                        onclick="return confirm('Apakah anda yakin ingn menghapus pesanan?')"
+                                                        class="btn btn-xs btn-danger"><i class="fas fa-trash-alt"></i></a>
+                                                @else
+                                                    @if (Auth::user()->id_posisi != 5 && $t->aktif == 1)
+                                                        <button class="btn btn-xs btn-danger"
+                                                            data-target="#void{{ $t->id_order }}"
+                                                            data-toggle="modal">Void</button>
+                                                    @endif
+                                                @endif
                                             </td>
                                         </tr>
                                         <?php endforeach ?>
@@ -104,8 +104,7 @@
                                 <div class="modal-content">
                                     <div class="modal-header bg-info">
                                         <h4 class="modal-title">View</h4>
-                                        <button type="button" class="close" data-dismiss="modal"
-                                            aria-label="Close">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span aria-hidden="true">&times;</span>
                                         </button>
                                     </div>
@@ -125,7 +124,8 @@
                                             </div>
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="submit" class="btn btn-primary" target="_blank">Lanjutkan</button>
+                                            <button type="submit" class="btn btn-primary"
+                                                target="_blank">Lanjutkan</button>
                                         </div>
 
                                     </div>
@@ -136,72 +136,73 @@
 
 
 
-                    @foreach ($tb_order as $o)                                     
-                    <form action="<?= route('edit_order') ?>" method="post">
-                        @csrf
-                        <div class="modal fade" id="edit<?= $o->id_order ?>">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header bg-info">
-                                        <h4 class="modal-title">Edit Orderan</h4>
-                                        <button type="button" class="close" data-dismiss="modal"
-                                            aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
+                    @foreach ($tb_order as $o)
+                        <form action="<?= route('edit_order') ?>" method="post">
+                            @csrf
+                            <div class="modal fade" id="edit<?= $o->id_order ?>">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header bg-info">
+                                            <h4 class="modal-title">Edit Orderan</h4>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
 
-                                        <div class="row">
+                                            <div class="row">
 
-                                            <input type="hidden" name="id_order" value="<?= $o->id_order ?>">
+                                                <input type="hidden" name="id_order" value="<?= $o->id_order ?>">
 
-                                            <div class="col-6">
-                                                <div class="from-group">
-                                                    <label for="">Menu</label>
-                                                    <input type="text" class="form-control" value="<?= $o->nm_menu ?>"
-                                                        disabled>
+                                                <div class="col-6">
+                                                    <div class="from-group">
+                                                        <label for="">Menu</label>
+                                                        <input type="text" class="form-control"
+                                                            value="<?= $o->nm_menu ?>" disabled>
+                                                    </div>
                                                 </div>
-                                            </div>
 
-                                            <div class="col-3">
-                                                <div class="from-group">
-                                                    <label for="">Qty</label>
-                                                    <input type="number" name="qty" class="form-control"
-                                                        value="<?= $o->qty ?>">
+                                                <div class="col-3">
+                                                    <div class="from-group">
+                                                        <label for="">Qty</label>
+                                                        <input type="number" name="qty" class="form-control"
+                                                            value="<?= $o->qty ?>">
+                                                    </div>
                                                 </div>
-                                            </div>
 
-                                            <div class="col-3">
-                                                <div class="from-group">
-                                                    <label for="">Harga</label>
-                                                    <input type="number" class="form-control" value="<?= $o->harga ?>"
-                                                        disabled>
+                                                <div class="col-3">
+                                                    <div class="from-group">
+                                                        <label for="">Harga</label>
+                                                        <input type="number" class="form-control"
+                                                            value="<?= $o->harga ?>" disabled>
+                                                    </div>
                                                 </div>
-                                            </div>
 
-                                            <div class="col-12">
-                                                <div class="from-group">
-                                                    <label for="">Request</label>
-                                                    <input type="text" name="keterangan" class="form-control"
-                                                        value="<?= $o->request ?>">
+                                                <div class="col-12">
+                                                    <div class="from-group">
+                                                        <label for="">Request</label>
+                                                        <input type="text" name="keterangan" class="form-control"
+                                                            value="<?= $o->request ?>">
+                                                    </div>
                                                 </div>
+
                                             </div>
 
                                         </div>
+                                        <div class="modal-footer justify-content-between">
+                                            <button type="button" class="btn btn-default"
+                                                data-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-primary"
+                                                target="_blank">Lanjutkan</button>
+                                        </div>
 
                                     </div>
-                                    <div class="modal-footer justify-content-between">
-                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                        <button type="submit" class="btn btn-primary" target="_blank">Lanjutkan</button>
-                                    </div>
-
                                 </div>
                             </div>
-                        </div>
                 </div>
                 </form>
-      
-                                                
+
+
                 <form action="{{ route('orderan_void') }}" method="get">
                     <div class="modal fade" id="void<?= $o->id_order ?>">
                         <div class="modal-dialog">
@@ -255,7 +256,5 @@
         .modal-lg-max {
             max-width: 900px;
         }
-
     </style>
-
 @endsection

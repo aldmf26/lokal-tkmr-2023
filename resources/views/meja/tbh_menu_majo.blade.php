@@ -18,13 +18,14 @@
             <?php endforeach ?>
         </select>
     </div>
-    <div class="col-lg-2">
+    <div class="col-lg-4">
         <label for="">Qty</label>
         <input type="number" name="qty" id="qty_majo" value="1" min="1" class="form-control">
     </div>
-    <div class="col-lg-2">
+    <div class="col-lg-4">
         <label for="">Harga</label>
-        <input type="text" name="harga" id="hrg_majo" class="form-control harga_majo harga_majo1" detail="1" readonly>
+        <input type="text" name="harga" id="hrg_majo" class="form-control harga_majo harga_majo1" detail="1"
+            readonly>
     </div>
 </div>
 

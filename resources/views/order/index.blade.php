@@ -76,148 +76,147 @@
         }
 
         .wrap-num-product {
-        width: 140px;
+            width: 140px;
 
-        border-radius: 3px;
-        overflow: hidden;
-    }
+            border-radius: 3px;
+            overflow: hidden;
+        }
 
-    .btn-num-product-up,
-    .btn-num-product-down {
-        width: 0px;
-        height: 100%;
-        cursor: pointer;
-    }
-
-
-
-    .num-product {
-        width: calc(100% - 90px);
-        height: 100%;
-        border-left: 1px solid #e6e6e6;
-        border-right: 1px solid #e6e6e6;
-        background-color: #f7f7f7;
-    }
-
-    input.num-product {
-        -moz-appearance: textfield;
-        appearance: none;
-        -webkit-appearance: none;
-    }
-
-    input.num-product::-webkit-outer-spin-button,
-    input.num-product::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-    }
-
-    .tes {
-        text-align: center;
-        font-size: 20px;
-        font-weight: bold;
-    }
-
-    element.style {}
-
-    label:not(.form-check-label):not(.custom-file-label) {
-        font-weight: 700;
-    }
-
-    .buying-selling.active {
-        background-image: linear-gradient(to right, #00B7B5 0%, #00B7B5 19%, #019392 60%, #04817F 100%);
-    }
-
-    .option1 {
-        display: none;
-    }
-
-    .buying-selling {
-        width: 123px;
-        padding: 10px;
-        position: relative;
-    }
-
-    .buying-selling-word {
-        font-size: 10px;
-        font-weight: 600;
-        margin-left: 35px;
-    }
-
-    .radio-dot:before,
-    .radio-dot:after {
-        content: "";
-        display: block;
-        position: absolute;
-        background: #fff;
-        border-radius: 100%;
-    }
-
-    .radio-dot:before {
-        width: 20px;
-        height: 20px;
-        border: 1px solid #ccc;
-        top: 10px;
-        left: 16px;
-    }
-
-    .radio-dot:after {
-        width: 12px;
-        height: 12px;
-        border-radius: 100%;
-        top: 14px;
-        left: 20px;
-    }
-
-    .buying-selling.active .buying-selling-word {
-        color: #fff;
-    }
-
-    .buying-selling.active .radio-dot:after {
-        background-image: linear-gradient(to right, #00B7B5 0%, #00B7B5 19%, #019392 60%, #04817F 100%);
-    }
-
-    .buying-selling.active .radio-dot:before {
-        background: #fff;
-        border-color: #699D17;
-    }
-
-    .buying-selling:hover .radio-dot:before {
-        border-color: #adadad;
-    }
-
-    .buying-selling.active:hover .radio-dot:before {
-        border-color: #699D17;
-    }
+        .btn-num-product-up,
+        .btn-num-product-down {
+            width: 0px;
+            height: 100%;
+            cursor: pointer;
+        }
 
 
-    /* .buying-selling.active .radio-dot:after {
-					background-image: linear-gradient(to right, #f78ca0 0%, #f9748f 19%, #fd868c 60%, #fe9a8b 100%);
-				} */
 
-    /* dot */
-    .buying-selling:hover .radio-dot:after {
-        background-image: linear-gradient(to right, #00B7B5 0%, #00B7B5 19%, #019392 60%, #04817F 100%);
-    }
+        .num-product {
+            width: calc(100% - 90px);
+            height: 100%;
+            border-left: 1px solid #e6e6e6;
+            border-right: 1px solid #e6e6e6;
+            background-color: #f7f7f7;
+        }
 
-    /* .buying-selling.active:hover .radio-dot:after {
-					background-image: linear-gradient(to right, #f78ca0 0%, #f9748f 19%, #fd868c 60%, #fe9a8b 100%);
+        input.num-product {
+            -moz-appearance: textfield;
+            appearance: none;
+            -webkit-appearance: none;
+        }
 
-				} */
+        input.num-product::-webkit-outer-spin-button,
+        input.num-product::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
 
-    @media (max-width: 400px) {
+        .tes {
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+        }
 
-        .mobile-br {
+        element.style {}
+
+        label:not(.form-check-label):not(.custom-file-label) {
+            font-weight: 700;
+        }
+
+        .buying-selling.active {
+            background-image: linear-gradient(to right, #00B7B5 0%, #00B7B5 19%, #019392 60%, #04817F 100%);
+        }
+
+        .option1 {
             display: none;
         }
 
         .buying-selling {
-            width: 49%;
+            width: 123px;
             padding: 10px;
             position: relative;
         }
 
-    }
+        .buying-selling-word {
+            font-size: 10px;
+            font-weight: 600;
+            margin-left: 35px;
+        }
 
+        .radio-dot:before,
+        .radio-dot:after {
+            content: "";
+            display: block;
+            position: absolute;
+            background: #fff;
+            border-radius: 100%;
+        }
+
+        .radio-dot:before {
+            width: 20px;
+            height: 20px;
+            border: 1px solid #ccc;
+            top: 10px;
+            left: 16px;
+        }
+
+        .radio-dot:after {
+            width: 12px;
+            height: 12px;
+            border-radius: 100%;
+            top: 14px;
+            left: 20px;
+        }
+
+        .buying-selling.active .buying-selling-word {
+            color: #fff;
+        }
+
+        .buying-selling.active .radio-dot:after {
+            background-image: linear-gradient(to right, #00B7B5 0%, #00B7B5 19%, #019392 60%, #04817F 100%);
+        }
+
+        .buying-selling.active .radio-dot:before {
+            background: #fff;
+            border-color: #699D17;
+        }
+
+        .buying-selling:hover .radio-dot:before {
+            border-color: #adadad;
+        }
+
+        .buying-selling.active:hover .radio-dot:before {
+            border-color: #699D17;
+        }
+
+
+        /* .buying-selling.active .radio-dot:after {
+                                                                                             background-image: linear-gradient(to right, #f78ca0 0%, #f9748f 19%, #fd868c 60%, #fe9a8b 100%);
+                                                                                            } */
+
+        /* dot */
+        .buying-selling:hover .radio-dot:after {
+            background-image: linear-gradient(to right, #00B7B5 0%, #00B7B5 19%, #019392 60%, #04817F 100%);
+        }
+
+        /* .buying-selling.active:hover .radio-dot:after {
+                                                                                             background-image: linear-gradient(to right, #f78ca0 0%, #f9748f 19%, #fd868c 60%, #fe9a8b 100%);
+
+                                                                                            } */
+
+        @media (max-width: 400px) {
+
+            .mobile-br {
+                display: none;
+            }
+
+            .buying-selling {
+                width: 49%;
+                padding: 10px;
+                position: relative;
+            }
+
+        }
     </style>
     <div class="content-wrapper">
         <!-- Content Header (Page header) -->
@@ -265,8 +264,8 @@
                                                 class="fa fa-search"></i></a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link majoo" id_dis="{{$id}}" id="pills-profile-tab" data-toggle="pill"
-                                            href="#majoo" role="tab" aria-controls="pills-profile"
+                                        <a class="nav-link majoo" id_dis="{{ $id }}" id="pills-profile-tab"
+                                            data-toggle="pill" href="#majoo" role="tab" aria-controls="pills-profile"
                                             aria-selected="false"><strong>STK</strong></a>
                                     </li>
                                     @foreach ($kategori as $k)
@@ -307,14 +306,12 @@
                             @php
                                 $tgl = date('Y-m-d');
                                 $id_lokasi = Session::get('id_lokasi');
-                                $sold_out = DB::table('tb_sold_out')
-                                    ->where('tgl', $tgl)
-                                    ->get();
+                                $sold_out = DB::table('tb_sold_out')->where('tgl', $tgl)->get();
                                 $id_menu_sold_out = [];
                                 foreach ($sold_out as $s) {
                                     $id_menu_sold_out[] = $s->id_menu;
                                 }
-                                
+
                                 $idl = [];
                                 $limit = DB::select("SELECT tb_menu.id_menu as id_menu FROM tb_menu
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         LEFT JOIN(SELECT SUM(qty) as jml_jual, tb_harga.id_menu FROM tb_order LEFT JOIN tb_harga ON tb_order.id_harga = tb_harga.id_harga WHERE tb_order.id_lokasi = $id_lokasi AND tb_order.tgl = '$tgl' AND tb_order.void = 0 GROUP BY tb_harga.id_menu) dt_order ON tb_menu.id_menu = dt_order.id_menu
@@ -342,13 +339,13 @@
 
                                         @foreach ($menu as $t)
                                             <div class="col-md-3">
-                                                <a href="" class="input_cart2" data-toggle="modal" data-target="#myModal"
-                                                    id_harga="{{ $t->id_harga }}" id_dis="{{ $id_dis }}">
+                                                <a href="" class="input_cart2" data-toggle="modal"
+                                                    data-target="#myModal" id_harga="{{ $t->id_harga }}"
+                                                    id_dis="{{ $id_dis }}">
                                                     <div class="card">
                                                         <div
                                                             style="background-color: rgba(0, 0, 0, 0.5); padding:5px 0 5px;">
-                                                            <h6 style="font-weight: bold; color:#fff;"
-                                                                class="text-center">
+                                                            <h6 style="font-weight: bold; color:#fff;" class="text-center">
                                                                 {{ ucwords(Str::lower($t->nm_menu)) }}
 
                                                             </h6>
@@ -369,8 +366,8 @@
                                 <div class="col-lg-12">
                                     <div class="card">
                                         <div class="card-body">
-                                            <input type="text" name="search_text" id_dis="{{$id}}" id="search_majoo"
-                                                class="form-control" placeholder="Cari Menu . . ." />
+                                            <input type="text" name="search_text" id_dis="{{ $id }}"
+                                                id="search_majoo" class="form-control" placeholder="Cari Menu . . ." />
                                         </div>
                                     </div>
                                 </div>
@@ -394,87 +391,33 @@
                                 <div class="card-body">
                                     <h4 class="text-center" style="font-weight: bold;">KERANJANG BELANJA</h4>
                                     <div class="row justify-content-center">
-                                    <div class="col-lg-2 col-2">
-                                        <div class="card " style="padding: 0.25rem; background-color: red; ">
-                                            <table>
-                                                <td align="center"><input type="radio" name="warna" id="merah"
-                                                        value="Merah" required></td>
-                                                <td><label for="merah"
-                                                        style="font-size: 10px;color: white">Merah</label></td>
-                                            </table>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-2 col-2">
-                                        <div class="card " style="padding: 0.25rem ;background-color: yellow;">
-                                            <table>
-                                                <td align="center"><input type="radio" name="warna" id="kuning"
-                                                        value="Kuning"></td>
-                                                <td><label for="kuning" style="font-size: 10px">Kuning</label></td>
-                                            </table>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-2 col-2">
-                                        <div class="card " style="padding: 0.25rem; background-color: green;">
-                                            <table>
-                                                <td align="center"><input type="radio" name="warna" id="hijau"
-                                                        value="Hijau"></td>
-                                                <td><label for="Hijau"
-                                                        style="font-size: 10px;color: white">Hijau</label></td>
-                                            </table>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-2 col-2">
-                                        <div class="card " style="padding: 0.25rem;background-color: blue;">
-                                            <table>
-                                                <td align="center"><input type="radio" name="warna" id="biru"
-                                                        value="Biru"></td>
-                                                <td><label for="biru" style="font-size: 10px; color: white">Biru</label>
-                                                </td>
-                                            </table>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="col-lg-2 col-2">
-                                        <div class="card " style="padding: 0.25rem">
-                                            <table>
-                                                <td align="center"><input type="radio" name="warna" id="putih"
-                                                        value="Putih"></td>
-                                                <td><label for="putih" style="font-size: 10px">Putih</label></td>
-                                            </table>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-2 col-2">
-                                        <div class="card " style="padding: 0.25rem;background-color: rgb(22, 177, 204);">
-                                            <table>
-                                                <td align="center"><input type="radio" name="warna" id="takeaway"
-                                                        value="Takeaway"></td>
-                                                <td><label for="takeaway" style="font-size: 10px;color: white">Takeaway</label></td>
-                                            </table>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-4">
-                                        <label for="">Server</label>
-                                        <select name="admin" class="form-control select2" required>
-                                            <option value="">Pilih Server</option>
-                                            <?php foreach($absen as $a): ?>
-                                            <?php if($admin == $a->nama): ?>
-                                            <option value="<?= $a->nama ?>" selected>
-                                                <?= $a->nama ?>
-                                            </option>
-                                            <?php else :?>
-                                            <option value="<?= $a->nama ?>">
-                                                <?= $a->nama ?>
-                                            </option>
-                                            <?php endif ?>
+                                        {{-- <div class="col-lg-4">
+                                            <label for="">Server</label>
+                                            <select name="admin" class="form-control select2" required>
+                                                <option value="">Pilih Server</option>
+                                                <?php foreach($absen as $a): ?>
+                                                <?php if($admin == $a->nama): ?>
+                                                <option value="<?= $a->nama ?>" selected>
+                                                    <?= $a->nama ?>
+                                                </option>
+                                                <?php else :?>
+                                                <option value="<?= $a->nama ?>">
+                                                    <?= $a->nama ?>
+                                                </option>
+                                                <?php endif ?>
 
-                                            <?php endforeach ?>
-                                        </select>
-                                    </div>
+                                                <?php endforeach ?>
+                                            </select>
+                                        </div> --}}
                                         <div class="col-lg-4">
-                                            <label for="">Meja</label>
-                                            <select name="meja" id="meja" class="form-control select2bs4">
+                                            <label for="">Id Meja</label>
+                                            <select name="meja" id="meja" class="form-control select2bs4" readonly>
 
                                             </select>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <label for="">No Meja</label>
+                                            <input type="number" name="no_meja" required class="form-control" value="1">
                                         </div>
                                         <div class="col-lg-4">
                                             <label for="">Orang</label>
@@ -502,8 +445,8 @@
     </div>
 
     <form method="get" class="input_cart">
-        <div class="modal fade modal-cart" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-            aria-hidden="true">
+        <div class="modal fade modal-cart" id="myModal" tabindex="-1" role="dialog"
+            aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-sm" role="document">
                 <div id="harga"></div>
             </div>
@@ -511,8 +454,8 @@
         </div>
     </form>
     <form method="get" class="input_cart_majo">
-        <div class="modal fade modal-cart" id="modal_majo" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-            aria-hidden="true">
+        <div class="modal fade modal-cart" id="modal_majo" tabindex="-1" role="dialog"
+            aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
 
@@ -530,13 +473,13 @@
                         <div id="harga_majoo">
 
                         </div>
-                        <hr>
+                        {{-- <hr>
                         <h5 style="font-size: 1rem;">DIJUAL OLEH</h5>
 
                         <div class="buying-selling-group" id="buying-selling-group" data-toggle="buttons">
 
 
-                        </div>
+                        </div> --}}
 
                         <button type="submit" class="btn float-right  btn-costume"> SIMPAN</button>
 
@@ -662,8 +605,7 @@
                 var id_menu = $("#id_menu").val();
                 var req = $("#req").val();
                 var tipe = $("#tipe").val();
-                var dis = "{{request()->get('dis')}}";
-
+                var dis = "{{ request()->get('dis') }}";
                 $.ajax({
                     url: "{{ route('cart') }}",
                     method: 'GET',
@@ -782,7 +724,7 @@
         });
     </script>
     <script>
-        $(document).ready(function(){
+        $(document).ready(function() {
             var dis = $("#dis").val()
             $(document).on('click', '.majoo', function(event) {
                 var id_dis = $(this).attr("id_dis");
@@ -802,52 +744,53 @@
                 }
 
             });
-            function load_majo(keyword) {
-                    $.ajax({
-                        method: "GET",
-                        url: "{{ route('search_majo') }}",
-                        data: {
-                            keyword: keyword,
-                            dis: dis
 
-                        },
-                        success: function(hasil) {
-                            $('#result_majo').html(hasil);
-                        }
-                    });
-                }
+            function load_majo(keyword) {
+                $.ajax({
+                    method: "GET",
+                    url: "{{ route('search_majo') }}",
+                    data: {
+                        keyword: keyword,
+                        dis: dis
+
+                    },
+                    success: function(hasil) {
+                        $('#result_majo').html(hasil);
+                    }
+                });
+            }
             $(document).on('click', '.stok_habis', function(event) {
                 Swal.fire({
-                  toast: true,
-                  position: 'top-end',
-                  showConfirmButton: false,
-                  timer: 3000,
-                  icon: 'error',
-                  title: ' Stok habis'
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    icon: 'error',
+                    title: ' Stok habis'
                 });
             });
 
             $(document).on('click', '.input_cart3', function() {
-                    var id_produk = $(this).attr("id_produk");
+                var id_produk = $(this).attr("id_produk");
 
 
-                    // console.log(id_harga);
-                    $.ajax({
-                        url: "{{ route('item_menu_majoo') }}",
-                        method: "GET",
-                        data: {
-                            id_produk: id_produk,
-                        },
-                        success: function(data) {
-                            $('#harga_majoo').html(data);
-                            // alert(data);
-                        }
-                    });
+                // console.log(id_harga);
+                $.ajax({
+                    url: "{{ route('item_menu_majoo') }}",
+                    method: "GET",
+                    data: {
+                        id_produk: id_produk,
+                    },
+                    success: function(data) {
+                        $('#harga_majoo').html(data);
+                        // alert(data);
+                    }
+                });
 
-                    $.ajax({
-                        url: "{{route('get_karyawan_majo')}}",
-                        method: "GET",
-                        success: function(data) {
+                $.ajax({
+                    url: "{{ route('get_karyawan_majo') }}",
+                    method: "GET",
+                    success: function(data) {
                         $('.buying-selling-group').html(data);
 
                     }
@@ -857,68 +800,68 @@
 
             load_cart();
 
-                function load_cart() {
-                    var dis2 = $("#dis2").val();
-                    $.ajax({
-                        method: "GET",
-                        url: "{{ route('keranjang') }}?dis=" + dis2,
-                        success: function(hasil) {
-                            $('#keranjang').html(hasil);
-                        }
-                    });
-                }
+            function load_cart() {
+                var dis2 = $("#dis2").val();
+                $.ajax({
+                    method: "GET",
+                    url: "{{ route('keranjang') }}?dis=" + dis2,
+                    success: function(hasil) {
+                        $('#keranjang').html(hasil);
+                    }
+                });
+            }
 
 
 
             $(document).on('submit', '.input_cart_majo', function(event) {
-              event.preventDefault();
-              var id = $("#cart_id").val();
-              var jumlah = $("#cart_jumlah").val();
-              var satuan = $("#cart_satuan").val();
-              var catatan = $("#cart_catatan").val();
+                event.preventDefault();
+                var id = $("#cart_id").val();
+                var jumlah = $("#cart_jumlah").val();
+                var satuan = $("#cart_satuan").val();
+                var catatan = $("#cart_catatan").val();
                 //   var kd_karyawan = $('.cart_id_karyawan').val();
                 var kode = []
-              var kd_karyawan = $('input[name^="kd_karyawan"]:checked').each(function() {
+                var kd_karyawan = $('input[name^="kd_karyawan"]:checked').each(function() {
                     kode.push($(this).val())
 
                 });
-              $.ajax({
-                url: "{{route('cart_majoo')}}",
-                method: 'get',
-                data:{
-                    id : id,
-                    jumlah : jumlah,
-                    satuan : satuan,
-                    catatan : catatan,
-                    kd_karyawan : kode,
-                },
-                success: function(data) {
-                  if (data == 'kosong') {
-                    Swal.fire({
-                      toast: true,
-                      position: 'top-end',
-                      showConfirmButton: false,
-                      timer: 3000,
-                      icon: 'error',
-                      title: 'Stok tidak cukup'
-                    });
-                  }else if (data == 'null'){
-                    Swal.fire({
-                      toast: true,
-                      position: 'top-end',
-                      showConfirmButton: false,
-                      timer: 3000,
-                      icon: 'error',
-                      title: 'Data penjual belum diisi'
-                    });
-                  }else{
-                    $('#cart_session').html(data);
-                    $('.modal-cart').modal('hide');
-                    load_cart();
-                  }
+                $.ajax({
+                    url: "{{ route('cart_majoo') }}",
+                    method: 'get',
+                    data: {
+                        id: id,
+                        jumlah: jumlah,
+                        satuan: satuan,
+                        catatan: catatan,
+                        kd_karyawan: kode,
+                    },
+                    success: function(data) {
+                        if (data == 'kosong') {
+                            Swal.fire({
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 3000,
+                                icon: 'error',
+                                title: 'Stok tidak cukup'
+                            });
+                        } else if (data == 'null') {
+                            Swal.fire({
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 3000,
+                                icon: 'error',
+                                title: 'Data penjual belum diisi'
+                            });
+                        } else {
+                            $('#cart_session').html(data);
+                            $('.modal-cart').modal('hide');
+                            load_cart();
+                        }
 
-                }
-              });
+                    }
+                });
             });
         })
     </script>

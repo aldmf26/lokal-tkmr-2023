@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Jenssegers\Agent\Agent;
+use Illuminate\Support\Facades\Http;
 
 class AbsenController extends Controller
 {
@@ -151,5 +152,45 @@ class AbsenController extends Controller
         ];
 
         return view('absen.excel',$data);
+    }
+
+    public function print_absen2(Request $request)
+    {
+        if (empty($request->tgl1)) {
+            $tgl1 = date('Y-m-01');
+            $tgl2 = date('Y-m-d');
+        } else {
+            $tgl1 = $request->tgl1;
+            $tgl2 = $request->tgl2;
+        }
+        $karyawan = Http::get("https://ptagafood.com/api/absenBaru?tgl1=$tgl1&tgl2=$tgl2");
+        $dt_karyawan = json_decode($karyawan, TRUE);
+
+        $absen = Http::get("https://ptagafood.com/api/absenPrint?tgl1=$tgl1&tgl2=$tgl2",);
+        $dt_absen = json_decode($absen, true);
+
+        DB::table('absennew')->whereBetween('tgl', [$tgl1, $tgl2])->delete();
+
+        foreach ($dt_absen['data']['absen'] as $a) {
+            $data = [
+                'karyawan_id' => $a['karyawan_id'],
+                'tgl' => $a['tgl'],
+                'shift_id' => $a['shift_id'],
+            ];
+            DB::table('absennew')->insert($data);
+        }
+
+        $data = [
+            'title' => 'Absen',
+            'tgl1' => $tgl1,
+            'tgl2' => $tgl2,
+            'logout' => $request->session()->get('logout'),
+            'karyawan' => $dt_karyawan['data']['karyawan'],
+            'dates' => $dt_karyawan['data']['dates'],
+            'tahun' => empty($request->tgl1) ? date('Y') : date('Y', strtotime($request->tgl1)),
+            'bulan' => empty($request->tgl1) ? date('m') : date('m', strtotime($request->tgl1)),
+        ];
+
+        return view('absen.index2', $data);
     }
 }

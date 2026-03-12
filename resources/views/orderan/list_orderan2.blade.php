@@ -45,7 +45,7 @@
 
                 <td>{{ $no }}</td>
                 <td style="white-space: nowrap">
-                    <?= $o->nm_meja ?>
+                    Meja <?= $o->nm_meja ?>
                 </td>
                 <td>
                     <?= $o->nm_menu ?>
@@ -272,7 +272,7 @@
         {{-- promo bank --}}
         @php
             $klasifikasiPromoBank = DB::table('akun_pembayaran')
-                ->where('id_klasifikasi', 5)
+                ->where([['id_klasifikasi', 5],['nonaktif', 'T']])
                 ->get();
         @endphp
         <tr>
@@ -294,7 +294,7 @@
                         value="0" name="pembayaranPromo[]" class="form-control pembayaranPromo">
                 </td>
                 <td style="white-space: nowrap;">
-                    <a class="btn btn-info btn-sm cek_promo"><i class="fas fa-sync-alt"></i> cek</a>
+                    <a class="btn btn-info btn-sm cek_promo" id_akun="{{ $a->id_akun_pembayaran }}"><i class="fas fa-sync-alt"></i> cek</a>
                     <a class="btn btn-danger btn-sm batal_promo"><i class="fas fa-undo-alt"></i> batal</a>
                 </td>
                 {{-- <td class="diskonPromo"></td> --}}
@@ -401,16 +401,28 @@
             </td>
             <td></td>
         </tr>
+        <?php
+                $x = round($total);
+                $y = number_format(substr($x, -3), 0);
+
+                if ($y == '000') {
+                    $z = $x;
+                    $round = '000';
+                } elseif ($y < 1000) {
+                    $z= $x - $y + 1000;
+                    $round = 1000 - $y;
+                }
+                ?>
         <tr>
             <td colspan="2" style="font-weight: bold;">Total </td>
             <td></td>
             <td></td>
             <td>-</td>
             <td width="20%" class="ttl_ttp_sebelum" style="font-weight: bold;">
-                <?= number_format($c, 0) ?>
+                <?= number_format($z, 0) ?>
             </td>
             <td>
-                <input type="hidden" id="hidden_ttl_ttp_sebelum" value=" <?= number_format($c, 0) ?>">
+                <input type="hidden" id="hidden_ttl_ttp_sebelum" value=" <?= number_format($z, 0) ?>">
             </td>
         </tr>
 
@@ -467,13 +479,13 @@
             <td width="20%"></td>
             <td width="20%">
 
-                <input type="number" id="total1" name="total_dibayar" class="form-control" value="<?= $f ?>"
+                <input type="number" id="total1" name="total_dibayar" class="form-control" value="<?= $z ?>"
                     readonly>
-                <input type="hidden" id="totalTetap" name="totalTetap" class="form-control" value="<?= $f ?>"
+                <input type="hidden" id="totalTetap" name="totalTetap" class="form-control" value="<?= $z ?>"
                     readonly>
-                <input type="hidden" id="tvoucher" name="tvoucher" class="form-control" value="<?= $f ?>"
+                <input type="hidden" id="tvoucher" name="tvoucher" class="form-control" value="<?= $z ?>"
                     readonly>
-                <input type="hidden" id="total2" name="total_orderan" class="form-control" value="<?= $f ?>"
+                <input type="hidden" id="total2" name="total_orderan" class="form-control" value="<?= $z ?>"
                     readonly>
 
 

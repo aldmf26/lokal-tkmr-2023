@@ -39,7 +39,8 @@ foreach ($masak as $k) : ?>
 
 
     <!-- Main content -->
-    <div class="content">
+    <div class="content {{Auth::user()->nama == 'Dea' || Auth::user()->nama == 'dheaAdmin'
+ || Auth::user()->id_posisi == 1 ? '' : 'd-none'}}">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-12">

@@ -62,12 +62,45 @@
 @section('script')
     <script>
         $(document).ready(function() {
-            $(document).on('keyup', '.pembayaranPromo', function() {
+            // $(document).on('keyup', '.pembayaranPromo', function() {
+            //     var total_pembayaran = 0;
+            //     $(".pembayaranPromo").each(function() {
+            //         total_pembayaran += parseFloat($(this).val());
+            //     });
+
+            //     var id_akun = $(this).attr('id_akun')
+            //     var ttl_sub = $('#ttl_hrg').val();
+            //     var ttl_majo = $('#ttl_majo').val();
+            //     var sub_total = parseFloat(ttl_sub) + parseFloat(ttl_majo)
+            //     $.ajax({
+            //         type: "GET",
+            //         url: "{{ route('getPromoBank') }}",
+            //         data: {
+            //             id_akun: id_akun,
+            //             ttl_sub: sub_total,
+            //             total_pembayaran: total_pembayaran,
+            //         },
+            //         dataType: "json",
+            //         success: function(r) {
+            //             console.log(
+            //                 `diskon = ${r.jumlah_diskon}  bayar = ${r.ttl_setelah_diskon}`)
+            //             var jumlah_diskon = r.jumlah_diskon.toFixed(0).replace(
+            //                 /(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
+            //             $('.diskonPromo').val(`${jumlah_diskon} (${r.persentase_diskon}%)`)
+            //             var diskon = parseFloat(r.jumlah_diskon)
+            //             $('.diskonPromoInt').val(diskon)
+
+            //             // $("#ttl_hrg").val(r.);
+            //         }
+            //     });
+            // })
+
+            $(document).on('click', '.cek_promo', function() {
                 var total_pembayaran = 0;
                 $(".pembayaranPromo").each(function() {
                     total_pembayaran += parseFloat($(this).val());
                 });
-
+                
                 var id_akun = $(this).attr('id_akun')
                 var ttl_sub = $('#ttl_hrg').val();
                 var ttl_majo = $('#ttl_majo').val();
@@ -84,44 +117,42 @@
                     success: function(r) {
                         console.log(
                             `diskon = ${r.jumlah_diskon}  bayar = ${r.ttl_setelah_diskon}`)
-                        var jumlah_diskon = r.jumlah_diskon.toFixed(0).replace(
+                        var jumlah_diskon = Number(r.jumlah_diskon).toFixed(0).replace(
                             /(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
                         $('.diskonPromo').val(`${jumlah_diskon} (${r.persentase_diskon}%)`)
                         var diskon = parseFloat(r.jumlah_diskon)
                         $('.diskonPromoInt').val(diskon)
 
-                        // $("#ttl_hrg").val(r.);
+                        $('.pembayaranTr').addClass('d-none');
+                        var diskonPromo = $('.diskonPromoInt').val()
+                        var ttl_sub = $('#ttl_hrg2').val();
+                        var ttl_majo = $('#ttl_majo').val();
+                        var diskonVoucher = $('#rupiah').val();
+                        var sub_total = parseFloat(ttl_sub) + parseFloat(ttl_majo) - parseFloat(
+                            diskonVoucher)
+                        var ttl_promoRound = parseFloat(sub_total) - parseFloat(diskonPromo)
+                        // var ttl_promoRound = Math.ceil(ttl_promo / 1000) * 1000;
+                        $('#diskonPromoInfo').val(ttl_promoRound);
+
+                        // hitung
+                        var service = ttl_promoRound * 0.07
+                        var tax = (ttl_promoRound + service) * 0.1
+
+                        $('.servis').html(service);
+                        $('.tax').html(tax);
+                        $('.servis1').val(service);
+                        $('.tax1').val(tax);
+
+                        var grand_total = ttl_promoRound + service + tax
+                        var grand_totalRound = Math.ceil(grand_total / 1000) * 1000;
+                        $('#total1').val(grand_totalRound);
+                        $('#totalTetap').val(grand_totalRound);
+                        $('.ttl_ttp_sebelum').text(grand_totalRound);
+
+                        var round = parseFloat(grand_totalRound) - parseFloat(grand_total)
+                        $('.round').val(round);
                     }
                 });
-            })
-
-            $(document).on('click', '.cek_promo', function() {
-                $('.pembayaranTr').addClass('d-none');
-                var diskonPromo = $('.diskonPromoInt').val()
-                var ttl_sub = $('#ttl_hrg2').val();
-                var ttl_majo = $('#ttl_majo').val();
-                var diskonVoucher = $('#rupiah').val();
-                var sub_total = parseFloat(ttl_sub) + parseFloat(ttl_majo) - parseFloat(diskonVoucher)
-                var ttl_promoRound = parseFloat(sub_total) - parseFloat(diskonPromo)
-                // var ttl_promoRound = Math.ceil(ttl_promo / 1000) * 1000;
-                $('#diskonPromoInfo').val(ttl_promoRound);
-
-                // hitung
-                var service = ttl_promoRound * 0.07
-                var tax = (ttl_promoRound + service) * 0.1
-                
-                $('.servis').html(service);
-                $('.tax').html(tax);
-                $('.servis1').val(service);
-                $('.tax1').val(tax);
-
-                var grand_total = ttl_promoRound + service + tax
-                var grand_totalRound = Math.ceil(grand_total / 1000) * 1000;
-                $('#total1').val(grand_totalRound);
-                $('#totalTetap').val(grand_totalRound);
-
-                var round = parseFloat(grand_totalRound) - parseFloat(grand_total)
-                $('.round').val(round);
 
             })
             $(document).on('click', '.batal_promo', function() {
@@ -263,13 +294,15 @@
                         type: "POST",
                         url: "{{ route('save_transaksi') }}",
                         data: $(".form_save").serialize(),
-                        dataType:'json',
+                        dataType: 'json',
                         success: function(r) {
-                            if(r.code === 'error') {
+                            if (r.code === 'error') {
                                 alert('Ada yang error')
-                                document.location.href = "{{ route('list_orderan') }}?no="+r.nota
+                                document.location.href = "{{ route('list_orderan') }}?no=" + r
+                                    .nota
                             } else {
-                                document.location.href = "{{ route('pembayaran2') }}?no=" + r.nota
+                                document.location.href = "{{ route('pembayaran2') }}?no=" + r
+                                    .nota
                             }
                         }
                     });
@@ -632,7 +665,7 @@
                                         var total = parseInt($("#total1").val());
                                         var bayar = total_pembayaran;
 
-    
+
                                         if (total <= bayar) {
                                             $('#btn_bayar').removeAttr('disabled');
                                         } else {

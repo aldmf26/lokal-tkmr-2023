@@ -20,7 +20,7 @@
         );
       
     $pesan_2 =   DB::table('tb_order as a')
-                ->select(DB::raw('a.*, sum(a.qty) as sum_qty ,  b.nm_meja'))
+                ->select(DB::raw('a.*, sum(a.qty) as sum_qty ,  a.no_meja as nm_meja'))
                 ->leftJoin('tb_meja as b', 'b.id_meja', '=', 'a.id_meja')
                 ->leftJoin('view_menu as c', 'c.id_harga', '=', 'a.id_harga')
                 ->where('a.no_order', $no_order)

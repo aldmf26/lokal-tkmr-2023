@@ -65,8 +65,8 @@ use App\Http\Controllers\viewKomServerController;
 // });
 Route::get('/order', [OrderController::class, 'index'])->name('order');
 
-Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/loginTakemori', [LoginTakemoriController::class, 'index'])->name('loginTakemori');
+Route::get('/homehome', [HomeController::class, 'index'])->name('home');
+Route::get('/', [LoginTakemoriController::class, 'index'])->name('loginTakemori');
 Route::get('/loginSoondobu', [LoginSoondobuController::class, 'index'])->name('loginSoondobu');
 Route::get('/loginAdministrator', [LoginAdministratorController::class, 'index'])->name('loginAdministrator');
 Route::post('/aksiLoginAdm', [LoginAdministratorController::class, 'aksiLoginAdm'])->name('aksiLoginAdm');
@@ -231,6 +231,7 @@ Route::post('/absenKoki', [AddKokiController::class, 'absenKoki'])->name('absenK
 Route::post('/delAbsKoki', [AddKokiController::class, 'delAbsKoki'])->name('delAbsKoki')->middleware('auth');
 
 Route::get('/absen', [AbsenController::class, 'index'])->name('absen')->middleware('auth');
+Route::get('/print_absen2', [AbsenController::class, 'print_absen2'])->name('print_absen2')->middleware('auth');
 Route::get('/tabelAbsenM', [AbsenController::class, 'tabelAbsenM'])->name('tabelAbsenM')->middleware('auth');
 Route::post('/addAbsenM', [AbsenController::class, 'addAbsenM'])->name('addAbsenM')->middleware('auth');
 Route::post('/updateAbsenM', [AbsenController::class, 'updateAbsenM'])->name('updateAbsenM')->middleware('auth');
@@ -302,7 +303,7 @@ Route::get('/waitress', [MejaController::class, 'waitress'])->name('waitress');
 Route::post('/pilih_waitress', [MejaController::class, 'pilih_waitress'])->name('pilih_waitress');
 Route::post('/un_waitress', [MejaController::class, 'un_waitress'])->name('un_waitress');
 Route::post('/meja_selesai', [MejaController::class, 'meja_selesai'])->name('meja_selesai');
-Route::get('/save_pesanan', [MejaController::class, 'save_pesanan'])->name('save_pesanan_new');
+Route::post('/save_pesanan', [MejaController::class, 'save_pesanan'])->name('save_pesanan_new');
 Route::get('/tambah_pesanan', [MejaController::class, 'tambah_pesanan'])->name('tambah_pesanan');
 Route::get('/get_harga', [MejaController::class, 'get_harga'])->name('get_harga');
 Route::get('/bill', [MejaController::class, 'bill'])->name('billing');
@@ -352,6 +353,7 @@ Route::get('/head_cancel', [HeadController::class, 'head_cancel'])->name('head_c
 Route::get('/distribusi3', [HeadController::class, 'distribusi'])->name('distribusi3');
 Route::get('/cancel', [HeadController::class, 'cancel'])->name('cancel');
 Route::get('/view1jam', [HeadController::class, 'view1jam'])->name('view1jam');
+Route::get('/load_menu_selesai', [HeadController::class, 'load_menu_selesai'])->name('load_menu_selesai');
 
 Route::post('/selesai_check', [HeadController::class, 'selesai_check'])->name('selesai_check');
 
@@ -430,6 +432,7 @@ Route::get('/save_pesanan_majo', [MejaController::class, 'save_pesanan_majo'])->
 Route::get('/dataOrderan_majo', [dataOrderanController::class, 'dataOrderan_majo'])->name('dataOrderan_majo');
 Route::get('/hapus_majo', [dataOrderanController::class, 'hapus_majo'])->name('hapus_majo');
 Route::get('/laporan_penjualan_majo', [dataOrderanController::class, 'laporan_penjualan_majo'])->name('laporan_penjualan_majo');
+Route::get('/load_waitress_selesai', [MejaController::class, 'load_waitress_selesai'])->name('load_waitress_selesai');
 
 // view komisi server
 Route::middleware(['auth'])->group(function () {

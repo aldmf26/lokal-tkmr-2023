@@ -1,19 +1,11 @@
 @extends('template.master')
 @section('content')
-    <!-- Content Wrapper. Contains page content -->
     <style>
-        /* .icon-menu:hover{
-                                                                                        background: #C8BED8;
-                                                                                        border-radius: 50px;
-                                                                                    } */
-
         h6 {
             color: #155592;
             font-weight: bold;
         }
 
-    </style>
-    <style>
         .nav-pills .nav-link.active {
             color: #fff;
             background-color: #00A549;
@@ -103,7 +95,6 @@
             line-height: 18px;
             border-radius: 50%;
         }
-
     </style>
     <div class="content-wrapper">
         <!-- Content Header (Page header) -->
@@ -158,14 +149,13 @@
         .modal-lg-max {
             max-width: 900px;
         }
+
         .modal-lg-max2 {
             max-width: 1200px;
         }
-
     </style>
     <form>
-        <div class="modal fade" id="summary" role="dialog"
-            aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal fade" id="summary" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg-max2" role="document">
                 <div class="modal-content ">
                     <div class="modal-header btn-costume">
@@ -175,57 +165,23 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                       <div id="badan"></div>
-    
+                        <div id="badan"></div>
+
                     </div>
-    
+
                 </div>
             </div>
         </div>
     </form>
 @endsection
 @section('script')
-  
     <script>
         $(document).ready(function() {
-        //     function loadSearch(s){
-        //         $.ajax({
-        //             type: "GET",
-        //             url: "{{route('getSearchHead')}}?s="+s,
-        //             success: function (data) {
-        //                 // $("#tugas_head").hide()
-        //                 // $("#searchTugas").show()
-        //                $("#tugas_head").html(data)
-        //             }
-        //         });
-                
-        //     }
-        //     $(document).on('click', '#btnSearch', function(e){
-        //         e.preventDefault()
-        //         var s = $("#searchHead").val()
-        
-        //         if(s == '') {
-        //             load_tugas();
-        //         } else {
-        //             loadSearch(s)
-        //         }
-        //     })
-        //     $("#tugas_head").show()
 
             load_tugas();
-            function loadView1Jam() {
-                $("#badan").load("{{route('view1jam')}}", "data", function (response, status, request) {
-                    this; // dom element
-                        $('#tableJam').DataTable({
-                            "bSort": true,
-                            // "scrollX": true,
-                            "paging": true,
-                            "stateSave": true,
-                            "scrollCollapse": true
-                        });
-                });
-            }
-           loadView1Jam()
+            load_distribusi();
+
+
             function load_tugas() {
                 var id_distribusi = $("#id_distribusi").val();
                 // var jumlah1 = $("#jumlah").val();
@@ -234,135 +190,21 @@
                     method: "GET",
                     url: "{{ route('get_head') }}?id=" + id_distribusi,
                     dataType: "html",
+                    beforeSend: function() {
+                        $('#tugas_head').html('loading...');
+                    },
                     success: function(hasil) {
                         $('#tugas_head').html(hasil);
                     }
                 });
 
             }
-
-            $(document).on('click', '.koki1', function(event) {
+            $(document).on('click', '.selesai_majo', function(event) {
                 var kode = $(this).attr('kode');
-                var kry = $(this).attr('kry');
-                var id_meja = $(this).attr('id_meja');
-                var s = $("#searchHead").val();
-                var id_distribusi = $("#id_distribusi").val();
+                var no_order = $(this).attr('no_order');
                 $.ajax({
                     type: "POST",
-                    url: "<?= route('koki1') ?>",
-                    data: {
-                        kode: kode,
-                        kry: kry,
-                        '_token': "{{ csrf_token() }}"
-                    },
-                    success: function(response) {
-                        Swal.fire({
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 3000,
-                            icon: 'success',
-                            title: 'Koki 1 berhasil ditambahkan'
-                        });
-                        
-                        $.ajax({
-                            method: "GET",
-                            url: "{{ route('head2') }}?id_meja=" + id_meja,
-                            dataType: "html",
-                            success: function(hasil) {
-                                $('.addmeja' + id_meja).html(hasil);
-                                $('.meja' + id_meja ).remove();
-                                $('.meja' + id_meja ).hide();
-                            }
-                        });
-                        
-                    }
-                });
-            });
-
-
-            $(document).on('click', '.koki2', function(event) {
-                var kode = $(this).attr('kode');
-                var kry = $(this).attr('kry');
-                var s = $("#searchHead").val();
-                var id_meja = $(this).attr('id_meja');
-                $.ajax({
-                    type: "POST",
-                    url: "<?= route('koki2') ?>",
-                    data: {
-                        kode: kode,
-                        kry: kry,
-                        '_token': "{{ csrf_token() }}"
-                    },
-                    success: function(response) {
-                        Swal.fire({
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 3000,
-                            icon: 'success',
-                            title: 'Koki 2 berhasil ditambahkan'
-                        });
-                        
-                        $.ajax({
-                            method: "GET",
-                            url: "{{ route('head2') }}?id_meja=" + id_meja,
-                            dataType: "html",
-                            success: function(hasil) {
-                                $('.addmeja' + id_meja).html(hasil);
-                                $('.meja' + id_meja ).remove();
-                                $('.meja' + id_meja ).hide();
-                            }
-                        });
-                        
-                    }
-                });
-            });
-
-            $(document).on('click', '.koki3', function(event) {
-                var kode = $(this).attr('kode');
-                var kry = $(this).attr('kry');
-                var s = $("#searchHead").val();
-                var id_meja = $(this).attr('id_meja');
-                $.ajax({
-                    type: "POST",
-                    url: "<?= route('koki3') ?>",
-                    data: {
-                        kode: kode,
-                        kry: kry,
-                        '_token': "{{ csrf_token() }}"
-                    },
-                    success: function(response) {
-                        Swal.fire({
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 3000,
-                            icon: 'success',
-                            title: 'Koki 3 berhasil ditambahkan'
-                        });
-                        
-                        $.ajax({
-                            method: "GET",
-                            url: "{{ route('head2') }}?id_meja=" + id_meja,
-                            dataType: "html",
-                            success: function(hasil) {
-                                $('.addmeja' + id_meja).html(hasil);
-                                $('.meja' + id_meja ).remove();
-                                $('.meja' + id_meja ).hide();
-                            }
-                        });
-                    }
-                });
-            });
-
-            $(document).on('click', '.un_koki1', function(event) {
-                var kode = $(this).attr('kode');
-                var s = $("#searchHead").val();
-                var id_meja = $(this).attr('id_meja');
-                $.ajax({
-                    type: "POST",
-                    url: "<?= route('un_koki1') ?>",
+                    url: "{{ route('meja_selesai_majo') }}",
                     data: {
                         kode: kode,
                         '_token': "{{ csrf_token() }}"
@@ -374,87 +216,9 @@
                             showConfirmButton: false,
                             timer: 3000,
                             icon: 'success',
-                            title: 'Koki 1 dibatalkan'
+                            title: 'Makanan telah selesai'
                         });
-                       
-                        $.ajax({
-                            method: "GET",
-                            url: "{{ route('head2') }}?id_meja=" + id_meja,
-                            dataType: "html",
-                            success: function(hasil) {
-                                $('.addmeja' + id_meja).html(hasil);
-                                $('.meja' + id_meja ).remove();
-                                $('.meja' + id_meja ).hide();
-                            }
-                        });
-                    }
-                });
-            });
-            $(document).on('click', '.un_koki2', function(event) {
-                var kode = $(this).attr('kode');
-                var s = $("#searchHead").val();
-                var id_meja = $(this).attr('id_meja');
-                $.ajax({
-                    type: "POST",
-                    url: "<?= route('un_koki2') ?>",
-                    data: {
-                        kode: kode,
-                        '_token': "{{ csrf_token() }}"
-                    },
-                    success: function(response) {
-                        Swal.fire({
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 3000,
-                            icon: 'success',
-                            title: 'Koki 2 dibatalkan'
-                        });
-                        
-                        $.ajax({
-                            method: "GET",
-                            url: "{{ route('head2') }}?id_meja=" + id_meja,
-                            dataType: "html",
-                            success: function(hasil) {
-                                $('.addmeja' + id_meja).html(hasil);
-                                $('.meja' + id_meja ).remove();
-                                $('.meja' + id_meja ).hide();
-                            }
-                        });
-                    }
-                });
-            });
-            $(document).on('click', '.un_koki3', function(event) {
-                var kode = $(this).attr('kode');
-                var s = $("#searchHead").val();
-                var id_meja = $(this).attr('id_meja');
-                $.ajax({
-                    type: "POST",
-                    url: "<?= route('un_koki3') ?>",
-                    data: {
-                        kode: kode,
-                        '_token': "{{ csrf_token() }}"
-                    },
-                    success: function(response) {
-                        Swal.fire({
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 3000,
-                            icon: 'success',
-                            title: 'Koki 3 dibatalkan'
-                        });
-                        
-                        $.ajax({
-                            method: "GET",
-                            url: "{{ route('head2') }}?id_meja=" + id_meja,
-                            dataType: "html",
-                            success: function(hasil) {
-                                $('.addmeja' + id_meja).html(hasil);
-                                $('.meja' + id_meja ).remove();
-                                $('.meja' + id_meja ).hide();
-                            }
-                        });
+                        load_tugas();
                     }
                 });
             });
@@ -466,6 +230,7 @@
                 $.ajax({
                     type: "GET",
                     url: "<?= route('head_selesei') ?>?kode=" + kode,
+
                     success: function(response) {
                         Swal.fire({
                             toast: true,
@@ -475,15 +240,18 @@
                             icon: 'success',
                             title: 'Makanan telah selesai'
                         });
-                        
+
                         $.ajax({
                             method: "GET",
-                            url: "{{ route('head2') }}?id_meja=" + id_meja,
+                            url: "{{ route('head2') }}",
+                            data: {
+                                id_meja: id_meja
+                            },
                             dataType: "html",
                             success: function(hasil) {
                                 $('.addmeja' + id_meja).html(hasil);
-                                $('.meja' + id_meja ).remove();
-                                $('.meja' + id_meja ).hide();
+                                $('.meja' + id_meja).remove();
+                                $('.meja' + id_meja).hide();
                             }
                         });
                     }
@@ -496,7 +264,7 @@
                 var id_meja = $(this).attr('id_meja');
                 $.ajax({
                     type: "GET",
-                    url: "<?= route('head_cancel') ?>?kode="+kode,
+                    url: "<?= route('head_cancel') ?>?kode=" + kode,
                     success: function(response) {
                         Swal.fire({
                             toast: true,
@@ -506,38 +274,26 @@
                             icon: 'info',
                             title: 'Cancel orderan'
                         });
+
                         $.ajax({
                             method: "GET",
                             url: "{{ route('head2') }}?id_meja=" + id_meja,
                             dataType: "html",
+                            beforeSend: function() {
+                                $('.addmeja' + id_meja).html('loading...');
+                            },
                             success: function(hasil) {
                                 $('.addmeja' + id_meja).html(hasil);
-                                $('.meja' + id_meja ).remove();
-                                $('.meja' + id_meja ).hide();
+                                $('.load_menu_s' + id_meja).html('');
+                                $('.meja' + id_meja).remove();
+                                $('.hilang' + id_meja).hide();
+                                $('.muncul' + id_meja).show();
                             }
                         });
-                        
+
                     }
                 });
             });
-            
-            $(document).on('click', '.gagal', function(event) {
-                var s = $("#searchHead").val();
-                Swal.fire({
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 3000,
-                    icon: 'error',
-                    title: 'Koki belum di pilih'
-                });
-                load_tugas();
-            });
-
-
-
-
-            load_distribusi();
 
 
             function load_distribusi() {
@@ -556,26 +312,42 @@
                     });
 
             }
-            
+
 
             $(document).on('click', '.muncul', function(event) {
                 var id_meja = $(this).attr('id_meja');
-                $(".hide" + id_meja).addClass( "header" );
-                $(".muncul" + id_meja).addClass('sembunyi');
-                $(".muncul" + id_meja).removeClass('muncul');
-                
+                var no_order = $(this).attr('no_order');
+                $.ajax({
+                    type: "get",
+                    url: "{{ route('load_menu_selesai') }}",
+                    data: {
+                        id_meja: id_meja,
+                        no_order: no_order
+                    },
+                    beforeSend: function() {
+                        $('.load_menu_s' + id_meja).html('loading...');
+                    },
+                    success: function(r) {
+                        $('.load_menu_s' + id_meja).html(r);
+                        $('.muncul' + id_meja).hide();
+                        $('.hilang' + id_meja).show();
+                    }
+                });
+
+
             });
-            $(document).on('click', '.sembunyi', function(event) {
+            $(document).on('click', '.hilang', function(event) {
                 var id_meja = $(this).attr('id_meja');
-                $(".hide" + id_meja).removeClass( "header" );
-                $(".sembunyi" + id_meja).addClass('muncul');
-                $(".sembunyi" + id_meja).removeClass('sembunyi');
-                
+
+                // Sembunyikan data
+                $('.load_menu_s' + id_meja).html('');
+
+
+                // Ubah visibilitas tombol
+                $('.hilang' + id_meja).hide();
+                $('.muncul' + id_meja).show();
             });
-
         });
-
-
     </script>
     <script>
         function selection() {
@@ -588,7 +360,7 @@
         }
     </script>
 
-    <script>
+    {{-- <script>
         $(document).ready(function() {
             var ua = navigator.userAgent,
                 event = (ua.match(/iPad/i)) ? "touchstart" : "click";
@@ -598,8 +370,8 @@
                         return this.style.display === 'table-row' ? 'none' : 'table-row';
                     });
                 });
-                
+
             }
         })
-    </script>
+    </script> --}}
 @endsection

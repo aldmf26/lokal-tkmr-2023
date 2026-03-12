@@ -22,9 +22,9 @@
                         <div class="col-md-6 text-right" style="margin-top: -20px;">
                             <p class="font-weight-bold mb-1">checker #{{ $page->nm_meja }} {{ $dis->nm_distribusi }}
                             </p>
-                            <p class="font-weight-bold mb-1">Server : {{ $admin }}</p>
+                            {{-- <p class="font-weight-bold mb-1">Server : {{ $admin }}</p>
 
-                            <p class="font-weight-bold mb-1">Warna : {{ $warna }}</p>
+                            <p class="font-weight-bold mb-1">Warna : {{ $warna }}</p> --}}
                             <p class="text-muted">TGL :
                                 <?= date('d-F-Y') ?>
                             </p>
@@ -33,22 +33,22 @@
 
                     <hr style="margin-top: -40px;">
                     @php
-                    $ttl = 0;
-                    $sub_total = 0;
-                    $sub_majo = 0;
-                    foreach (Cart::content() as $c):
-                    if ($c->options->program == 'resto') {
-                    $ttl += $c->qty;
-                    $sub_total += $c->qty * $c->price;
-                    } else {
-                    $sub_majo += $c->qty * $c->price;
-                    }
-                    endforeach;
+                        $ttl = 0;
+                        $sub_total = 0;
+                        $sub_majo = 0;
+                        foreach (Cart::content() as $c):
+                            if ($c->options->program == 'resto') {
+                                $ttl += $c->qty;
+                                $sub_total += $c->qty * $c->price;
+                            } else {
+                                $sub_majo += $c->qty * $c->price;
+                            }
+                        endforeach;
                     @endphp
                     <form action="{{ route('create') }}" id="form_save_percobaan" method="post">
                         @csrf
-                        <input type="hidden" name="admin" value="{{ $admin }}">
-                        <input type="hidden" name="warna" value="{{ $warna }}">
+                        {{-- <input type="hidden" name="admin" value="{{ $admin }}">
+                        <input type="hidden" name="warna" value="{{ $warna }}"> --}}
                         <div class="row p-5" style="margin-top: -40px;">
                             <div class="col-md-12">
                                 <table class="table " style="font-weight: bold;">
@@ -63,44 +63,39 @@
                                     </thead>
                                     <tbody>
                                         @foreach (Cart::content() as $c)
-                                        @if ($c->options->program == 'resto')
-                                        <tr>
-                                            <td>{{$c->name}}</td>
-                                            <td>
-                                                {{ $c->qty }}
-                                            </td>
-                                            <td>
-                                                Rp. {{ number_format($c->price, 0) }}
-                                                <input type="hidden" name="program[]"
-                                                    value="{{ $c->options->program }}">
-                                            </td>
-                                        </tr>
-                                        <input type="hidden" name="id_meja" value="{{ $page->id_meja }}">
+                                            @if ($c->options->program == 'resto')
+                                                <tr>
+                                                    <td>{{ $c->name }}</td>
+                                                    <td>
+                                                        {{ $c->qty }}
+                                                    </td>
+                                                    <td>
+                                                        Rp. {{ number_format($c->price, 0) }}
+                                                        <input type="hidden" name="program[]"
+                                                            value="{{ $c->options->program }}">
+                                                    </td>
+                                                </tr>
+                                                <input type="hidden" name="id_meja" value="{{ $page->id_meja }}">
 
 
-                                        <input type="hidden" name="id_harga[]" value="{{ $c->id }} ">
-                                        <input type="hidden" name="qty[]" value="{{ $c->qty }}">
-                                        <input type="hidden" name="harga[]" value="{{ $c->price }}">
-                                        <input type="hidden" name="req[]" value="{{ $c->options->req }}">
-                                        <input type="hidden" name="id[]" value="{{ $c->id }}">
-
-                                        @else
-
-                                        <tr>
-                                            <td>{{$c->name}}</td>
-                                            <td>
-                                                {{ $c->qty }}
-                                            </td>
-                                            <td>
-                                                Rp. {{ number_format($c->price, 0) }}
-                                                <input type="hidden" name="program[]"
-                                                    value="{{ $c->options->program }}">
-                                            </td>
-                                        </tr>
-
-                                        @endif
-
-
+                                                <input type="hidden" name="id_harga[]" value="{{ $c->id }} ">
+                                                <input type="hidden" name="qty[]" value="{{ $c->qty }}">
+                                                <input type="hidden" name="harga[]" value="{{ $c->price }}">
+                                                <input type="hidden" name="req[]" value="{{ $c->options->req }}">
+                                                <input type="hidden" name="id[]" value="{{ $c->id }}">
+                                            @else
+                                                <tr>
+                                                    <td>{{ $c->name }}</td>
+                                                    <td>
+                                                        {{ $c->qty }}
+                                                    </td>
+                                                    <td>
+                                                        Rp. {{ number_format($c->price, 0) }}
+                                                        <input type="hidden" name="program[]"
+                                                            value="{{ $c->options->program }}">
+                                                    </td>
+                                                </tr>
+                                            @endif
                                         @endforeach
                                         <tr>
                                             <td colspan="3"></td>
@@ -111,7 +106,7 @@
                                         </tr>
                                         <?php if ($dis->service == 'Y') : ?>
                                         @php
-                                        $service = $sub_total * 0.07;
+                                            $service = $sub_total * 0.07;
                                         @endphp
                                         <tr>
                                             <td colspan="2">Service Charge</td>
@@ -119,17 +114,17 @@
                                         </tr>
                                         <?php else : ?>
                                         @php
-                                        $service = 0;
+                                            $service = 0;
                                         @endphp
                                         <?php endif ?>
                                         <?php if ($dis->ongkir == 'Y') : ?>
                                         <?php if ($sub_total < $batas->rupiah) : ?>
                                         @php
-                                        $ongkir = $onk->rupiah;
+                                            $ongkir = $onk->rupiah;
                                         @endphp
                                         <?php else : ?>
                                         @php
-                                        $ongkir = 0;
+                                            $ongkir = 0;
                                         @endphp
                                         <?php endif ?>
                                         <tr>
@@ -138,13 +133,13 @@
                                         </tr>
                                         <?php else : ?>
                                         @php
-                                        $ongkir = 0;
+                                            $ongkir = 0;
                                         @endphp
                                         <?php endif ?>
 
                                         <?php if ($dis->tax == 'Y') : ?>
                                         @php
-                                        $tax = ($sub_total + $service + $ongkir + $sub_majo ) * 0.1;
+                                            $tax = ($sub_total + $service + $ongkir + $sub_majo) * 0.1;
                                         @endphp
                                         <tr>
                                             <td colspan="2">Tax</td>
@@ -152,30 +147,33 @@
                                         </tr>
                                         <?php else : ?>
                                         @php
-                                        $tax = 0;
+                                            $tax = 0;
                                         @endphp
                                         <?php endif; ?>
 
 
                                         @php
-                                        $total2 = $sub_total + $sub_majo + $service + $tax + $ongkir;
+                                            $total2 = $sub_total + $sub_majo + $service + $tax + $ongkir;
                                         @endphp
 
                                         <tr>
                                             @php
-                                            $a = round($total2);
-                                            $b = number_format(substr($a, -3), 0);
+                                                $a = round($total2);
+                                                $b = number_format(substr($a, -3), 0);
 
-                                            if ($b == '000') {
-                                            $c = $a;
-                                            $round = '000';
-                                            } elseif ($b < 1000) { $c=$a - $b + 1000; $round=1000 - $b; } @endphp <td
-                                                colspan="2">Total</td>
-                                                <td>Rp. {{ number_format($c, 0) }}</td>
+                                                if ($b == '000') {
+                                                    $c = $a;
+                                                    $round = '000';
+                                                } elseif ($b < 1000) {
+                                                    $c = $a - $b + 1000;
+                                                    $round = 1000 - $b;
+                                            } @endphp <td colspan="2">Total</td>
+                                            <td>Rp. {{ number_format($c, 0) }}</td>
                                         </tr>
 
                                         <input type="hidden" name="ongkir" value="{{ $ongkir }}">
                                         <input type="hidden" name="orang" value="{{ $orang }}">
+                                        <input type="hidden" name="no_meja" value="{{ $no_meja }}">
                                         <input type="hidden" name="id_distribusi" value="{{ $distribusi }}">
                                     </tbody>
                                 </table>

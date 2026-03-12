@@ -10,6 +10,7 @@ use App\Models\Invoice;
 use App\Models\Limit;
 use App\Models\SoldOut;
 use App\Models\Pembelian;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Gloudemans\Shoppingcart\Facades\Cart;
@@ -353,11 +354,12 @@ class OrderController extends Controller
     public function payment(Request $request)
     {
         $meja = $request->meja;
+        $no_meja = $request->no_meja;
         $orang = $request->orang;
         $id_distribusi = $request->distribusi;
         $now = date('Y-m-d');
-        $warna =  $request->warna;
-        $admin =  $request->admin;
+        // $warna =  $request->warna;
+        // $admin =  $request->admin;
 
         if (empty($id_distribusi)) {
             $id_me = '1';
@@ -382,8 +384,9 @@ class OrderController extends Controller
                 ->where('id_distribusi', $id_distribusi)
                 ->first(),
             'orang' => $orang,
-            'warna' => $warna,
-            'admin' => $admin,
+            'no_meja' => $no_meja,
+            // 'warna' => $warna,
+            // 'admin' => $admin,
             'distribusi' => $id_distribusi,
         ];
 
@@ -438,10 +441,11 @@ class OrderController extends Controller
         $price = $request->harga;
         $ongkir = $request->ongkir;
         $orang = $request->orang;
+        $no_meja = $request->no_meja;
         $lokasi = $request->session()->get('id_lokasi');
         $pesan = $request->req;
-        $warna = $request->warna;
-        $admin = $request->admin;
+        // $warna = $request->warna;
+        // $admin = $request->admin;
 
         $date = date('Y-m-d');
         $last_meja = DB::selectOne("SELECT *
@@ -472,12 +476,14 @@ class OrderController extends Controller
                             'selesai' => 'dimasak',
                             'id_lokasi' => $lokasi,
                             'tgl' => date('Y-m-d'),
-                            'admin' => $admin,
+                            'admin' => Auth::user()->nama,
                             'j_mulai' => date('Y-m-d H:i:s'),
                             'aktif' => '1',
                             'ongkir' => $ongkir,
                             'orang' => $orang,
-                            'warna' => $warna
+                            'no_meja' => $no_meja,
+
+                            'warna' => 'hijau'
                         ];
                         Orderan::create($data2);
                     }
@@ -494,41 +500,43 @@ class OrderController extends Controller
                         'selesai' => 'dimasak',
                         'id_lokasi' => $lokasi,
                         'tgl' => date('Y-m-d'),
-                        'admin' => $admin,
+                        'admin' => Auth::user()->nama,
                         'j_mulai' => date('Y-m-d H:i:s'),
                         'aktif' => '1',
                         'ongkir' => $ongkir,
                         'orang' => $orang,
-                        'warna' => $warna
+                        'no_meja' => $no_meja,
+
+                        'warna' => 'hijau'
                     ];
                     Orderan::create($data2);
                 }
             } else {
-                $nm_karyawan = '';
-                $length = count($c->options->nm_karyawan[0]);
-                $number = 1;
-                foreach ($c->options->nm_karyawan as $key => $karyawan) {
-                    foreach ($karyawan as $kar) {
-                        $nm_karyawan .= $kar;
-                        if ($number !== $length) {
-                            $nm_karyawan .= ', ';
-                        }
-                        $number++;
-                    }
-                }
+                // $nm_karyawan = '';
+                // $length = count($c->options->nm_karyawan[0]);
+                // $number = 1;
+                // foreach ($c->options->nm_karyawan as $key => $karyawan) {
+                //     foreach ($karyawan as $kar) {
+                //         $nm_karyawan .= $kar;
+                //         if ($number !== $length) {
+                //             $nm_karyawan .= ', ';
+                //         }
+                //         $number++;
+                //     }
+                // }
                 $d_produk = DB::table('tb_produk')->where('id_produk', $c->id)->where('id_lokasi', $lokasi)->first();
                 // dd(Auth::user()->nama);
                 $data = [
-                    'id_karyawan'  => $c->options->id_karyawan[0],
+                    'id_karyawan'  => '1',
                     'id_produk' => $c->id,
-                    'nm_karyawan' => $nm_karyawan,
+                    'nm_karyawan' => 'kosong',
                     'no_nota' => $hasil,
                     'jumlah' => $c->qty,
                     'harga' => $c->price,
                     'total' => $c->price * $c->qty,
                     'tanggal' => date('Y-m-d'),
                     'tgl_input' => date('Y-m-d H:i:s'),
-                    'admin' => $admin,
+                    'admin' => Auth::user()->nama,
                     'lokasi' => $lokasi,
                     'no_meja' => $last_meja->id_meja,
                     'jml_komisi' => $d_produk->komisi
@@ -556,7 +564,8 @@ class OrderController extends Controller
                     'j_mulai' => date('Y-m-d H:i:s'),
                     'aktif' => '1',
                     'orang' => $orang,
-                    'warna' => $warna
+                    'no_meja' => $no_meja,
+                    'warna' => ''
                 ];
                 Orderan::create($data2);
 
@@ -569,17 +578,17 @@ class OrderController extends Controller
                     $subharga = 0;
                 }
                 $komisi1 = $subharga * $d_produk->komisi / 100;
-                $komisi = $komisi1 / count($c->options->id_karyawan);
-                foreach ($c->options->id_karyawan as $id_karyawan) {
-                    $data_komisi = [
-                        'id_pembelian' => $id_pembelian,
-                        'id_kry'  => $id_karyawan,
-                        'komisi' => $komisi,
-                        'tgl' => date('Y-m-d'),
-                        'id_lokasi' => '1'
-                    ];
-                    DB::table('komisi')->insert($data_komisi);
-                }
+                // $komisi = $komisi1 / count($c->options->id_karyawan);
+                // foreach ($c->options->id_karyawan as $id_karyawan) {
+                //     $data_komisi = [
+                //         'id_pembelian' => $id_pembelian,
+                //         'id_kry'  => $id_karyawan,
+                //         'komisi' => $komisi,
+                //         'tgl' => date('Y-m-d'),
+                //         'id_lokasi' => '1'
+                //     ];
+                //     DB::table('komisi')->insert($data_komisi);
+                // }
             }
         }
 
@@ -777,37 +786,34 @@ class OrderController extends Controller
         
         WHERE a.id_produk = '$id'");
 
-        if (empty($id_karyawan)) {
-            echo "null";
-        } else {
-            if ($jumlah > ($detail->debit - ($detail->kredit + $detail->kredit_penjualan))) {
-                echo 'kosong';
-            } elseif ($qty > ($detail->debit - ($detail->kredit + $detail->kredit_penjualan))) {
-                echo 'kosong';
-            } else {
-                foreach ($id_karyawan as $id_kr) {
-                    $kry = DB::table('tb_karyawan_majo')->where('kd_karyawan', $id_kr)->first();
-                    $karyawan[] = preg_replace("/[^a-zA-Z0-9]/", " ", $kry->nm_karyawan);
-                }
-                $harga = $detail->harga;
 
-                $data = array(
-                    'id' => $id,
-                    'qty'     => $r->jumlah,
-                    'price'   => $harga,
-                    'name'    => preg_replace("/[^a-zA-Z0-9]/", " ", $detail->nm_produk),
-                    'options' => [
-                        'satuan'  => $satuan,
-                        'catatan' => $catatan,
-                        'id_karyawan'   => $id_karyawan,
-                        'nm_karyawan'   => [$karyawan],
-                        'type'    => 'barang',
-                        'program' => 'majo',
-                        'id_karyawan' => $id_karyawan
-                    ],
-                );
-                Cart::add($data);
-            }
+        if ($jumlah > ($detail->debit - ($detail->kredit + $detail->kredit_penjualan))) {
+            echo 'kosong';
+        } elseif ($qty > ($detail->debit - ($detail->kredit + $detail->kredit_penjualan))) {
+            echo 'kosong';
+        } else {
+            // foreach ($id_karyawan as $id_kr) {
+            //     $kry = DB::table('tb_karyawan_majo')->where('kd_karyawan', $id_kr)->first();
+            //     $karyawan[] = preg_replace("/[^a-zA-Z0-9]/", " ", $kry->nm_karyawan);
+            // }
+            $harga = $detail->harga;
+
+            $data = array(
+                'id' => $id,
+                'qty'     => $r->jumlah,
+                'price'   => $harga,
+                'name'    => preg_replace("/[^a-zA-Z0-9]/", " ", $detail->nm_produk),
+                'options' => [
+                    'satuan'  => $satuan,
+                    'catatan' => $catatan,
+                    // 'id_karyawan'   => $id_karyawan,
+                    // 'nm_karyawan'   => [$karyawan],
+                    'type'    => 'barang',
+                    'program' => 'majo',
+                    // 'id_karyawan' => $id_karyawan
+                ],
+            );
+            Cart::add($data);
         }
     }
     public function produk(Request $r)

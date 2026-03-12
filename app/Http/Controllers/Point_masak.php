@@ -15,6 +15,7 @@ class Point_masak extends Controller
 {
     public function index(Request $r)
     {
+        return redirect()->back();
         $id_user = Auth::user()->id;
         $id_menu = DB::table('tb_permission')->select('id_menu')->where('id_user', $id_user)->where('id_menu', 28)->first();
         if (empty($id_menu)) {

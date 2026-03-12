@@ -8,35 +8,31 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use App\Models\Distribusi;
 use App\Models\Koki;
+
 class HeadController extends Controller
 {
     public function index(Request $request)
     {
         $id_user = Auth::user()->id;
-        $id_menu = DB::table('tb_permission')->select('id_menu')->where('id_user',$id_user)->where('id_menu', 27)->first();
-        if(empty($id_menu)) {
+        $id_menu = DB::table('tb_permission')->select('id_menu')->where('id_user', $id_user)->where('id_menu', 27)->first();
+
+        if (empty($id_menu)) {
             return back();
         } else {
-            if (empty($request->id)) {
-                $id = '1';
-            } else {
-                $id = $request->id;
-            }
-            $tgl = date('Y-m-d');
+
+            $id = $request->id ?? '1';
             $lokasi = $request->session()->get('id_lokasi');
+
+            $menu = DB::table('view_menu')
+                ->where([['id_distribusi', $id], ['akv', 'on'], ['lokasi', $lokasi]])
+                ->get();
             $data = [
                 'title' => 'Tugas Head',
                 'logout' => $request->session()->get('logout'),
                 'id' => $id,
-                'menu' => DB::table('view_menu')
-                    ->where('id_distribusi', $id)
-                    ->where('akv', 'on')
-                    ->where('lokasi', $lokasi)
-                    ->get(),
+                'menu' => $menu,
                 'orderan' => DB::select("SELECT COUNT(id_order) as jml_order FROM tb_order WHERE id_lokasi = '$lokasi' AND id_distribusi = '$id' AND selesai = 'dimasak' AND void = 0"),
             ];
-           
-    
             return view('head.head', $data);
         }
     }
@@ -65,10 +61,10 @@ class HeadController extends Controller
             'tb_koki' => Koki::join('tb_karyawan', 'tb_karyawan.id_karyawan', '=', 'tb_koki.id_karyawan')->where('tb_koki.tgl', $tgl)->get(),
             'nav' => '5'
         ];
-            
-        return view('head.view1jam',$data);
+
+        return view('head.view1jam', $data);
     }
-    public function getSearchHead(Request $request) 
+    public function getSearchHead(Request $request)
     {
         if (empty($request->id)) {
             $id_distribusi = '1';
@@ -92,7 +88,7 @@ class HeadController extends Controller
         WHERE e.nm_menu LIKE '%$s%' and a.aktif = '1' and a.selesai = 'dimasak' AND a.id_lokasi = '$lokasi' and a.id_distribusi = '$id_distribusi'
         group by a.no_order order by a.id_distribusi , a.id_meja ASC
         ");
-       
+
         $data = [
             'title' => 'Tugas Head',
             'meja' => $meja,
@@ -115,12 +111,8 @@ class HeadController extends Controller
 
     public function get_head(Request $request)
     {
-      
-        if (empty($request->id)) {
-            $id_distribusi = '1';
-        } else {
-            $id_distribusi = $request->id;
-        }
+
+        $id_distribusi = $request->id ?? '1';
 
         $lokasi = $request->session()->get('id_lokasi');
         $tgl = date('Y-m-d');
@@ -128,13 +120,15 @@ class HeadController extends Controller
         // $tb_koki = DB::join('tb_karyawan', 'tb_karyawan.id_karyawan', '=', 'tb_koki.id_karyawan')->where('tb_koki.tgl', $tgl)->where('tb_koki.id_lokasi', $lokasi)->get();
         $tb_koki = DB::table('tb_koki')->join('tb_karyawan', 'tb_karyawan.id_karyawan', '=', 'tb_koki.id_karyawan')->where('tb_koki.tgl', $tgl)->where('tb_koki.id_lokasi', $lokasi)->get();
 
-        $meja = DB::select("SELECT a.id_meja, d.nm_meja, a.no_order, RIGHT(a.no_order,2) AS kd, b.nm_distribusi,a.selesai
+        $meja = DB::select("SELECT a.id_meja, a.no_meja as nm_meja, a.no_order, RIGHT(a.no_order,2) AS kd, b.nm_distribusi,a.selesai
         FROM tb_order AS a
         LEFT JOIN tb_distribusi AS b ON b.id_distribusi = a.id_distribusi
         left join tb_meja as d on d.id_meja = a.id_meja
         WHERE a.aktif = '1' AND a.id_lokasi = '$lokasi' and a.id_distribusi = '$id_distribusi'
-        group by a.no_order order by a.id_distribusi , a.id_meja ASC;
+        group by a.no_order order by a.id_distribusi , a.no_meja ASC;
         ");
+
+        $setMenit = DB::table('tb_menit')->where('id_lokasi', $lokasi)->first();
 
         $data = [
             'title' => 'Tugas Head',
@@ -150,6 +144,7 @@ class HeadController extends Controller
                             ) c ON c.id_distribusi = a.id_distribusi
                             "),
             'id' => $id_distribusi,
+            'setMenit' => $setMenit,
 
         ];
         return view('head.tugas', $data);
@@ -157,7 +152,7 @@ class HeadController extends Controller
 
     public function distribusi(Request $request)
     {
-    
+
         if (empty($request->id)) {
             $id = '1';
         } else {
@@ -196,7 +191,7 @@ class HeadController extends Controller
             'title'    => 'Menu | Buku Tugas',
             'tb_order' => DB::join('view_menu', 'view_menu.id_harga = tb_order.id_harga')->where('tb_order', ['tb_order.aktif' => '1'])->get(),
             'kategori' => DB::table('tb_kategori')->where('lokasi', 'TAKEMORI')->get(),
-           'distribusi' => DB::select("SELECT a.*, c.jumlah
+            'distribusi' => DB::select("SELECT a.*, c.jumlah
             FROM tb_distribusi AS a 
             LEFT JOIN (SELECT b.id_distribusi , COUNT(b.id_order) AS jumlah
             FROM tb_order AS b
@@ -208,18 +203,18 @@ class HeadController extends Controller
             'id' => $id
 
         ];
-        return view('head.jumlah', $data);   
+        return view('head.jumlah', $data);
     }
 
     public function koki1(Request $request)
     {
         $id_order = $request->kode;
         $koki1 = $request->kry;
-     
+
         $data = array(
             'id_koki1'   => $koki1,
         );
-     
+
         DB::table('tb_order')->where('id_order', $id_order)->update($data);
     }
 
@@ -275,11 +270,11 @@ class HeadController extends Controller
         date_default_timezone_set('Asia/Makassar');
         $id_order = $request->kode;
         $data = array(
-            'selesai'   => 'diantar',
+            'selesai'   => 'selesai',
             'j_selesai' => date('Y-m-d H:i:s'),
             'wait' => date('Y-m-d H:i:s'),
         );
-  
+
         DB::table('tb_order')->where('id_order', $id_order)->update($data);
     }
 
@@ -297,7 +292,6 @@ class HeadController extends Controller
     {
         $id_meja =  $r->id_meja;
         $lokasi = $r->session()->get('id_lokasi');
-        $tgl = date('Y-m-d');
 
         $meja = DB::selectOne("SELECT a.id_meja, d.nm_meja, a.no_order,  b.nm_distribusi,a.selesai
         FROM tb_order AS a
@@ -308,30 +302,46 @@ class HeadController extends Controller
         ");
 
         $menu = DB::select(
-            "SELECT b.nm_menu, c.nm_meja, a.*,e.ttlMenu,f.ttlMenuSemua FROM tb_order AS a LEFT JOIN view_menu AS b ON b.id_harga = a.id_harga
-            LEFT JOIN (SELECT d.id_harga, COUNT(id_harga) as ttlMenu FROM `tb_order` as d where d.id_lokasi = '$lokasi' and d.id_meja = '$id_meja' and d.selesai = 'dimasak' and aktif = '1' and void = 0 GROUP BY d.id_harga) as e on b.id_harga = e.id_harga
+            "SELECT b.nm_menu, c.nm_meja, a.*,f.ttlMenuSemua FROM tb_order AS a LEFT JOIN view_menu AS b ON b.id_harga = a.id_harga
             LEFT JOIN (SELECT d.id_harga, COUNT(id_harga) as ttlMenuSemua FROM `tb_order` as d where d.id_lokasi = '$lokasi' and d.selesai = 'dimasak' and aktif = '1' and void = 0 GROUP BY d.id_harga) as f on b.id_harga = f.id_harga
             LEFT JOIN tb_meja AS c ON c.id_meja = a.id_meja where a.id_lokasi = '$lokasi' and a.id_meja = '$id_meja' and a.selesai = 'dimasak' and aktif = '1' and void = 0 ORDER BY a.id_order"
         );
-        $menu2 = DB::select(
-            "SELECT b.nm_menu, c.nm_meja, a.*,e.ttlMenu,f.ttlMenuSemua FROM tb_order AS a
-                    LEFT JOIN view_menu AS b ON b.id_harga = a.id_harga
-                    LEFT JOIN (SELECT d.id_harga, COUNT(id_harga) as ttlMenu FROM `tb_order` as d where d.id_lokasi = '$lokasi' and d.id_meja = '$id_meja' and d.selesai != 'dimasak' and aktif = '1' and void = 0 GROUP BY d.id_harga) as e on b.id_harga = e.id_harga
-                    LEFT JOIN (SELECT d.id_harga, COUNT(id_harga) as ttlMenuSemua FROM `tb_order` as d where d.id_lokasi = '$lokasi' and d.selesai != 'dimasak' and aktif = '1' and void = 0 GROUP BY d.id_harga) as f on b.id_harga = f.id_harga
-                    LEFT JOIN tb_meja AS c ON c.id_meja = a.id_meja where a.id_lokasi = '$lokasi' and a.id_meja = '$id_meja' and a.selesai != 'dimasak' and aktif = '1' and void = 0 ORDER BY a.id_order",
-        );
-        
 
-        $tb_koki = DB::table('tb_koki')->join('tb_karyawan', 'tb_karyawan.id_karyawan', '=', 'tb_koki.id_karyawan')->where('tb_koki.tgl', $tgl)->where('tb_koki.id_lokasi', $lokasi)->get();
+       
 
         $data = [
             'm' => $meja,
-            'tb_koki' => $tb_koki,
             'menu' => $menu,
             'lokasi' => $lokasi,
-            'menu2' => $menu2
         ];
 
         return view('head.tugas2', $data);
+    }
+
+    public function load_menu_selesai(Request $r)
+    {
+        $lokasi = $r->session()->get('id_lokasi');
+        $tgl = date('Y-m-d');
+        $menu2 = DB::select("SELECT b.nm_menu, a.*,f.ttlMenuSemua 
+        FROM tb_order AS a
+        LEFT JOIN view_menu AS b ON b.id_harga = a.id_harga
+        LEFT JOIN (SELECT d.id_harga, COUNT(id_harga) as ttlMenuSemua FROM `tb_order` as d where d.id_lokasi = '$lokasi' and d.selesai != 'dimasak' and aktif = '1' and void = 0 GROUP BY d.id_harga) as f on b.id_harga = f.id_harga
+        
+        where a.id_lokasi = '$lokasi' and a.id_meja = '$r->id_meja' and a.selesai != 'dimasak' and aktif = '1' and void = 0 ORDER BY a.id_order");
+        $tb_koki = DB::table('tb_koki')->join('tb_karyawan', 'tb_karyawan.id_karyawan', '=', 'tb_koki.id_karyawan')->where('tb_koki.tgl', $tgl)->where('tb_koki.id_lokasi', $lokasi)->get();
+
+        $majo_hide = DB::select("SELECT a.no_nota, c.nm_produk,a.jumlah
+        FROM tb_pembelian AS a
+        LEFT JOIN tb_produk AS c ON c.id_produk = a.id_produk
+        WHERE  a.lokasi = '$lokasi' and a.selesai = 'selesai' and a.no_nota = '$r->no_order'
+        GROUP BY a.id_pembelian");
+
+        $data = [
+            'menu2' => $menu2,
+            'tb_koki' => $tb_koki,
+            'lokasi' => $lokasi,
+            'majo_hide' => $majo_hide,
+        ];
+        return view('head.load_menu_selesai', $data);
     }
 }

@@ -34,7 +34,7 @@
             </td>
 
             <td>
-                {{$pesan_2->nm_meja }}
+                Meja {{$pesan_2->no_meja }}
             </td>
 
         </tr>
@@ -60,7 +60,7 @@
                     <br>
                 </td>
                 <td>
-                    {{$pesan_2->nm_meja }}
+                    Meja {{$pesan_2->no_meja }}
                 </td>
             </tr>
         </tbody>

@@ -167,8 +167,8 @@
 
 
         /* .buying-selling.active .radio-dot:after {
-            background-image: linear-gradient(to right, #f78ca0 0%, #f9748f 19%, #fd868c 60%, #fe9a8b 100%);
-        } */
+                                                                                                                                                                                                                                                            background-image: linear-gradient(to right, #f78ca0 0%, #f9748f 19%, #fd868c 60%, #fe9a8b 100%);
+                                                                                                                                                                                                                                                        } */
 
         /* dot */
         .buying-selling:hover .radio-dot:after {
@@ -176,9 +176,9 @@
         }
 
         /* .buying-selling.active:hover .radio-dot:after {
-            background-image: linear-gradient(to right, #f78ca0 0%, #f9748f 19%, #fd868c 60%, #fe9a8b 100%);
+                                                                                                                                                                                                                                                            background-image: linear-gradient(to right, #f78ca0 0%, #f9748f 19%, #fd868c 60%, #fe9a8b 100%);
 
-        } */
+                                                                                                                                                                                                                                                        } */
 
         @media (max-width: 400px) {
 
@@ -239,7 +239,25 @@
         <!-- /.content -->
     </div>
 
-    <form id="tambah_pesanan_new">
+
+    <div class="modal fade" id="view_menu" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+
+            <div class="modal-content">
+                <div class="modal-header bg-info">
+                    <h5 class="modal-title" id="exampleModalLabel">Menu Selesai</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="load_menu_s"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form method="post" action="{{ route('save_pesanan_new') }}" id="save_tambah_pesanan">
         @csrf
         <div class="modal fade" id="tbh_menu" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg" role="document">
@@ -252,7 +270,7 @@
                         </button>
                     </div>
                     <div class="modal-body">
-
+                        <input type="hidden" name="no_meja" id="no_meja">
                         <div id="orderan">
 
                         </div>
@@ -262,16 +280,16 @@
                         <div align="right" class="mt-2">
                             <button type="button" id="tambah_form_menu" class="btn btn-sm btn-success">+</button>
                         </div>
-                        <div class="buying-selling-group" id="buying-selling-group" data-toggle="buttons">
+                        {{-- <div class="buying-selling-group" id="buying-selling-group" data-toggle="buttons">
 
 
-                        </div>
+                        </div> --}}
 
 
                     </div>
                     <div class="modal-footer">
 
-                        <button type="submit" class="btn btn-primary ">Edit / Save</button>
+                        <button type="submit" class="btn btn-primary btn-hide">Edit / Save</button>
                     </div>
                 </div>
             </div>
@@ -301,7 +319,8 @@
     </form>
     <form id="tambah_pesanan_new_majo">
         @csrf
-        <div class="modal fade" id="tbh_menu_majo" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal fade" id="tbh_menu_majo" role="dialog" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
             <div class="modal-dialog modal-lg" role="document">
 
                 <div class="modal-content">
@@ -316,21 +335,6 @@
                         <div id="orderan_majo">
 
                         </div>
-
-                        <br>
-                        <br>
-
-                        {{-- <div id="tambah_menu_order_majo"></div>
-
-                    <div align="right" class="mt-2">
-                        <button type="button" id="tambah_form_menu_majo" class="btn btn-sm btn-success">+</button>
-                    </div> --}}
-
-                        <div class="buying-selling-group_majo" id="buying-selling-group" data-toggle="buttons">
-
-
-                        </div>
-
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn  btn_save_majo"
@@ -346,6 +350,12 @@
 @section('script')
     <script>
         $(document).ready(function() {
+
+            $(document).on('click', '.plusPesanan', function(event) {
+                const no_meja = $(this).attr('no_meja');
+                $('#no_meja').val(no_meja);
+            })
+
             $(document).on('keyup', '.pembayaran', function() {
                 var total_tagihan = parseInt($('#total_tagihan').val());
 
@@ -364,7 +374,7 @@
                     $('#btn_e_pembayaran').attr('disabled', 'true');
                 }
             });
-            
+
             $(document).on('click', '.btn_tbh', function(event) {
                 $.ajax({
                     url: "{{ route('get_karyawan') }}",
@@ -376,6 +386,14 @@
 
                     }
                 });
+            });
+
+            $(document).on('submit', '#save_tambah_pesanan', function(event) {
+                //   event.preventDefault();
+
+                $('.btn-hide').hide();
+                // $('.save_loading').show();
+
             });
 
             $(document).on('submit', '#e_pembayaran', function(event) {
@@ -527,12 +545,7 @@
 
             }
             setInterval(function() {
-                $.ajax({
-                    type: "GET",
-                    dataType: "json",
-                    data: {},
-                });
-                load_distribusi2();
+                // load_distribusi2();
                 load_tugas();
             }, 10000);
 
@@ -549,56 +562,8 @@
                     }
                 });
             }
-            $(document).on('click', '.waitress', function(event) {
-                var kode = $(this).attr('kode');
-                var kry = $(this).attr('kry');
-                var id = $(this).attr('id_distribusi')
 
-                // alert('behasil');
-                $.ajax({
-                    type: "POST",
-                    url: "{{ route('pilih_waitress') }}",
-                    data: {
-                        kode: kode,
-                        kry: kry,
-                        id: id,
-                        '_token': "{{ csrf_token() }}"
-                    },
-                    success: function(response) {
-                        Swal.fire({
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 3000,
-                            icon: 'success',
-                            title: 'Waitress sudah dipilih'
-                        });
-                        load_tugas();
-                    }
-                });
-            });
-            $(document).on('click', '.un_waitress', function(event) {
-                var kode = $(this).attr('kode');
-                $.ajax({
-                    type: "POST",
-                    url: "{{ route('un_waitress') }}",
-                    data: {
-                        kode: kode,
-                        '_token': "{{ csrf_token() }}"
-                    },
-                    success: function(response) {
-                        Swal.fire({
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 3000,
-                            icon: 'success',
-                            title: 'Waitress dibatalkan'
-                        });
-                        load_tugas();
-                    }
-                });
-            });
+
             $(document).on('click', '.selesai', function(event) {
                 var kode = $(this).attr('kode');
                 $.ajax({
@@ -759,8 +724,7 @@
                 var delete_row = $(this).data("row");
                 $('#' + delete_row).remove();
             });
-
-            var isSubmit = false
+            var isSubmitting = false;
             $(document).on('submit', '#tambah_pesanan_new', function(event) {
                 event.preventDefault();
                 $('#btn_tambah_pesanan').hide();
@@ -773,8 +737,8 @@
                 var id_harga = $("#id_harga").val()
 
                 var pesanan_new = $("#tambah_pesanan_new").serialize()
-                if (!isSubmit) {
-                    isSubmit = true
+                if (!isSubmitting) {
+                    isSubmitting = true
                     $.ajax({
                         url: "{{ route('save_pesanan_new') }}?" + pesanan_new,
                         method: 'GET',
@@ -797,96 +761,40 @@
                             });
                             load_tugas();
 
-                            $('#tambah_pesanan').trigger("reset");
-                            $('.id_harga').val('');
-                            $('.id_harga').trigger('change');
+                            // $('#tambah_pesanan').trigger("reset");
+
                             $('.row_tambah_menu').remove();
 
 
-
-
+                            // 
                         }
-
                     });
                     setTimeout(() => {
-                        isSubmit = false
+
+                        isSubmitting = false
                     }, 15000);
                 }
                 $('#btn_tambah_pesanan').show();
 
             });
 
-            $(document).on('click', '.selesai_majo', function(event) {
-                var kode = $(this).attr('kode');
+            $(document).on("change", ".id_harga", function() {
+
+                var id_harga = $(this).val();
+                var detail = $(this).attr('detail')
                 $.ajax({
-                    type: "POST",
-                    url: "{{ route('meja_selesai_majo') }}",
-                    data: {
-                        kode: kode,
-                        '_token': "{{ csrf_token() }}"
-                    },
-                    success: function(response) {
-                        Swal.fire({
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 3000,
-                            icon: 'success',
-                            title: 'Makanan telah selesai'
-                        });
-                        load_tugas();
+                    url: "{{ route('get_harga') }}?id_harga=" + id_harga,
+                    method: "GET",
+                    dataType: "json",
+                    success: function(data) {
+                        $(".harga" + detail).val(data);
+
                     }
                 });
-            });
-            $(document).on('click', '.waitress_majo', function(event) {
-                var kode = $(this).attr('kode');
-                var kry = $(this).attr('kry');
 
-
-                $.ajax({
-                    type: "POST",
-                    url: "{{ route('pilih_waitress_majo') }}",
-                    data: {
-                        kode: kode,
-                        kry: kry,
-                        '_token': "{{ csrf_token() }}"
-                    },
-                    success: function(response) {
-                        Swal.fire({
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 3000,
-                            icon: 'success',
-                            title: 'Waitress sudah dipilih'
-                        });
-                        load_tugas();
-                    }
-                });
             });
 
-            $(document).on('click', '.un_waitress_majo', function(event) {
-                var kode = $(this).attr('kode');
-                $.ajax({
-                    type: "POST",
-                    url: "{{ route('un_waitress_majo') }}",
-                    data: {
-                        kode: kode,
-                        '_token': "{{ csrf_token() }}"
-                    },
-                    success: function(response) {
-                        Swal.fire({
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 3000,
-                            icon: 'success',
-                            title: 'Waitress dibatalkan'
-                        });
-                        load_tugas();
-                    }
-                });
-            });
+
 
 
             $(document).on('click', '.btn_tbh_majo', function() {
@@ -918,12 +826,10 @@
 
 
             });
-
-            var isSubmitting = false
+            var isSubmitting = false;
             $(document).on('submit', '#tambah_pesanan_new_majo', function(event) {
                 event.preventDefault();
                 $('.btn_save_majo').hide();
-
                 var kd_order = $('#kd_order_majo').val()
                 var id_dis = $('#id_dis_majo').val()
                 var meja = $('#meja_majo').val()
@@ -964,13 +870,32 @@
                             $('#tbh_menu_majo').modal('toggle');
                         }
                     });
-                    setTimeout(() => {
 
-                        isSubmitting = false
-                    }, 15000);
                 }
                 $('.btn_save_majo').show();
             });
+
+
+            $(document).on('click', '.muncul', function(event) {
+                var id_meja = $(this).attr('id_meja');
+                var no_order = $(this).attr('no_order');
+                $.ajax({
+                    type: "get",
+                    url: "{{ route('load_waitress_selesai') }}",
+                    data: {
+                        id_meja: id_meja,
+                        no_order: no_order
+                    },
+                    success: function(r) {
+                        $('.load_menu_s').html(r);
+                        // $('.muncul' + id_meja).hide();
+                        // $('.hilang' + id_meja).show();
+                    }
+                });
+
+
+            });
+
 
 
 

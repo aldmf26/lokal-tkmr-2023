@@ -9,5 +9,5 @@ class Orderan extends Model
 {
     use HasFactory;
     protected $table = 'tb_order';
-    protected $fillable = ['no_order','id_harga', 'qty', 'harga', 'request', 'id_meja', 'id_distribusi', 'selesai', 'id_lokasi', 'tgl', 'admin', 'j_mulai', 'j_selesai', 'aktif', 'ongkir', 'orang', 'pengantar', 'wait', 'no_checker', 'print', 'copy_print', 'void', 'alasan', 'nm_void','warna','voucher'];
+    protected $fillable = ['no_order','no_meja','id_harga', 'qty', 'harga', 'request', 'id_meja', 'id_distribusi', 'selesai', 'id_lokasi', 'tgl', 'admin', 'j_mulai', 'j_selesai', 'aktif', 'ongkir', 'orang', 'pengantar', 'wait', 'no_checker', 'print', 'copy_print', 'void', 'alasan', 'nm_void','warna','voucher'];
 }

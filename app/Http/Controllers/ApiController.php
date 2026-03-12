@@ -292,6 +292,20 @@ class ApiController extends Controller
         Transaksi::whereIn('id_transaksi', $id_transaksi)->update(['import' => 'Y']);
 
 
+        $tb_voucher = Voucher::where('lokasi', '1')->get();
+
+        $data = [];
+        $id_mencuci = [];
+        foreach ($tb_voucher as $t) {
+            array_push($data, [
+                'kode' => $t->kode,
+                'updated_at' => $t->updated_at,
+                'terpakai' => $t->terpakai,
+            ]);
+        }
+        Http::post('https://ptagafood.com/api/tb_voucherUpdate', $data);
+
+
         return redirect()->route('sukses')->with('sukses', 'Sukses');
     }
 
@@ -344,18 +358,7 @@ class ApiController extends Controller
         Http::post('https://ptagafood.com/api/tb_absen', $data);
         Absen::whereIn('id_absen', $id_absen)->update(['import' => 'Y']);
 
-        $tb_voucher = Voucher::where('lokasi', '1')->get();
-
-        $data = [];
-        $id_mencuci = [];
-        foreach ($tb_voucher as $t) {
-            array_push($data, [
-                'kode' => $t->kode,
-                'updated_at' => $t->updated_at,
-                'terpakai' => $t->terpakai,
-            ]);
-        }
-        Http::post('https://ptagafood.com/api/tb_voucherUpdate', $data);
+        
 
         return redirect()->route('sukses')->with('sukses', 'Sukses');
     }
