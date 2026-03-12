@@ -1,9 +1,9 @@
 <div class="row">
     <div class="col-sm-4 col-md-4">
         <?php if (empty($value->foto)) : ?>
-        <img class="img-thumbnail" width="170" src="{{ asset('public/assets') }}/tb_menu/notfound.png" alt="">
+        <img class="img-thumbnail" width="170" src="{{ asset_custom('') }}/tb_menu/notfound.png" alt="">
         <?php else : ?>
-        <img class=" img-thumbnail" width="170" src="{{ asset('public/assets') }}/tb_menu/notfound.png" alt="">
+        <img class=" img-thumbnail" width="170" src="{{ asset_custom('') }}/tb_menu/notfound.png" alt="">
         <?php endif ?>
 
     </div>

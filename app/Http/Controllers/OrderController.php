@@ -118,12 +118,17 @@ class OrderController extends Controller
             $idl[] = $l->id_menu;
         }
 
-        $vm = DB::table('view_menu')
-            ->where('lokasi', $id_lokasi)
-            ->where('id_distribusi', $id)
-            ->where('akv', 'on')
-            ->whereNotIn('view_menu.id_menu', $ids)
-            ->whereNotIn('view_menu.id_menu', $idl)
+        $vm = DB::table('tb_harga as a')
+            ->select('b.tipe', 'a.id_harga', 'a.id_menu', 'a.id_distribusi', 'a.harga',
+                     'b.nm_menu', 'c.nm_distribusi', 'b.image', 'b.aktif as akv',
+                     'b.lokasi', 'b.id_station', 'b.id_kategori')
+            ->leftJoin('tb_menu as b', 'a.id_menu', '=', 'b.id_menu')
+            ->leftJoin('tb_distribusi as c', 'a.id_distribusi', '=', 'c.id_distribusi')
+            ->where('b.lokasi', $id_lokasi)
+            ->where('a.id_distribusi', $id)
+            ->where('b.aktif', 'on')
+            ->whereNotIn('a.id_menu', $ids)
+            ->whereNotIn('a.id_menu', $idl)
             ->paginate(12);
 
         $data = [
@@ -208,13 +213,18 @@ class OrderController extends Controller
             $idl[] = $l->id_menu;
         }
 
-        $vm = DB::table('view_menu')
-            ->where('lokasi', $id_lokasi)
-            ->where('id_distribusi', $id)
-            ->where('nm_menu', 'LIKE', '%' . $request->keyword . '%')
-            ->where('akv', 'on')
-            ->whereNotIn('view_menu.id_menu', $ids)
-            ->whereNotIn('view_menu.id_menu', $idl)
+        $vm = DB::table('tb_harga as a')
+            ->select('b.tipe', 'a.id_harga', 'a.id_menu', 'a.id_distribusi', 'a.harga',
+                     'b.nm_menu', 'c.nm_distribusi', 'b.image', 'b.aktif as akv',
+                     'b.lokasi', 'b.id_station', 'b.id_kategori')
+            ->leftJoin('tb_menu as b', 'a.id_menu', '=', 'b.id_menu')
+            ->leftJoin('tb_distribusi as c', 'a.id_distribusi', '=', 'c.id_distribusi')
+            ->where('b.lokasi', $id_lokasi)
+            ->where('a.id_distribusi', $id)
+            ->where('b.nm_menu', 'LIKE', '%' . $request->keyword . '%')
+            ->where('b.aktif', 'on')
+            ->whereNotIn('a.id_menu', $ids)
+            ->whereNotIn('a.id_menu', $idl)
             ->get();
 
         $data = [
@@ -230,8 +240,13 @@ class OrderController extends Controller
     {
         $id_harga = $request->id_harga;
         $id_dis = $request->id_dis;
-        $menu = DB::table('view_menu')
-            ->where('id_harga', $id_harga)
+        $menu = DB::table('tb_harga as a')
+            ->select('b.tipe', 'a.id_harga', 'a.id_menu', 'a.id_distribusi', 'a.harga',
+                     'b.nm_menu', 'c.nm_distribusi', 'b.image', 'b.aktif as akv',
+                     'b.lokasi', 'b.id_station', 'b.id_kategori')
+            ->leftJoin('tb_menu as b', 'a.id_menu', '=', 'b.id_menu')
+            ->leftJoin('tb_distribusi as c', 'a.id_distribusi', '=', 'c.id_distribusi')
+            ->where('a.id_harga', $id_harga)
             ->first();
         $data = [
             'menu' => $menu,

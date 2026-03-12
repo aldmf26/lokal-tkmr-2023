@@ -8,17 +8,17 @@
     <title>
         <?= $title ?>
     </title>
-    <link rel="stylesheet" href="{{ asset('public/assets') }}/css/csshome/bootstrap.min.css"
+    <link rel="stylesheet" href="{{ asset_custom('') }}/css/csshome/bootstrap.min.css"
         integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
-    <link rel="stylesheet" href="{{ asset('public/assets') }}/css/csshome/all.min.css"
+    <link rel="stylesheet" href="{{ asset_custom('') }}/css/csshome/all.min.css"
         integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
-    <script src="{{ asset('public/assets') }}/css/csshome/jquery-3.5.1.slim.min.js"
+    <script src="{{ asset_custom('') }}/css/csshome/jquery-3.5.1.slim.min.js"
         integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous">
     </script>
-    <script src="{{ asset('public/assets') }}/css/csshome/bootstrap.bundle.min.js"
+    <script src="{{ asset_custom('') }}/css/csshome/bootstrap.bundle.min.js"
         integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous">
     </script>
-    <link rel="stylesheet" href="{{ asset('public/assets') }}/css/csshome/jquery.min.js"
+    <link rel="stylesheet" href="{{ asset_custom('') }}/css/csshome/jquery.min.js"
         integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
     <style>
@@ -262,7 +262,7 @@
                     <div class="card card-signin my-5">
                         <div class="card-body">
                             <center>
-                                <img src="{{ asset('public/assets') }}/menu/img/user.png" width="60%" alt="">
+                                <img src="{{ asset_custom('') }}/menu/img/user.png" width="60%" alt="">
                             </center>
                         </div>
                         <div class="card-footer">
@@ -276,7 +276,7 @@
                     <a href="{{ route('loginTakemori') }}">
                         <div class="card-body">
                             <center>
-                                <img src="{{ asset('public/assets') }}/menu/img/Takemori.svg" width="80%" alt="">
+                                <img src="{{ asset_custom('') }}/menu/img/Takemori.svg" width="80%" alt="">
                             </center>
                         </div>
                         <div class="card-footer">
@@ -291,7 +291,7 @@
                         <a href="{{ route('loginSoondobu') }}">
                             <div class="card-body">
                                 <center>
-                                    <img src="{{ asset('public/assets') }}/menu/img/soondobu.jpg" width="60%" alt="">
+                                    <img src="{{ asset_custom('') }}/menu/img/soondobu.jpg" width="60%" alt="">
                                 </center>
                             </div>
                             <div class="card-footer">

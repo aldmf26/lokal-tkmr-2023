@@ -1,4 +1,4 @@
-<link href="{{ asset('public/assets') }}/css/pay.css" rel="stylesheet" id="bootstrap-css">
+<link href="{{ asset_custom('') }}/css/pay.css" rel="stylesheet" id="bootstrap-css">
 
 
 <!------ Include the above in your HEAD tag ---------->
@@ -197,7 +197,7 @@
 </div>
 
 
-<script src="{{ asset('public/assets') }}/plugins/jquery/jquery.min.js"></script>
+<script src="{{ asset_custom('') }}/plugins/jquery/jquery.min.js"></script>
 <script>
     $(document).ready(function() {
         $(document).on('submit', '#form_save_percobaan', function(event) {

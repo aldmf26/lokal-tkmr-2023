@@ -5,7 +5,7 @@
         <div class="preloader flex-column justify-content-center align-items-center">
 
             <img class="animation__wobble"
-                src="{{asset('public/assets')}}{{Request::get('acc') == 1 ? '/menu/img/Takemori.svg' : '/menu/img/soondobu.jpg'}}"
+                src="{{ asset_custom('') }}{{Request::get('acc') == 1 ? '/menu/img/Takemori.svg' : '/menu/img/soondobu.jpg'}}"
                 alt="AdminLTELogo" height="60" width="60">
         </div>
 

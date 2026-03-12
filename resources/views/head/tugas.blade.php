@@ -104,7 +104,7 @@ a<table class="table" width="100%">
 </table>
 
 
-<script src="{{ asset('assets/plugins/jquery/jquery.min.js') }}"></script>
+<script src="{{ asset_custom('plugins/jquery/jquery.min.js') }}"></script>
 
 <script>
     $(document).ready(function() {

@@ -11,7 +11,7 @@
     }
 
     #content {
-        position: absolute;
+        position: relative;
         z-index: 1;
     }
 

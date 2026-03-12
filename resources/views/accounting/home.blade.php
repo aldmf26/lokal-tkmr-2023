@@ -262,7 +262,7 @@
                     <a href="{{ route('dashboard', ['acc' => 1]) }}">
                         <div class="card-body">
                             <center>
-                                <img src="{{ asset('public/assets') }}/menu/img/Takemori.svg" width="80%" alt="">
+                                <img src="{{ asset_custom('') }}/menu/img/Takemori.svg" width="80%" alt="">
                             </center>
                         </div>
                         <div class="card-footer">
@@ -277,7 +277,7 @@
                         <a href="{{ route('dashboard', ['acc' => 2]) }}">
                             <div class="card-body">
                                 <center>
-                                    <img src="{{ asset('public/assets') }}/menu/img/soondobu.jpg" width="60%" alt="">
+                                    <img src="{{ asset_custom('') }}/menu/img/soondobu.jpg" width="60%" alt="">
                                 </center>
                             </div>
                             <div class="card-footer">

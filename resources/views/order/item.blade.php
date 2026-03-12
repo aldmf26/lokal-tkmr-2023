@@ -1,8 +1,8 @@
 <div class="modal-content">
     <?php if (file_exists("./assets/tb_menu/$menu->image")) : ?>
-    <img width="100%" height="100%" src="{{ asset('public/assets') }}/tb_menu/{{ $menu->image }}" alt="">
+    <img width="100%" height="100%" src="{{ asset_custom('') }}/tb_menu/{{ $menu->image }}" alt="">
     <?php else : ?>
-    <img width=" 100%" height="100%" src="{{ asset('public/assets') }}/tb_menu/notfound.png" alt="">
+    <img width=" 100%" height="100%" src="{{ asset_custom('') }}/tb_menu/notfound.png" alt="">
     <?php endif ?>
     <div style="background-color: rgba(0, 0, 0, 0.5); padding:5px 0 5px;">
         <h5 style="font-weight: bold; color:#fff;" class="text-center">Rp. <?= number_format($menu->harga) ?></h5>

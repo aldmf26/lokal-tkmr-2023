@@ -9,10 +9,10 @@
 <div style="font-size: 14px;" class="invoice">
     <center>
         <?php if (Session::get('id_lokasi') == 1) { ?>
-        <img width="100" src="{{ asset('public/assets') }}/pages/login/img/Takemori_new.jpg" alt="">
+        <img width="100" src="{{ asset_custom('') }}/pages/login/img/Takemori_new.jpg" alt="">
         <h3 align="center" style="margin-top: -1px;">TAKEMORI</h3>
         <?php } else { ?>
-        <img width="100" src="{{ asset('public/assets') }}/pages/login/img/soondobu.jpg" alt="">
+        <img width="100" src="{{ asset_custom('') }}/pages/login/img/soondobu.jpg" alt="">
         <h3 align="center" style="margin-top: -1px;">SOONDOBU</h3>
         <?php } ?>
 

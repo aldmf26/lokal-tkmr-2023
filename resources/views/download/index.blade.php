@@ -125,7 +125,7 @@
 </div>
 @endsection
 @section('script')
-<script src="{{ asset('public/assets') }}/css/csshome/jquery.min.js"></script>
+<script src="{{ asset_custom('') }}/css/csshome/jquery.min.js"></script>
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     $(document).ready(function() {

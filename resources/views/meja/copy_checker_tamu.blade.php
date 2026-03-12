@@ -11,7 +11,7 @@
     }
 
     #content {
-        position: absolute;
+        position: relative;
         z-index: 1;
     }
 
@@ -29,7 +29,7 @@
 <div id="content">
 <?php if (empty($pesan_2)) : ?>
 <?php else : ?>
-    <div style="font-size: 14px;" id="content">
+    <div style="font-size: 14px;">
         <table align="center" class="table" style="font-size: 14px;">
             <tbody>
                 <tr>

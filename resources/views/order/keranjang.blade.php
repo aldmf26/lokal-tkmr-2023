@@ -19,7 +19,7 @@
     <div class="cart-table">
         <div class="cart-table-warp">
             <center>
-                <img width="150" src="{{ asset('public/assets') }}/img_menu/shopping-cart.png" alt=""><br><br>
+                <img width="150" src="{{ asset_custom('') }}/img_menu/shopping-cart.png" alt=""><br><br>
                 <h4>Keranjang Belanja Kosong</h4>
             </center>
             <br><br>

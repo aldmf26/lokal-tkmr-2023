@@ -30,7 +30,7 @@
 
         <div class="card">
             <center>
-                <img width="30%" src="{{ asset('public/assets') }}/pages/login/img/{{ $gambar }}" alt="">
+                <img width="30%" src="{{ asset_custom('') }}/pages/login/img/{{ $gambar }}" alt="">
             </center>
         </div>
     </div>

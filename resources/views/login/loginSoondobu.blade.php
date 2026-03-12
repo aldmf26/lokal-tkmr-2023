@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>{{ $title }}</title>
-    <<link rel="stylesheet" href="{{ asset('public/assets') }}/css1/materialdesignicons.min.css">
+    <<link rel="stylesheet" href="{{ asset_custom('') }}/css1/materialdesignicons.min.css">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-        <link rel="stylesheet" href="{{ asset('public/assets') }}/css1/login.css">
+        <link rel="stylesheet" href="{{ asset_custom('') }}/css1/login.css">
 </head>
 
 <body>
@@ -17,13 +17,13 @@
             <div class="card login-card">
                 <div class="row no-gutters">
                     <div class="col-md-5">
-                        <img src="{{ asset('public/assets') }}/tb_menu/SUMO BEEF.jpg" alt="login"
+                        <img src="{{ asset_custom('') }}/tb_menu/SUMO BEEF.jpg" alt="login"
                             class="login-card-img">
                     </div>
                     <div class="col-md-7">
                         <div class="card-body">
                             <div class="brand-wrapper">
-                                <img src="{{ asset('public/assets') }}/pages/login/img/soondobu.jpg" alt="logo"
+                                <img src="{{ asset_custom('') }}/pages/login/img/soondobu.jpg" alt="logo"
                                     class="logo">
                             </div>
                             <p class="login-card-description">Sign into your account</p>

@@ -28,13 +28,13 @@
                 <?php if($c->jenis == 'navbar'){ ?>
                 <li>
                     <a href="{{ route($c->rot) }}"><img
-                            src="{{ asset('public/assets') }}/img_menu/{{ $c->img }}"><span>{{ $c->sub_navbar }}</span>
+                            src="{{ asset_custom('') }}/img_menu/{{ $c->img }}"><span>{{ $c->sub_navbar }}</span>
                     </a>
                 </li>
                 <?php } ?>
                 @endforeach
                 <li class="dropdown"><a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown"> <img
-                            src="{{ asset('public/assets') }}/img_menu/server.png"><span>Database</span> <b
+                            src="{{ asset_custom('') }}/img_menu/server.png"><span>Database</span> <b
                             class="caret"></b></a>
                     <ul class="dropdown-menu">
                         @php
@@ -62,12 +62,12 @@
                 <?php if($c->jenis == 'navbar'){ ?>
                 <li>
                     <a href="{{ route($c->rot) }}"><img
-                            src="{{ asset('public/assets') }}/img_menu/{{ $c->img }}"><span>{{ $c->sub_navbar }}</span>
+                            src="{{ asset_custom('') }}/img_menu/{{ $c->img }}"><span>{{ $c->sub_navbar }}</span>
                     </a>
                 </li>
                 <?php if($c->rot == 'laporan'){ ?>
                 <li class="dropdown"><a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
-                        <img src="{{ asset('public/assets') }}/img_menu/order2.png"><span>Orderan</span> <b
+                        <img src="{{ asset_custom('') }}/img_menu/order2.png"><span>Orderan</span> <b
                             class="caret"></b></a>
                     <ul class="dropdown-menu">
                         @php
@@ -86,7 +86,7 @@
                 <?php } ?>
                 @endforeach
                 <li class="dropdown"><a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
-                        <img src="{{ asset('public/assets') }}/img_menu/notebook.png"><span>Catatan</span> <b
+                        <img src="{{ asset_custom('') }}/img_menu/notebook.png"><span>Catatan</span> <b
                             class="caret"></b></a>
                     <ul class="dropdown-menu">
                         @php
@@ -110,7 +110,7 @@
 
 
                 <li class="dropdown"><a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown"> <img
-                            src="{{ asset('public/assets') }}/img_menu/warning.png"><span>Peringatan</span>
+                            src="{{ asset_custom('') }}/img_menu/warning.png"><span>Peringatan</span>
                         <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         @php
@@ -126,7 +126,7 @@
                     </ul>
                 </li>
                 <li class="dropdown"><a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown"> <img
-                            src="{{ asset('public/assets') }}/img_menu/export.png"><span>Server</span>
+                            src="{{ asset_custom('') }}/img_menu/export.png"><span>Server</span>
                         <b class="caret"></b></a>
                     <ul class="dropdown-menu">
 

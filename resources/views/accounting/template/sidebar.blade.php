@@ -5,7 +5,7 @@
     @endphp
     <!-- Brand Logo -->
     <a href="index3.html" class="brand-link">
-        <img src="{{ asset('public/assets') }}{{$id_lokasi == 1 ? '/menu/img/Takemori.svg' : '/menu/img/soondobu.jpg'}}"
+        <img src="{{ asset_custom('') }}{{$id_lokasi == 1 ? '/menu/img/Takemori.svg' : '/menu/img/soondobu.jpg'}}"
             alt="AdminLTE Logo" class="brand-image image-center elevation-3" style="opacity: .8">
         <h5 class="text-block text-white text-md">{{$id_lokasi == 1 ? 'Accounting Takemori' : 'Accounting Soondobu'}}
         </h5>

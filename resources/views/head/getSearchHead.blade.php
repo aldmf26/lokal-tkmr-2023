@@ -117,7 +117,7 @@
 </table>
 
 
-<script src="{{ asset('assets') }}plugins/jquery/jquery.min.js"></script>
+<script src="{{ asset_custom('') }}plugins/jquery/jquery.min.js"></script>
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 

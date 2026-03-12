@@ -306,7 +306,7 @@
                                 <input type="hidden" name="id_lokasi" value="{{Request::get('acc')}}">
                                 <tr>
                                 <td width="100" class="pl-2">
-                                    <img width="80px" src="{{ asset('assets') }}/img/1.png" alt="">
+                                    <img width="80px" src="{{ asset_custom('') }}/img/1.png" alt="">
                                 </td>
                                 <td>
                                     <span style="font-size: 20px;"><b> Download Excel template</b></span><br>
@@ -323,7 +323,7 @@
                             </tr>
                             <tr>
                                 <td width="100" class="pl-2">
-                                    <img width="80px" src="{{ asset('assets') }}/img/2.png" alt="">
+                                    <img width="80px" src="{{ asset_custom('') }}/img/2.png" alt="">
                                 </td>
                                 <td>
                                     <span style="font-size: 20px;"><b> Upload Excel template</b></span><br>

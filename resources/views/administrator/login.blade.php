@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>{{ $title }}</title>
-    <link rel="stylesheet" href="{{ asset('public/assets') }}/css1/materialdesignicons.min.css">
+    <link rel="stylesheet" href="{{ asset_custom('') }}/css1/materialdesignicons.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="{{ asset('public/assets') }}/css1/login.css">
+    <link rel="stylesheet" href="{{ asset_custom('') }}/css1/login.css">
 </head>
 
 <body>
@@ -17,7 +17,7 @@
             <div class="card login-card">
                 <div class="row no-gutters">
                     <div class="col-md-5">
-                        <img src="{{ asset('public/assets') }}/login/images/work.jpg" alt="login"
+                        <img src="{{ asset_custom('') }}/login/images/work.jpg" alt="login"
                             class="login-card-img">
 
                     </div>

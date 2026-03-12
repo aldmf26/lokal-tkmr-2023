@@ -29,10 +29,10 @@
             <div class="row mt-4">
                 <div class="col-lg-4">
                     <center>
-                        ( <img src="{{ asset('public/assets') }}/img_menu/order.png" alt="" width="20px"> / <img
-                            src="{{ asset('public/assets') }}/img_menu/stack.png" alt="" width="20px"> / <img
-                            src="{{ asset('public/assets') }}/img_menu/chef-hat.png" alt="" width="20px"> / <img
-                            src="{{ asset('public/assets') }}/img_menu/add-user.png" alt="" width="20px"> )
+                        ( <img src="{{ asset_custom('') }}/img_menu/order.png" alt="" width="20px"> / <img
+                            src="{{ asset_custom('') }}/img_menu/stack.png" alt="" width="20px"> / <img
+                            src="{{ asset_custom('') }}/img_menu/chef-hat.png" alt="" width="20px"> / <img
+                            src="{{ asset_custom('') }}/img_menu/add-user.png" alt="" width="20px"> )
                     </center>
                     <h3 class="text-bold text-center">Order / Meja / Head / Add Koki</h3>
                     <center>
@@ -50,7 +50,7 @@
                 </div>
                 <div class="col-lg-4">
                     <center>
-                        ( <img src="{{ asset('public/assets') }}/img_menu/order.png" alt="" width="20px"> )
+                        ( <img src="{{ asset_custom('') }}/img_menu/order.png" alt="" width="20px"> )
                     </center>
                     <h3 class="text-bold text-center">Split bill</h3>
                     <center>
@@ -68,7 +68,7 @@
                 </div>
                 <div class="col-lg-4">
                     <center>
-                        ( <img src="{{ asset('public/assets') }}/img_menu/order2.png" alt="" width="20px"> )
+                        ( <img src="{{ asset_custom('') }}/img_menu/order2.png" alt="" width="20px"> )
                     </center>
                     <h3 class="text-bold text-center">Transaksi</h3>
                     <center>
@@ -230,7 +230,7 @@
 </div>
 @endsection
 @section('script')
-<script src="{{ asset('public/assets') }}/css/csshome/jquery.min.js"></script>
+<script src="{{ asset_custom('') }}/css/csshome/jquery.min.js"></script>
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     $(document).ready(function() {

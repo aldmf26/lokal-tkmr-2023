@@ -307,6 +307,7 @@ Route::post('/save_pesanan', [MejaController::class, 'save_pesanan'])->name('sav
 Route::get('/tambah_pesanan', [MejaController::class, 'tambah_pesanan'])->name('tambah_pesanan');
 Route::get('/get_harga', [MejaController::class, 'get_harga'])->name('get_harga');
 Route::get('/bill', [MejaController::class, 'bill'])->name('billing');
+Route::get('/get_list_bill', [MejaController::class, 'get_list_bill'])->name('get_list_bill');
 Route::get('/checker', [MejaController::class, 'checker'])->name('checker');
 Route::get('/copy_checker', [MejaController::class, 'copy_checker'])->name('copy_checker');
 Route::get('/checker_tamu', [MejaController::class, 'checker_tamu'])->name('checker_tamu');
