@@ -95,14 +95,15 @@ class MejaController extends Controller
         $meja = DB::select(
             "SELECT c.id_meja, c.nm_meja, a.warna, a.no_order, RIGHT(a.no_order,2) AS kd, a.selesai,
             a.pengantar, SUM(a.qty) AS qty1, e.qty2, min(a.print) as prn, min(a.copy_print) as c_prn, 
-            min(a.checker_tamu) as t_prn, MIN(a.j_mulai) as j_mulai
+            min(a.checker_tamu) as t_prn, MIN(a.j_mulai) as j_mulai, tr.no_order as paid_order
             FROM tb_meja AS c
-            LEFT JOIN tb_order AS a ON c.id_meja = a.id_meja AND a.aktif = '1' AND a.void = 0
+            INNER JOIN tb_order AS a ON c.id_meja = a.id_meja AND a.aktif = '1' AND a.void = 0
             LEFT JOIN ( 
                 SELECT d.no_order , SUM(d.qty) qty2 
                 FROM tb_order2 AS d 
                 GROUP BY d.no_order
             ) AS e ON e.no_order = a.no_order
+            LEFT JOIN tb_transaksi as tr ON tr.no_order = a.no_order
             WHERE c.id_lokasi = '$loc' AND c.id_distribusi = '$id_distribusi'
             GROUP BY c.id_meja 
             ORDER BY c.nm_meja ASC;"
@@ -841,10 +842,11 @@ class MejaController extends Controller
     public function load_waitress_selesai(Request $r)
     {
         $loc = $r->session()->get('id_lokasi');
-        $menu2 = DB::table('view_waktu')
-            ->where('id_lokasi', $loc)
-            ->where('id_meja', $r->id_meja)
-            ->get();
+        $menu2 = DB::select("SELECT a.*, b.nm_menu, b.tipe 
+            FROM tb_order as a 
+            LEFT JOIN tb_harga as h ON a.id_harga = h.id_harga
+            LEFT JOIN tb_menu as b ON h.id_menu = b.id_menu
+            WHERE a.id_meja = '$r->id_meja' AND a.no_order = '$r->no_order' AND a.aktif = '1' AND a.void = 0");
         $majo_hide = DB::select("SELECT a.*, c.nm_produk
                             FROM tb_pembelian AS a
                             LEFT JOIN tb_produk AS c ON c.id_produk = a.id_produk
