@@ -65,7 +65,7 @@ class OrderanController extends Controller
         left join tb_karyawan as d on d.id_karyawan = a.id_koki2
         left join tb_karyawan as e ON e.id_karyawan = a.id_koki3
         LEFT JOIN tb_order2 AS f ON f.id_order1 = a.id_order
-        where   a.no_order = '$no' AND (a.qty - if(f.qty IS NULL ,0,f.qty)) != '0' AND a.selesai = 'selesai'");
+        where   a.no_order = '$no' AND (a.qty - if(f.qty IS NULL ,0,f.qty)) != '0'");
 
         if ($order) {
             echo 'ada';
@@ -86,7 +86,7 @@ class OrderanController extends Controller
         left join tb_karyawan as c on c.id_karyawan = a.id_koki1
         left join tb_karyawan as d on d.id_karyawan = a.id_koki2
         left join tb_karyawan as e ON e.id_karyawan = a.id_koki3
-        where   a.no_order = '$no' AND a.selesai = 'selesai' AND a.void = 0 ");
+        where   a.no_order = '$no' AND a.void = 0 ");
 
         $data = [
             'title' => 'Pembayaran',
@@ -116,7 +116,7 @@ class OrderanController extends Controller
         left join tb_karyawan as e ON e.id_karyawan = a.id_koki3
         LEFT JOIN tb_order2 AS f ON f.id_order1 = a.id_order
         LEFT JOIN tb_meja AS g ON g.id_meja = a.id_meja
-        where   a.no_order = '$no' AND (a.qty - if(f.qty IS NULL ,0,f.qty)) != '0' AND a.selesai = 'selesai' AND a.void = 0 ");
+        where   a.no_order = '$no' AND (a.qty - if(f.qty IS NULL ,0,f.qty)) != '0' AND a.void = 0 ");
 
         $majo = DB::select("SELECT a.id_pembelian, a.tanggal, a.no_nota, c.nm_meja, a.nm_karyawan, b.nm_produk, a.id_karyawan,  a.jumlah, a.harga, a.total
         FROM tb_pembelian AS a
@@ -338,7 +338,6 @@ class OrderanController extends Controller
         foreach ($id_akun as $i => $id_akunBayar) {
             if ($pembayaran[$i] != 0) {
                 $jumlah_diskon = 0;
-                $ttl_sub = $ttl_sub; // Anda mungkin ingin menghitung total ini terlebih dahulu
                 $data = [
                     'id_akun_pembayaran' => $id_akunBayar,
                     'no_nota' => $hasil,

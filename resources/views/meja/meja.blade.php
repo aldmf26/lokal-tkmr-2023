@@ -98,102 +98,119 @@
         }
     </style>
     <style>
-        /* card active */
-        .buying-selling.active {
-            background-image: linear-gradient(to right, #00B7B5 0%, #00B7B5 19%, #019392 60%, #04817F 100%);
+        :root {
+            --empty-color: #2ecc71;
+            --occupied-color: #e74c3c;
+            --pending-color: #f1c40f;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --glass-bg: rgba(255, 255, 255, 0.15);
         }
 
-        .option1 {
-            display: none;
+        .meja-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+            padding: 15px;
         }
 
-        .buying-selling {
-            width: 123px;
-            padding: 10px;
+        .meja-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            transition: all 0.3s ease;
             position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 180px;
+            cursor: pointer;
         }
 
-        .buying-selling-word {
-            font-size: 10px;
+        .meja-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.25);
+        }
+
+        .meja-card.empty { border-top: 8px solid var(--empty-color); }
+        .meja-card.occupied { border-top: 8px solid var(--occupied-color); }
+        .meja-card.pending { border-top: 8px solid var(--pending-color); }
+
+        .meja-card .card-body {
+            padding: 15px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .meja-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .meja-status {
+            font-size: 0.85rem;
             font-weight: 600;
-            margin-left: 35px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            margin-bottom: 10px;
         }
 
-        .radio-dot:before,
-        .radio-dot:after {
-            content: "";
-            display: block;
-            position: absolute;
+        .empty .meja-status { background: rgba(46, 204, 113, 0.1); color: var(--empty-color); }
+        .occupied .meja-status { background: rgba(231, 76, 60, 0.1); color: var(--occupied-color); }
+
+        .meja-footer {
+            background: rgba(0,0,0,0.03);
+            padding: 10px;
+            display: flex;
+            justify-content: space-around;
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .btn-meja-action {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            color: #666;
             background: #fff;
-            border-radius: 100%;
+            border: 1px solid #eee;
         }
 
-        .radio-dot:before {
-            width: 20px;
-            height: 20px;
-            border: 1px solid #ccc;
-            top: 10px;
-            left: 16px;
-        }
-
-        .radio-dot:after {
-            width: 12px;
-            height: 12px;
-            border-radius: 100%;
-            top: 14px;
-            left: 20px;
-        }
-
-        .buying-selling.active .buying-selling-word {
+        .btn-meja-action:hover {
+            background: #6c7ae0;
             color: #fff;
+            transform: scale(1.1);
         }
 
-        .buying-selling.active .radio-dot:after {
-            background-image: linear-gradient(to right, #00B7B5 0%, #00B7B5 19%, #019392 60%, #04817F 100%);
+        .occupied-info {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #7f8c8d;
         }
 
-        .buying-selling.active .radio-dot:before {
-            background: #fff;
-            border-color: #699D17;
-        }
-
-        .buying-selling:hover .radio-dot:before {
-            border-color: #adadad;
-        }
-
-        .buying-selling.active:hover .radio-dot:before {
-            border-color: #699D17;
-        }
-
-
-        /* .buying-selling.active .radio-dot:after {
-                                                                                                                                                                                                                                                            background-image: linear-gradient(to right, #f78ca0 0%, #f9748f 19%, #fd868c 60%, #fe9a8b 100%);
-                                                                                                                                                                                                                                                        } */
-
-        /* dot */
-        .buying-selling:hover .radio-dot:after {
-            background-image: linear-gradient(to right, #00B7B5 0%, #00B7B5 19%, #019392 60%, #04817F 100%);
-        }
-
-        /* .buying-selling.active:hover .radio-dot:after {
-                                                                                                                                                                                                                                                            background-image: linear-gradient(to right, #f78ca0 0%, #f9748f 19%, #fd868c 60%, #fe9a8b 100%);
-
-                                                                                                                                                                                                                                                        } */
-
-        @media (max-width: 400px) {
-
-            .mobile-br {
-                display: none;
-            }
-
-            .buying-selling {
-                width: 49%;
-                padding: 10px;
-                position: relative;
-            }
-
+        .timer-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.5);
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
         }
     </style>
+
     <div class="content-wrapper" style="min-height: 511px;">
         <!-- Content Header (Page header) -->
         <div class="content-header">

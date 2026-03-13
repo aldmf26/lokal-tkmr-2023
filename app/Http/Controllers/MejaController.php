@@ -93,18 +93,19 @@ class MejaController extends Controller
 
 
         $meja = DB::select(
-            "SELECT a.id_meja, a.no_meja as nm_meja, a.warna, a.no_order, RIGHT(a.no_order,2) AS kd,a.selesai,
-            a.pengantar,  SUM(a.qty) AS qty1 ,  e.qty2 , min(a.print) as prn , min(a.copy_print) as c_prn, min(a.checker_tamu) as t_prn
-            FROM tb_order AS a
-                left join tb_meja as c on c.id_meja = a.id_meja
-                
-                LEFT JOIN ( 
-                    SELECT d.no_order , SUM(d.qty) qty2 
-                    FROM tb_order2 AS d 
-                    GROUP BY d.no_order
-                ) AS e ON e.no_order = a.no_order
-            WHERE a.aktif = '1' and  a.id_lokasi = '$loc' and a.id_distribusi = '$id_distribusi' AND a.void = 0
-            group by a.no_order order by a.id_distribusi , a.no_meja  ASC;"
+            "SELECT c.id_meja, c.nm_meja, a.warna, a.no_order, RIGHT(a.no_order,2) AS kd, a.selesai,
+            a.pengantar, SUM(a.qty) AS qty1, e.qty2, min(a.print) as prn, min(a.copy_print) as c_prn, 
+            min(a.checker_tamu) as t_prn, MIN(a.j_mulai) as j_mulai
+            FROM tb_meja AS c
+            LEFT JOIN tb_order AS a ON c.id_meja = a.id_meja AND a.aktif = '1' AND a.void = 0
+            LEFT JOIN ( 
+                SELECT d.no_order , SUM(d.qty) qty2 
+                FROM tb_order2 AS d 
+                GROUP BY d.no_order
+            ) AS e ON e.no_order = a.no_order
+            WHERE c.id_lokasi = '$loc' AND c.id_distribusi = '$id_distribusi'
+            GROUP BY c.id_meja 
+            ORDER BY c.nm_meja ASC;"
         );
 
         $data = [
@@ -231,7 +232,7 @@ class MejaController extends Controller
                         'tgl' => date('Y-m-d'),
                         'admin' => empty($admin) ? Auth::user()->nama : $admin,
                         'j_mulai' => date('Y-m-d H:i:s'),
-                        'selesai' => 'dimasak',
+                        'selesai' => 'selesai',
                         'aktif' => '1',
                         'no_meja' => $no_meja,
                         'warna' => $warna,
