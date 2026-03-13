@@ -367,7 +367,6 @@
                                                             data-toggle="modal" data-target="#myModal" 
                                                             id_harga="{{ $t->id_harga }}" 
                                                             id_dis="{{ $id_dis }}">
-                                                            <i class="fa fa-edit text-info"></i>
                                                          </a>
                                                      </div>
                                                  </div>
@@ -608,61 +607,12 @@
                 });
             }
 
-            $(document).on('click', '.quick_add', function(e) {
+            $(document).on('click', '.card-order', function(e) {
+                // If it's the edit button itself, let the native handler work
                 if ($(e.target).closest('.btn-edit-order').length) return;
                 
-                var $card = $(this);
-                $card.addClass('adding');
-
-                var id_harga2 = $card.data("id_harga");
-                var id_menu = $card.data("id_menu");
-                var name = $card.data("nm_menu");
-                var price = $card.data("harga");
-                var tipe = $card.data("tipe");
-                var dis = $("#dis2").val();
-                var qty = 1;
-                var req = '';
-
-                $.ajax({
-                    url: "{{ route('cart') }}",
-                    method: 'GET',
-                    data: {
-                        id_harga2: id_harga2,
-                        price: price,
-                        name: name,
-                        qty: qty,
-                        req: req,
-                        id_menu: id_menu,
-                        tipe: tipe,
-                        dis: dis,
-                    },
-                    success: function(data) {
-                        $card.removeClass('adding');
-                        if (!$.isNumeric(data)) {
-                            $('#keranjang').html(data);
-                            Swal.fire({
-                                toast: true,
-                                position: 'top-end',
-                                showConfirmButton: false,
-                                timer: 500,
-                                icon: 'success',
-                                title: name + ' ditambahkan'
-                            });
-                        } else {
-                            Swal.fire({
-                                toast: true,
-                                position: 'top-end',
-                                showConfirmButton: false,
-                                timer: 3000,
-                                icon: 'error',
-                                title: 'Stok tidak cukup, sisa: ' + data
-                            });
-                        }
-                    },
-                    error: function() {
-                        $card.removeClass('adding');
-                    }
-                });
+                // Trigger the modal (the edit button in the footer)
+                $(this).find('.input_cart2').click();
             });
 
             $(document).on('submit', '.input_cart', function(event) {

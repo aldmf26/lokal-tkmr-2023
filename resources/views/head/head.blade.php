@@ -114,6 +114,21 @@
         <!-- /.content-header -->
         <input type="hidden" id="id_distribusi" value="<?= $id ?>">
         <input type="hidden" id="jml_order" value="{{ $orderan[0]->jml_order }}">
+        
+        <div class="row justify-content-center mb-2">
+            <div class="col-lg-2">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text bg-info text-white"><i class="fas fa-th-large"></i></span>
+                    </div>
+                    <select id="limit_meja" class="form-control" style="font-weight: bold;">
+                        <option value="3">Tampil 3 Meja</option>
+                        <option value="5">Tampil 5 Meja</option>
+                        <option value="7">Tampil 7 Meja</option>
+                    </select>
+                </div>
+            </div>
+        </div>
         <!-- Main content -->
         <div class="content">
             <div class="container-fluid">
@@ -121,11 +136,46 @@
                     <div class="col-lg-12">
                         <div class="card">
                             <div id="jumlah"></div>
-                            <div class="card-header">
-                                <div id="distribusi"></div>
+                            <div class="card-header pb-0">
+                                <!-- Navigation removed as all distributions are now combined -->
                             </div>
                             <div class="card-body">
                                 <audio id="audio" src=""></audio>
+
+                                <!-- Summary Card for Batch Cooking -->
+                                <div class="card card-outline card-info shadow-sm mb-4">
+                                    <div class="card-header">
+                                        <h3 class="card-title" style="font-weight: bold;"><i class="fas fa-layer-group mr-1"></i> Ringkasan Masakan (Batch Cooking)</h3>
+                                        <div class="card-tools">
+                                            <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
+                                        </div>
+                                    </div>
+                                    <div class="card-body p-2" id="summary_batch">
+                                        <div class="d-flex flex-wrap" style="gap: 10px;">
+                                            @php
+                                                // Using a.no_meja as it's directly available in tb_order
+                                                $allOrderSummary = DB::select("SELECT b.nm_menu, SUM(a.qty) as total_qty, 
+                                                     GROUP_CONCAT(CONCAT('Meja ', a.no_meja, '(', a.qty, ')') SEPARATOR ' ') as tables
+                                                     FROM tb_order a
+                                                     JOIN tb_harga h ON a.id_harga = h.id_harga
+                                                     JOIN tb_menu b ON h.id_menu = b.id_menu
+                                                     WHERE a.id_lokasi = '$id_lokasi' AND a.selesai = 'dimasak' AND a.aktif = '1' AND a.void = 0 AND b.id_kategori != 5
+                                                     GROUP BY a.id_harga
+                                                    ORDER BY total_qty DESC");
+                                            @endphp
+                                            @foreach($allOrderSummary as $summary)
+                                                <div class="border rounded p-2 bg-light" style="min-width: 150px; flex: 1; border-left: 4px solid #17a2b8 !important;">
+                                                    <div style="font-size: 0.9rem; font-weight: 800; text-transform: uppercase; color: #155592;">{{ $summary->nm_menu }}</div>
+                                                    <div class="d-flex justify-content-between align-items-center mt-1">
+                                                        <span class="badge badge-info" style="font-size: 1rem;">Total: {{ $summary->total_qty }}</span>
+                                                        <small class="text-muted font-weight-bold ml-2">{{ $summary->tables }}</small>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div id="tugas_head">
 
                                 </div>
@@ -184,21 +234,24 @@
 
             function load_tugas() {
                 var id_distribusi = $("#id_distribusi").val();
-                // var jumlah1 = $("#jumlah").val();
-                // var jumlah2 = $("#jumlah1").val();
+                var limit = $("#limit_meja").val();
+                
+                // Reload summary card content
+                $('#summary_batch').load(location.href + ' #summary_batch > *');
+
                 $.ajax({
                     method: "GET",
-                    url: "{{ route('get_head') }}?id=" + id_distribusi,
+                    url: "{{ route('get_head') }}?id=" + id_distribusi + "&limit=" + limit,
                     dataType: "html",
-                    beforeSend: function() {
-                        $('#tugas_head').html('loading...');
-                    },
                     success: function(hasil) {
                         $('#tugas_head').html(hasil);
                     }
                 });
-
             }
+
+            $(document).on('change', '#limit_meja', function() {
+                load_tugas();
+            });
             $(document).on('click', '.selesai_majo', function(event) {
                 var kode = $(this).attr('kode');
                 var no_order = $(this).attr('no_order');
@@ -214,7 +267,7 @@
                             toast: true,
                             position: 'top-end',
                             showConfirmButton: false,
-                            timer: 3000,
+                            timer: 2000,
                             icon: 'success',
                             title: 'Makanan telah selesai'
                         });
@@ -224,36 +277,20 @@
             });
             $(document).on('click', '.selesai', function(event) {
                 var kode = $(this).attr('kode');
-                var s = $("#searchHead").val();
                 var id_meja = $(this).attr('id_meja');
-                // alert(id_meja);
                 $.ajax({
                     type: "GET",
                     url: "<?= route('head_selesei') ?>?kode=" + kode,
-
                     success: function(response) {
                         Swal.fire({
                             toast: true,
                             position: 'top-end',
                             showConfirmButton: false,
-                            timer: 3000,
+                            timer: 2000,
                             icon: 'success',
                             title: 'Makanan telah selesai'
                         });
-
-                        $.ajax({
-                            method: "GET",
-                            url: "{{ route('head2') }}",
-                            data: {
-                                id_meja: id_meja
-                            },
-                            dataType: "html",
-                            success: function(hasil) {
-                                $('.addmeja' + id_meja).html(hasil);
-                                $('.meja' + id_meja).remove();
-                                $('.meja' + id_meja).hide();
-                            }
-                        });
+                        load_tugas();
                     }
                 });
             });

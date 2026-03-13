@@ -145,7 +145,7 @@ class OrderController extends Controller
             'title' => 'Order',
         ];
 
-        return view('order.get', ['page' => 1], $data)->render();
+        return view('order.get', array_merge(['page' => 1], $data))->render();
     }
 
 
@@ -462,10 +462,14 @@ class OrderController extends Controller
         // $warna = $request->warna;
         // $admin = $request->admin;
 
-        $date = date('Y-m-d');
-        $last_meja = DB::selectOne("SELECT *
-        FROM tb_meja AS a
-        WHERE a.id_meja NOT IN (SELECT b.id_meja from tb_order AS b WHERE b.tgl = '$date' or b.aktif = '1' ) and a.id_lokasi = '$lokasi' and a.id_distribusi = '$id_dis' ORDER BY a.id_meja ASC");
+        if ($request->id_meja) {
+            $last_meja = DB::table('tb_meja')->where('id_meja', $request->id_meja)->first();
+        } else {
+            $date = date('Y-m-d');
+            $last_meja = DB::selectOne("SELECT *
+            FROM tb_meja AS a
+            WHERE a.id_meja NOT IN (SELECT b.id_meja from tb_order AS b WHERE b.tgl = '$date' or b.aktif = '1' ) and a.id_lokasi = '$lokasi' and a.id_distribusi = '$id_dis' ORDER BY a.id_meja ASC");
+        }
 
         $total = 0;
         foreach (Cart::content() as $c) {
@@ -488,7 +492,7 @@ class OrderController extends Controller
                             'request' => $c->options->req,
                             'id_meja' => $last_meja->id_meja,
                             'id_distribusi' => $id_dis,
-                            'selesai' => 'selesai',
+                            'selesai' => 'dimasak',
                             'id_lokasi' => $lokasi,
                             'tgl' => date('Y-m-d'),
                             'admin' => Auth::user()->nama,
@@ -512,7 +516,7 @@ class OrderController extends Controller
                         'request' => $c->options->req,
                         'id_meja' => $last_meja->id_meja,
                         'id_distribusi' => $id_dis,
-                        'selesai' => 'selesai',
+                        'selesai' => 'dimasak',
                         'id_lokasi' => $lokasi,
                         'tgl' => date('Y-m-d'),
                         'admin' => Auth::user()->nama,

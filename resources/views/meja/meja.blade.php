@@ -133,9 +133,17 @@
             box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.25);
         }
 
-        .meja-card.empty { border-top: 8px solid var(--empty-color); }
-        .meja-card.occupied { border-top: 8px solid var(--occupied-color); }
-        .meja-card.pending { border-top: 8px solid var(--pending-color); }
+        .meja-card.empty {
+            border-top: 8px solid var(--empty-color);
+        }
+
+        .meja-card.occupied {
+            border-top: 8px solid var(--occupied-color);
+        }
+
+        .meja-card.pending {
+            border-top: 8px solid var(--pending-color);
+        }
 
         .meja-card .card-body {
             padding: 15px;
@@ -144,6 +152,22 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .distri-type {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            font-weight: 900;
+            color: rgba(0, 0, 0, 0.05);
+            z-index: 0;
+            white-space: nowrap;
+            letter-spacing: 2px;
+            pointer-events: none;
         }
 
         .meja-number {
@@ -151,6 +175,8 @@
             font-weight: 800;
             color: #2c3e50;
             margin-bottom: 5px;
+            position: relative;
+            z-index: 1;
         }
 
         .meja-status {
@@ -163,35 +189,49 @@
             margin-bottom: 10px;
         }
 
-        .empty .meja-status { background: rgba(46, 204, 113, 0.1); color: var(--empty-color); }
-        .occupied .meja-status { background: rgba(231, 76, 60, 0.1); color: var(--occupied-color); }
+        .empty .meja-status {
+            background: rgba(46, 204, 113, 0.1);
+            color: var(--empty-color);
+        }
+
+        .occupied .meja-status {
+            background: rgba(231, 76, 60, 0.1);
+            color: var(--occupied-color);
+        }
 
         .meja-footer {
-            background: rgba(0,0,0,0.03);
+            background: rgba(0, 0, 0, 0.03);
             padding: 10px;
-            display: flex;
-            justify-content: space-around;
-            border-top: 1px solid rgba(0,0,0,0.05);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
         }
 
         .btn-meja-action {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
+            width: 100%;
+            height: 44px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.2s;
-            color: #666;
+            color: #2c3e50;
             background: #fff;
-            border: 1px solid #eee;
+            border: 1px solid #dcdde1;
+            font-size: 0.8rem;
+            font-weight: 800;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            text-decoration: none !important;
         }
 
         .btn-meja-action:hover {
-            background: #6c7ae0;
-            color: #fff;
-            transform: scale(1.1);
+            background: #f8f9fa;
+            color: #2c3e50;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
+
 
         .occupied-info {
             text-align: center;
@@ -203,7 +243,7 @@
             position: absolute;
             top: 10px;
             right: 10px;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.5);
             color: #fff;
             padding: 2px 8px;
             border-radius: 4px;
@@ -337,8 +377,7 @@
     </form>
     <form id="tambah_pesanan_new_majo">
         @csrf
-        <div class="modal fade" id="tbh_menu_majo" role="dialog" aria-labelledby="exampleModalLabel"
-            aria-hidden="true">
+        <div class="modal fade" id="tbh_menu_majo" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg" role="document">
 
                 <div class="modal-content">
@@ -367,18 +406,18 @@
 
 @section('script')
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
 
-            $(document).on('click', '.plusPesanan', function(event) {
+            $(document).on('click', '.plusPesanan', function (event) {
                 const no_meja = $(this).attr('no_meja');
                 $('#no_meja').val(no_meja);
             })
 
-            $(document).on('keyup', '.pembayaran', function() {
+            $(document).on('keyup', '.pembayaran', function () {
                 var total_tagihan = parseInt($('#total_tagihan').val());
 
                 var total_pembayaran = 0;
-                $(".pembayaran").each(function() {
+                $(".pembayaran").each(function () {
                     total_pembayaran += parseFloat($(this).val());
                 });
                 var total_bayar = total_pembayaran;
@@ -393,12 +432,12 @@
                 }
             });
 
-            $(document).on('click', '.btn_tbh', function(event) {
+            $(document).on('click', '.btn_tbh', function (event) {
                 $.ajax({
                     url: "{{ route('get_karyawan') }}",
                     method: "GET",
 
-                    success: function(data) {
+                    success: function (data) {
 
                         $('.buying-selling-group').html(data);
 
@@ -406,7 +445,7 @@
                 });
             });
 
-            $(document).on('submit', '#save_tambah_pesanan', function(event) {
+            $(document).on('submit', '#save_tambah_pesanan', function (event) {
                 //   event.preventDefault();
 
                 $('.btn-hide').hide();
@@ -414,7 +453,7 @@
 
             });
 
-            $(document).on('submit', '#e_pembayaran', function(event) {
+            $(document).on('submit', '#e_pembayaran', function (event) {
                 event.preventDefault();
                 var no_order = $("#no_order").val();
                 var total_tagihan = parseInt($('#total_tagihan').val());
@@ -431,9 +470,9 @@
                     type: 'GET',
                     contentType: false,
                     processData: false,
-                    success: function(data) {
+                    success: function (data) {
                         $('#edit_pembayaran').hide();
-                        setTimeout(function() {
+                        setTimeout(function () {
                             $("[data-dismiss=modal]").trigger({
                                 type: "click"
                             });
@@ -455,7 +494,7 @@
 
             });
 
-            $(document).on('keyup', '.input_edit_pembayaran', function() {
+            $(document).on('keyup', '.input_edit_pembayaran', function () {
                 var total_tagihan = parseInt($('#total_tagihan').val());
 
 
@@ -478,7 +517,7 @@
                 }
             });
 
-            $(document).on('click', '.btn_edit_pembayaran', function() {
+            $(document).on('click', '.btn_edit_pembayaran', function () {
 
                 var no_order = $(this).attr('no_order');
 
@@ -487,7 +526,7 @@
                 $.ajax({
                     url: "{{ route('get_pembayaran') }}?no_order=" + no_order,
                     method: "GET",
-                    success: function(data) {
+                    success: function (data) {
                         $('#form_edit_pembayaran').html(data);
 
                         var total_tagihan = parseInt($('#total_tagihan').val());
@@ -521,7 +560,7 @@
                     method: "GET",
                     url: "{{ route('distribusi2') }}?id=" + id_distribusi,
                     dataType: "html",
-                    success: function(hasil) {
+                    success: function (hasil) {
                         $('#distribusi2').html(hasil);
                         if (jml_baru != jml_order) {
                             // console.log(`${jml_baru} : ${jml_order}`);
@@ -532,7 +571,7 @@
                 });
 
             }
-            setInterval(function() {
+            setInterval(function () {
                 // load_distribusi2();
                 load_tugas();
             }, 10000);
@@ -545,14 +584,14 @@
                     method: "GET",
                     url: "{{ route('waitress') }}?dis=" + id_distribusi,
                     dataType: "html",
-                    success: function(hasil) {
+                    success: function (hasil) {
                         $('#tugas_head').html(hasil);
                     }
                 });
             }
 
 
-            $(document).on('click', '.selesai', function(event) {
+            $(document).on('click', '.selesai', function (event) {
                 var kode = $(this).attr('kode');
                 $.ajax({
                     type: "POST",
@@ -561,7 +600,7 @@
                         kode: kode,
                         '_token': "{{ csrf_token() }}"
                     },
-                    success: function(response) {
+                    success: function (response) {
                         Swal.fire({
                             toast: true,
                             position: 'top-end',
@@ -574,7 +613,7 @@
                     }
                 });
             });
-            $(document).on('click', '.gagal', function(event) {
+            $(document).on('click', '.gagal', function (event) {
 
                 Swal.fire({
                     toast: true,
@@ -587,13 +626,13 @@
                 load_tugas();
             });
 
-            $(document).on('click', '.btn_pembayaran', function() {
+            $(document).on('click', '.btn_pembayaran', function () {
                 var no = $(this).attr('no_order');
                 $.ajax({
                     url: "{{ route('check_pembayaran') }}",
                     method: "GET",
                     data: { no: no },
-                    success: function(data) {
+                    success: function (data) {
                         if (data == 'ada') {
                             window.location.href = "{{ route('list_orderan') }}?no=" + no
                         } else if (data == 'sudah_bayar') {
@@ -619,7 +658,7 @@
                 });
             });
 
-            $(document).on('click', '.clear', function(event) {
+            $(document).on('click', '.clear', function (event) {
                 var kode = $(this).attr('kode');
 
                 Swal.fire({
@@ -635,7 +674,7 @@
                         $.ajax({
                             type: "get",
                             url: "<?= route('clear') ?>?kode=" + kode,
-                            success: function(response) {
+                            success: function (response) {
                                 Swal.fire({
                                     toast: true,
                                     position: 'top-end',
@@ -657,14 +696,14 @@
 
             });
 
-            $(document).on('click', '.btn_tbh', function() {
+            $(document).on('click', '.btn_tbh', function () {
                 var no_order = $(this).attr('no_order');
                 var id_distribusi = $("#id_distribusi").val();
                 // console.log(no_order);
                 $.ajax({
                     url: "{{ route('tambah_pesanan') }}?no=" + no_order + "&id=" + id_distribusi,
                     dataType: "html",
-                    success: function(hasil) {
+                    success: function (hasil) {
                         $('#orderan').html(hasil);
                         $('.row_tambah_menu').remove();
                         $('.select2bs4').select2({
@@ -676,7 +715,7 @@
             });
             // Form Tambah
             var count_tambah = 1;
-            $('#tambah_form_menu').click(function() {
+            $('#tambah_form_menu').click(function () {
                 count_tambah = count_tambah + 1;
                 // var no_nota_atk = $("#no_nota_atk").val();
                 var html_code = "<div class='row mt-2 row_tambah_menu' id='row_tambah" + count_tambah +
@@ -685,7 +724,7 @@
                 html_code +=
                     '<div class="col-lg-4"><select name="id_harga[]" class="select form-control id_harga id_harga1' +
                     count_tambah + ' " detail="' + count_tambah +
-                    '" required><option value="">-Pilih Menu-</option><?php foreach ($menu as $m) : ?><option value="<?= $m->id_harga ?>"><?= $m->nm_menu ?></option><?php endforeach ?></select></div>';
+                    '" required><option value="">-Pilih Menu-</option><?php foreach ($menu as $m): ?><option value="<?= $m->id_harga ?>"><?= $m->nm_menu ?></option><?php endforeach ?></select></div>';
 
                 html_code +=
                     '<div class="col-lg-2"><input type="number" name="qty[]"  value="1" min="1" class="form-control" required></div>';
@@ -706,17 +745,17 @@
 
                 $('#tambah_menu_order').append(html_code);
                 $('.select').select2()
-                $('.select2bs4').one('select2:open', function(e) {
+                $('.select2bs4').one('select2:open', function (e) {
                     $('input.select2-search__field').prop('placeholder', 'Search...');
                 });
             });
 
-            $(document).on('click', '.remove_tambah_menu', function() {
+            $(document).on('click', '.remove_tambah_menu', function () {
                 var delete_row = $(this).data("row");
                 $('#' + delete_row).remove();
             });
             var isSubmitting = false;
-            $(document).on('submit', '#tambah_pesanan_new', function(event) {
+            $(document).on('submit', '#tambah_pesanan_new', function (event) {
                 event.preventDefault();
                 $('#btn_tambah_pesanan').hide();
                 var kd_order = $('#kd_order').val()
@@ -735,9 +774,9 @@
                         method: 'GET',
                         contentType: false,
                         processData: false,
-                        success: function(data) {
+                        success: function (data) {
                             $('#tbh_menu').hide();
-                            setTimeout(function() {
+                            setTimeout(function () {
                                 $("[data-dismiss=modal]").trigger({
                                     type: "click"
                                 });
@@ -769,7 +808,7 @@
 
             });
 
-            $(document).on("change", ".id_harga", function() {
+            $(document).on("change", ".id_harga", function () {
 
                 var id_harga = $(this).val();
                 var detail = $(this).attr('detail')
@@ -777,7 +816,7 @@
                     url: "{{ route('get_harga') }}?id_harga=" + id_harga,
                     method: "GET",
                     dataType: "json",
-                    success: function(data) {
+                    success: function (data) {
                         $(".harga" + detail).val(data);
 
                     }
@@ -788,7 +827,7 @@
 
 
 
-            $(document).on('click', '.btn_tbh_majo', function() {
+            $(document).on('click', '.btn_tbh_majo', function () {
                 var no_order = $(this).attr('no_order');
                 var id_distribusi = $("#id_distribusi").val();
                 // console.log(no_order);
@@ -796,7 +835,7 @@
                     url: "{{ route('tambah_pesanan_majo') }}?no=" + no_order + "&id=" +
                         id_distribusi,
                     dataType: "html",
-                    success: function(hasil) {
+                    success: function (hasil) {
                         $('#orderan_majo').html(hasil);
                         $('.row_tambah_menu').remove();
                         $('.select2bs4').select2({
@@ -807,7 +846,7 @@
                 $.ajax({
                     url: "{{ route('get_karyawan_majo') }}",
                     method: "GET",
-                    success: function(data) {
+                    success: function (data) {
                         $('.buying-selling-group_majo').html(data);
 
                     }
@@ -818,7 +857,7 @@
 
             });
             var isSubmitting = false;
-            $(document).on('submit', '#tambah_pesanan_new_majo', function(event) {
+            $(document).on('submit', '#tambah_pesanan_new_majo', function (event) {
                 event.preventDefault();
                 $('.btn_save_majo').hide();
                 var kd_order = $('#kd_order_majo').val()
@@ -828,7 +867,7 @@
                 var hrg_majo = $('#hrg_majo').val()
 
                 var nota = [];
-                $('input[name="kd_karyawan"]:checked').each(function() {
+                $('input[name="kd_karyawan"]:checked').each(function () {
                     nota.push($(this).attr("value"))
                 });
 
@@ -847,7 +886,7 @@
                             qty_majo: qty_majo,
                             hrg_majo: hrg_majo,
                         },
-                        success: function(data) {
+                        success: function (data) {
                             // console.log(data);
                             Swal.fire({
                                 toast: true,
@@ -867,7 +906,7 @@
             });
 
 
-            $(document).on('click', '.muncul', function(event) {
+            $(document).on('click', '.muncul', function (event) {
                 var id_meja = $(this).attr('id_meja');
                 var no_order = $(this).attr('no_order');
                 $.ajax({
@@ -877,7 +916,7 @@
                         id_meja: id_meja,
                         no_order: no_order
                     },
-                    success: function(r) {
+                    success: function (r) {
                         $('.load_menu_s').html(r);
                         // $('.muncul' + id_meja).hide();
                         // $('.hilang' + id_meja).show();

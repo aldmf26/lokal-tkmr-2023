@@ -56,9 +56,9 @@ class MejaController extends Controller
         $tgl = date('Y-m-d');
         $lokasi = $request->session()->get('id_lokasi');
         $distribusi = DB::select(
-            "SELECT a.*
+            "SELECT a.id_distribusi, REPLACE(REPLACE(a.nm_distribusi, 'GOJEK', ''), 'GRAB', '') as nm_distribusi
             FROM tb_distribusi AS a 
-            
+            WHERE a.id_distribusi != '4'
             ",
         );
         // $orderan = DB::selectOne(
@@ -93,17 +93,20 @@ class MejaController extends Controller
 
 
         $meja = DB::select(
-            "SELECT c.id_meja, c.nm_meja, a.warna, a.no_order, RIGHT(a.no_order,2) AS kd, a.selesai,
-            a.pengantar, SUM(a.qty) AS qty1, e.qty2, min(a.print) as prn, min(a.copy_print) as c_prn, 
-            min(a.checker_tamu) as t_prn, MIN(a.j_mulai) as j_mulai, tr.no_order as paid_order,
-            SUM(a.qty * a.harga) as subtotal
+            "SELECT c.id_meja, c.nm_meja, 
+            MAX(a.no_order) as no_order, 
+            RIGHT(MAX(a.no_order),2) AS kd, 
+            SUM(a.qty) AS qty1, 
+            MAX(tr.no_order) as paid_order,
+            SUM(a.qty * a.harga) as subtotal,
+            COUNT(CASE WHEN IFNULL(a.selesai, 'dimasak') != 'selesai' THEN 1 END) as items_cooking,
+            MIN(a.j_mulai) as j_mulai,
+            MAX(a.print) as prn,
+            MAX(a.copy_print) as c_prn,
+            MAX(a.checker_tamu) as t_prn,
+            MAX(a.copy_checker_tamu) as ct_prn
             FROM tb_meja AS c
             INNER JOIN tb_order AS a ON c.id_meja = a.id_meja AND a.aktif = '1' AND a.void = 0
-            LEFT JOIN ( 
-                SELECT d.no_order , SUM(d.qty) qty2 
-                FROM tb_order2 AS d 
-                GROUP BY d.no_order
-            ) AS e ON e.no_order = a.no_order
             LEFT JOIN tb_transaksi as tr ON tr.no_order = a.no_order
             WHERE c.id_lokasi = '$loc' AND c.id_distribusi = '$id_distribusi'
             GROUP BY c.id_meja 
@@ -234,7 +237,7 @@ class MejaController extends Controller
                         'tgl' => date('Y-m-d'),
                         'admin' => empty($admin) ? Auth::user()->nama : $admin,
                         'j_mulai' => date('Y-m-d H:i:s'),
-                        'selesai' => 'selesai',
+                        'selesai' => 'dimasak',
                         'aktif' => '1',
                         'no_meja' => $no_meja,
                         'warna' => $warna,

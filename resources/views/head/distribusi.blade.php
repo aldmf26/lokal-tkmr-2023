@@ -2,8 +2,7 @@
     @foreach ($distribusi as $d)
         <li class="nav-item">
             <a href="{{ route('head', ['id' => $d->id_distribusi]) }}"
-               class="nav-link {{ $id == $d->id_distribusi ? 'active' : '' }} {{ !empty($d->jumlah) ? 'badge-notif' : '' }}"
-               data-badge="{{ $d->jumlah ?? '' }}">
+               class="nav-link {{ $id == $d->id_distribusi ? 'active' : '' }}">
                 <strong>{{ $d->nm_distribusi }}</strong>
             </a>
         </li>

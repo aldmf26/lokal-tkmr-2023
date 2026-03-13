@@ -1,3 +1,8 @@
+<!-- Back To Top Button -->
+<button id="btnTop" class="btn btn-primary">
+    ↑
+</button>
+
 <!-- Main Footer -->
 <footer class="main-footer">
     <strong>Copyright &copy; 2022 <a href="#" class="text-white">www.ptagafood.com</a>.</strong>
@@ -41,15 +46,15 @@
             return true;
         } else {
             element.data('alreadyClicked', true);
-            setTimeout(function() {
+            setTimeout(function () {
                 element.removeData('alreadyClicked');
             }, 500); // (Prevent user from clicking the button more than once within 500ms (0.5s))
             return false;
         }
     }
 
-    $(document).ready(function() {
-        $('.first-button').on('click', function(e) {
+    $(document).ready(function () {
+        $('.first-button').on('click', function (e) {
             if (doubleClicked($(this))) {
                 e.preventDefault(); // Prevent Default Action
                 e.stopPropagation(); // Stop Navbar from opening/closing
@@ -60,9 +65,9 @@
         });
     });
 
-    $(function() {
+    $(function () {
         $(".select").select2()
-        
+
         $("#example1").DataTable({
 
             "lengthChange": false,
@@ -136,6 +141,22 @@
         });
 
     });
+
+    // Show button when scroll
+    $(window).scroll(function () {
+        if ($(this).scrollTop() > 200) {
+            $('#btnTop').fadeIn();
+        } else {
+            $('#btnTop').fadeOut();
+        }
+    });
+
+    // Scroll to top
+    $('#btnTop').click(function () {
+        $('html, body').animate({ scrollTop: 0 }, 600);
+        return false;
+    });
+
 </script>
 
 @yield('script')

@@ -56,26 +56,27 @@ class OrderanController extends Controller
     public function check_pembayaran(Request $request)
     {
         $no = $request->no;
-        $order = DB::select("SELECT a.id_order, a.id_harga, b.nm_menu, a.qty, a.request, c.nama AS koki1 , d.nama AS koki2, e.nama AS koki3, a.id_distribusi,
-        a.pengantar, a.id_meja, a.j_mulai, a.j_selesai, a.wait, a.selesai, a.harga,
-        timestampdiff(MINUTE, a.j_mulai,a.wait) AS selisih, if(f.qty IS NULL ,0,f.qty) AS qty2
-        FROM tb_order as a 
-        left join view_menu as b on a.id_harga = b.id_harga 
-        left join tb_karyawan as c on c.id_karyawan = a.id_koki1
-        left join tb_karyawan as d on d.id_karyawan = a.id_koki2
-        left join tb_karyawan as e ON e.id_karyawan = a.id_koki3
-        LEFT JOIN tb_order2 AS f ON f.id_order1 = a.id_order
-        where   a.no_order = '$no' AND (a.qty - if(f.qty IS NULL ,0,f.qty)) != '0'");
+        $cek_pembayaran_all = DB::select("SELECT COUNT(*) as total, 
+            COUNT(CASE WHEN IFNULL(selesai, 'dimasak') = 'selesai' THEN 1 END) as selesai_count
+            FROM tb_order 
+            WHERE no_order = '$no' AND void = 0");
+
+        $can_pay = false;
+        if ($cek_pembayaran_all && $cek_pembayaran_all[0]->total > 0) {
+            if ($cek_pembayaran_all[0]->total == $cek_pembayaran_all[0]->selesai_count) {
+                $can_pay = true;
+            }
+        }
 
         $cek_transaksi = DB::table('tb_transaksi')->where('no_order', $no)->first();
 
-        if ($order) {
-            echo 'ada';
+        if ($can_pay) {
+            echo "ada";
         } else {
             if ($cek_transaksi) {
-                echo 'sudah_bayar';
+                echo "sudah_bayar";
             } else {
-                echo 'kosong';
+                echo "kosong";
             }
         }
     }
@@ -92,7 +93,7 @@ class OrderanController extends Controller
         left join tb_karyawan as c on c.id_karyawan = a.id_koki1
         left join tb_karyawan as d on d.id_karyawan = a.id_koki2
         left join tb_karyawan as e ON e.id_karyawan = a.id_koki3
-        where   a.no_order = '$no' AND a.void = 0 ");
+        where   a.no_order = '$no' AND a.selesai = 'selesai' AND a.void = 0 ");
 
         $data = [
             'title' => 'Pembayaran',
@@ -122,7 +123,7 @@ class OrderanController extends Controller
         left join tb_karyawan as e ON e.id_karyawan = a.id_koki3
         LEFT JOIN tb_order2 AS f ON f.id_order1 = a.id_order
         LEFT JOIN tb_meja AS g ON g.id_meja = a.id_meja
-        where   a.no_order = '$no' AND (a.qty - if(f.qty IS NULL ,0,f.qty)) != '0' AND a.void = 0 ");
+        where   a.no_order = '$no' AND (a.qty - if(f.qty IS NULL ,0,f.qty)) != '0' AND a.selesai = 'selesai' AND a.void = 0 ");
 
         $majo = DB::select("SELECT a.id_pembelian, a.tanggal, a.no_nota, c.nm_meja, a.nm_karyawan, b.nm_produk, a.id_karyawan,  a.jumlah, a.harga, a.total
         FROM tb_pembelian AS a

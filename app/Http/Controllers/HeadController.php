@@ -30,6 +30,7 @@ class HeadController extends Controller
                 'title' => 'Tugas Head',
                 'logout' => $request->session()->get('logout'),
                 'id' => $id,
+                'id_lokasi' => $lokasi,
                 'menu' => $menu,
                 'orderan' => DB::select("SELECT COUNT(id_order) as jml_order FROM tb_order WHERE id_lokasi = '$lokasi' AND id_distribusi = '$id' AND selesai = 'dimasak' AND void = 0"),
             ];
@@ -111,41 +112,80 @@ class HeadController extends Controller
 
     public function get_head(Request $request)
     {
-
         $id_distribusi = $request->id ?? '1';
-
         $lokasi = $request->session()->get('id_lokasi');
         $tgl = date('Y-m-d');
-
-        // $tb_koki = DB::join('tb_karyawan', 'tb_karyawan.id_karyawan', '=', 'tb_koki.id_karyawan')->where('tb_koki.tgl', $tgl)->where('tb_koki.id_lokasi', $lokasi)->get();
         $tb_koki = DB::table('tb_koki')->join('tb_karyawan', 'tb_karyawan.id_karyawan', '=', 'tb_koki.id_karyawan')->where('tb_koki.tgl', $tgl)->where('tb_koki.id_lokasi', $lokasi)->get();
+        $limit = $request->limit ?? '3';
 
-        $meja = DB::select("SELECT a.id_meja, a.no_meja as nm_meja, a.no_order, RIGHT(a.no_order,2) AS kd, b.nm_distribusi,a.selesai
+        // Priority: Only show tables that have items OTHER THAN beverages (id_kategori != 5) waiting to be cooked
+        $meja = DB::select("SELECT a.id_meja, a.no_meja as nm_meja, a.no_order, RIGHT(a.no_order,2) AS kd, b.nm_distribusi, a.selesai, a.id_distribusi
         FROM tb_order AS a
         LEFT JOIN tb_distribusi AS b ON b.id_distribusi = a.id_distribusi
-        left join tb_meja as d on d.id_meja = a.id_meja
-        WHERE a.aktif = '1' AND a.id_lokasi = '$lokasi' and a.id_distribusi = '$id_distribusi'
-        group by a.no_order order by a.id_distribusi , a.no_meja ASC;
+        JOIN tb_harga h ON a.id_harga = h.id_harga
+        JOIN tb_menu m_table ON h.id_menu = m_table.id_menu
+        WHERE a.aktif = '1' AND a.id_lokasi = '$lokasi' AND a.selesai = 'dimasak' AND a.void = 0 AND m_table.id_kategori != 5
+        GROUP BY a.no_order 
+        ORDER BY MIN(a.j_mulai) ASC
+        LIMIT $limit;
         ");
+
+        $no_orders = [];
+        foreach ($meja as $m) {
+            $no_orders[] = $m->no_order;
+        }
+
+        $menus = [];
+        $majos = [];
+
+        if (!empty($no_orders)) {
+            $order_list = "'" . implode("','", $no_orders) . "'";
+            
+            $all_menus = DB::select("SELECT m_table.nm_menu, a.no_meja as nm_meja, a.request, a.qty, a.selesai, a.id_order, a.j_mulai, a.no_order, f.ttlMenuSemua, g.other_tables 
+                FROM tb_order AS a 
+                JOIN tb_harga h ON a.id_harga = h.id_harga
+                JOIN tb_menu m_table ON h.id_menu = m_table.id_menu
+                LEFT JOIN (
+                    SELECT d.id_harga, SUM(d.qty) as ttlMenuSemua 
+                    FROM `tb_order` as d 
+                    where d.id_lokasi = '$lokasi' and d.selesai = 'dimasak' and d.aktif = '1' and d.void = 0 
+                    GROUP BY d.id_harga
+                ) as f on a.id_harga = f.id_harga
+                LEFT JOIN (
+                    SELECT d.id_harga, GROUP_CONCAT(CONCAT('Meja ', d.no_meja, '(', d.qty, ')') SEPARATOR ', ') as other_tables
+                    FROM `tb_order` as d
+                    where d.id_lokasi = '$lokasi' and d.selesai = 'dimasak' and d.aktif = '1' and d.void = 0
+                    GROUP BY d.id_harga
+                ) as g on a.id_harga = g.id_harga
+                where a.id_lokasi = '$lokasi' and a.no_order IN ($order_list) and a.selesai = 'dimasak' and a.aktif = '1' and a.void = 0 AND m_table.id_kategori != 5
+                ORDER BY a.id_order");
+
+            foreach ($all_menus as $menu) {
+                $menus[$menu->no_order][] = $menu;
+            }
+
+            $all_majos = DB::select("SELECT a.jumlah, a.id_pembelian, c.nm_produk, a.no_nota
+                    FROM tb_pembelian AS a
+                    LEFT JOIN tb_produk AS c ON c.id_produk = a.id_produk
+                    WHERE a.no_nota IN ($order_list) AND a.lokasi = '$lokasi' and a.selesai = 'diantar'
+                    GROUP BY a.id_pembelian");
+
+            foreach ($all_majos as $majo) {
+                $majos[$majo->no_nota][] = $majo;
+            }
+        }
 
         $setMenit = DB::table('tb_menit')->where('id_lokasi', $lokasi)->first();
 
         $data = [
             'title' => 'Tugas Head',
             'meja' => $meja,
+            'menus_all' => $menus,
+            'majos_all' => $majos,
             'tb_koki' => $tb_koki,
             'lokasi' => $lokasi,
-            'distribusi' => DB::select("SELECT a.*, c.jumlah
-                            FROM tb_distribusi AS a 
-                            LEFT JOIN (SELECT b.id_distribusi , COUNT(b.id_order) AS jumlah
-                            FROM tb_order AS b
-                            WHERE b.selesai = 'dimasak'
-                            GROUP BY b.id_distribusi
-                            ) c ON c.id_distribusi = a.id_distribusi
-                            "),
             'id' => $id_distribusi,
             'setMenit' => $setMenit,
-
         ];
         return view('head.tugas', $data);
     }

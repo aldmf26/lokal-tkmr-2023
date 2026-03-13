@@ -19,8 +19,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <link rel="stylesheet" href="{{ asset_custom('') }}/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
     <link rel="stylesheet"
         href="{{ asset_custom('') }}/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
-    <link rel="stylesheet"
-        href="{{ asset_custom('') }}/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+    <link rel="stylesheet" href="{{ asset_custom('') }}/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
 
     <!-- select 2 -->
     <link rel="stylesheet" href="{{ asset_custom('') }}/plugins/daterangepicker/daterangepicker.css">
@@ -28,8 +27,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <link rel="stylesheet" href="{{ asset_custom('') }}/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
 
     <link rel="stylesheet" href="{{ asset_custom('') }}/plugins/toastr/toastr.min.css">
-    <link rel="stylesheet"
-        href="{{ asset_custom('') }}/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+    <link rel="stylesheet" href="{{ asset_custom('') }}/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
     <!-- Bootstrap Color Picker -->
     <link rel="stylesheet"
         href="{{ asset_custom('') }}/plugins/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css">
@@ -38,11 +36,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
         href="{{ asset_custom('') }}/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
     <!-- Select2 -->
     <link rel="stylesheet" href="{{ asset_custom('') }}/plugins/select2/css/select2.min.css">
-    <link rel="stylesheet"
-        href="{{ asset_custom('') }}/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+    <link rel="stylesheet" href="{{ asset_custom('') }}/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
     <!-- Bootstrap4 Duallistbox -->
-    <link rel="stylesheet"
-        href="{{ asset_custom('') }}/plugins/bootstrap4-duallistbox/bootstrap-duallistbox.min.css">
+    <link rel="stylesheet" href="{{ asset_custom('') }}/plugins/bootstrap4-duallistbox/bootstrap-duallistbox.min.css">
     <!-- BS Stepper -->
     <link rel="stylesheet" href="{{ asset_custom('') }}/plugins/bs-stepper/css/bs-stepper.min.css">
     <!-- dropzonejs -->
@@ -54,10 +50,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <link href="{{ asset_custom('') }}/css1/bootstrap-switch-button.min.css" rel="stylesheet" />
     <link href="{{ asset_custom('') }}/css1/bootstrap4-toggle.min.css" rel="stylesheet">
     <!-- Alpine Plugins -->
-<script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/mask@3.x.x/dist/cdn.min.js"></script>
- 
-<!-- Alpine Core -->
-<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/mask@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- Alpine Core -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
         @keyframes blinking {
             0% {
@@ -755,6 +751,17 @@ scratch. This page gets rid of all links and provides the needed markup only.
             vertical-align: middle;
             height: 32 px;
             border-radius: 3 px
+        }
+
+        #btnTop {
+            position: fixed;
+            bottom: 70px;
+            right: 20px;
+            display: none;
+            z-index: 999;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
         }
     </style>
     <style type="text/css">

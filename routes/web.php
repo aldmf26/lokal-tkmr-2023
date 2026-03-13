@@ -227,6 +227,7 @@ Route::get('/delDp', [DpController::class, 'delDp'])->name('delDp')->middleware(
 // --------------------------------------------------------------------------------------
 
 Route::get('/addKoki', [AddKokiController::class, 'index'])->name('addKoki')->middleware('auth');
+Route::get('/get_bar', [AddKokiController::class, 'get_bar'])->name('get_bar')->middleware('auth');
 Route::post('/absenKoki', [AddKokiController::class, 'absenKoki'])->name('absenKoki')->middleware('auth');
 Route::post('/delAbsKoki', [AddKokiController::class, 'delAbsKoki'])->name('delAbsKoki')->middleware('auth');
 
