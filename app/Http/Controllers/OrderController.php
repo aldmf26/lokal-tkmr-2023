@@ -314,7 +314,7 @@ class OrderController extends Controller
                     ]
                 ]
             );
-            echo 'berhasil';
+            return $this->keranjang($request);
         }
     }
 

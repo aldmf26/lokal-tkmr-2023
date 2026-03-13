@@ -267,6 +267,7 @@
                         {{ number_format($c) }}</th>
                 </tr>
             </table>
+            <input type="hidden" name="ongkir" value="{{ $ongkir }}">
             <button type="submit" class="btn btn-success bg-gradient btn-block">SEND TO KITCHEN</button>
         </div>
     </div>

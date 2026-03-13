@@ -378,7 +378,7 @@ class MejaController extends Controller
                 'waktu' => date('H:i', strtotime($m->waktu_mulai)),
                 'subtotal' => $subtotal,
                 'grand_total' => $grand_total,
-                'url' => route('billing', ['no' => $m->no_order]),
+                'url' => route('list_orderan', ['no' => $m->no_order]),
             ];
         }
 

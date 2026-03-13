@@ -204,18 +204,22 @@
 
                                                                                             } */
 
-        @media (max-width: 400px) {
+        .quick_add:hover .card-order {
+            background-color: #f8f9fa;
+            cursor: pointer;
+            transform: translateY(-3px);
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card-order {
+            transition: all 0.2s ease-in-out;
+            border: 1px solid #ddd;
+        }
 
-            .mobile-br {
-                display: none;
-            }
-
-            .buying-selling {
-                width: 49%;
-                padding: 10px;
-                position: relative;
-            }
-
+        .quick_add.adding {
+            opacity: 0.6;
+            pointer-events: none;
         }
     </style>
     <div class="content-wrapper">
@@ -338,27 +342,37 @@
                                         @endphp
 
                                         @foreach ($menu as $t)
-                                            <div class="col-md-3">
-                                                <a href="" class="input_cart2" data-toggle="modal"
-                                                    data-target="#myModal" id_harga="{{ $t->id_harga }}"
-                                                    id_dis="{{ $id_dis }}">
-                                                    <div class="card">
-                                                        <div
-                                                            style="background-color: rgba(0, 0, 0, 0.5); padding:5px 0 5px;">
-                                                            <h6 style="font-weight: bold; color:#fff;" class="text-center">
-                                                                {{ ucwords(Str::lower($t->nm_menu)) }}
+                                             <div class="col-md-3 mb-3">
+                                                 <div class="card card-order h-100 quick_add" style="cursor: pointer;"
+                                                      data-id_harga="{{ $t->id_harga }}" 
+                                                      data-id_menu="{{ $t->id_menu }}"
+                                                      data-nm_menu="{{ $t->nm_menu }}"
+                                                      data-harga="{{ $t->harga }}"
+                                                      data-tipe="{{ $t->tipe }}">
+                                                     
+                                                     <div class="card-header p-0" style="background-color: rgba(0, 0, 0, 0.5); position: relative;">
+                                                         <h6 style="font-weight: bold; color:#fff; padding: 10px 5px;" class="text-center m-0">
+                                                             {{ ucwords(Str::lower($t->nm_menu)) }}
+                                                         </h6>
+                                                     </div>
+                                                     
+                                                     <div class="card-body d-flex flex-column justify-content-center align-items-center" style="padding:0.5rem;">
+                                                         <p class="m-0 text-center demoname" style="font-size:16px; color: #787878;">
+                                                             <strong>Rp. {{ number_format($t->harga) }}</strong>
+                                                         </p>
+                                                     </div>
 
-                                                            </h6>
-                                                        </div>
-                                                        <div class="card-body" style="padding:0.2rem;">
-                                                            <p class="mt-2 text-center demoname"
-                                                                style="font-size:15px; color: #787878;"><strong>Rp.
-                                                                    {{ number_format($t->harga) }}</strong></p>
-                                                        </div>
-                                                    </div>
-                                                </a>
-                                            </div>
-                                        @endforeach
+                                                     <div class="card-footer p-1 bg-transparent border-0 text-right">
+                                                         <a href="javascript:void(0)" class="input_cart2 btn-edit-order" 
+                                                            data-toggle="modal" data-target="#myModal" 
+                                                            id_harga="{{ $t->id_harga }}" 
+                                                            id_dis="{{ $id_dis }}">
+                                                            <i class="fa fa-edit text-info"></i>
+                                                         </a>
+                                                     </div>
+                                                 </div>
+                                             </div>
+                                         @endforeach
                                     </div>
                                 </div>
                             @endforeach
@@ -385,8 +399,9 @@
                         </div>
                     </div>
                     <div class="col-md-5">
-                        <form action="{{ route('payment') }}" method="get">
-                            <input type="hidden" name="distribusi" value="<?= $id_dis ?>">
+                        <form action="{{ route('create') }}" method="post">
+                            @csrf
+                            <input type="hidden" name="id_distribusi" value="<?= $id_dis ?>">
                             <div class="card">
                                 <div class="card-body">
                                     <h4 class="text-center" style="font-weight: bold;">KERANJANG BELANJA</h4>
@@ -411,7 +426,7 @@
                                         </div> --}}
                                         <div class="col-lg-4">
                                             <label for="">Id Meja</label>
-                                            <select name="meja" id="meja" class="form-control select2bs4" readonly>
+                                            <select name="id_meja" id="meja" class="form-control select2bs4" readonly>
 
                                             </select>
                                         </div>
@@ -481,7 +496,6 @@
 
                         </div> --}}
 
-                        <button type="submit" class="btn float-right  btn-costume"> SIMPAN</button>
 
                     </div>
                 </div>
@@ -581,7 +595,6 @@
 
             });
 
-
             load_cart();
 
             function load_cart() {
@@ -595,17 +608,21 @@
                 });
             }
 
-            $(document).on('submit', '.input_cart', function(event) {
-                event.preventDefault();
-                $('.btn_to_cart').hide();
-                var id_harga2 = $("#id_harga2").val();
-                var price = $("#price").val();
-                var name = $("#name").val();
-                var qty = $("#qty").val();
-                var id_menu = $("#id_menu").val();
-                var req = $("#req").val();
-                var tipe = $("#tipe").val();
-                var dis = "{{ request()->get('dis') }}";
+            $(document).on('click', '.quick_add', function(e) {
+                if ($(e.target).closest('.btn-edit-order').length) return;
+                
+                var $card = $(this);
+                $card.addClass('adding');
+
+                var id_harga2 = $card.data("id_harga");
+                var id_menu = $card.data("id_menu");
+                var name = $card.data("nm_menu");
+                var price = $card.data("harga");
+                var tipe = $card.data("tipe");
+                var dis = $("#dis2").val();
+                var qty = 1;
+                var req = '';
+
                 $.ajax({
                     url: "{{ route('cart') }}",
                     method: 'GET',
@@ -620,18 +637,70 @@
                         dis: dis,
                     },
                     success: function(data) {
-                        if (data == 'berhasil') {
-                            $('#cart_session').html(data);
-                            $('.modal-cart').modal('hide');
+                        $card.removeClass('adding');
+                        if (!$.isNumeric(data)) {
+                            $('#keranjang').html(data);
+                            Swal.fire({
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 500,
+                                icon: 'success',
+                                title: name + ' ditambahkan'
+                            });
+                        } else {
                             Swal.fire({
                                 toast: true,
                                 position: 'top-end',
                                 showConfirmButton: false,
                                 timer: 3000,
-                                icon: 'success',
-                                title: 'Data berhasil ditambahkan'
+                                icon: 'error',
+                                title: 'Stok tidak cukup, sisa: ' + data
                             });
-                            load_cart();
+                        }
+                    },
+                    error: function() {
+                        $card.removeClass('adding');
+                    }
+                });
+            });
+
+            $(document).on('submit', '.input_cart', function(event) {
+                event.preventDefault();
+                $('.btn_to_cart').hide();
+                var id_harga2 = $("#id_harga2").val();
+                var price = $("#price").val();
+                var name = $("#name").val();
+                var qty = $("#qty").val();
+                var id_menu = $("#id_menu").val();
+                var req = $("#req").val();
+                var tipe = $("#tipe").val();
+                var dis = $("#dis2").val();
+                $.ajax({
+                    url: "{{ route('cart') }}",
+                    method: 'GET',
+                    data: {
+                        id_harga2: id_harga2,
+                        price: price,
+                        name: name,
+                        qty: qty,
+                        req: req,
+                        id_menu: id_menu,
+                        tipe: tipe,
+                        dis: dis,
+                    },
+                    success: function(data) {
+                        if (!$.isNumeric(data)) {
+                            $('#keranjang').html(data);
+                            $('.modal-cart').modal('hide');
+                            Swal.fire({
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 1500,
+                                icon: 'success',
+                                title: 'Berhasil ditambahkan ke keranjang'
+                            });
                         } else {
                             Swal.fire({
                                 toast: true,
