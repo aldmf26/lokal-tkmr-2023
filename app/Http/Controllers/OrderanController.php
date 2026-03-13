@@ -67,10 +67,16 @@ class OrderanController extends Controller
         LEFT JOIN tb_order2 AS f ON f.id_order1 = a.id_order
         where   a.no_order = '$no' AND (a.qty - if(f.qty IS NULL ,0,f.qty)) != '0'");
 
+        $cek_transaksi = DB::table('tb_transaksi')->where('no_order', $no)->first();
+
         if ($order) {
             echo 'ada';
         } else {
-            echo 'kosong';
+            if ($cek_transaksi) {
+                echo 'sudah_bayar';
+            } else {
+                echo 'kosong';
+            }
         }
     }
 

@@ -1,3 +1,13 @@
+<div class="row mb-3">
+    <div class="col-12">
+        <div class="d-flex justify-content-center align-items-center flex-wrap" style="gap: 20px; font-size: 0.9rem; font-weight: 600;">
+            <div class="d-flex align-items-center"><span style="width: 15px; height: 15px; background: #e74c3c; border-radius: 4px; margin-right: 8px;"></span> BELUM BAYAR</div>
+            <div class="d-flex align-items-center"><span style="width: 15px; height: 15px; background: #f1c40f; border-radius: 4px; margin-right: 8px;"></span> SUDAH BAYAR</div>
+            <div class="d-flex align-items-center"><span style="width: 15px; height: 15px; background: #2ecc71; border-radius: 4px; margin-right: 8px;"></span> KOSONG</div>
+        </div>
+    </div>
+</div>
+
 <div class="meja-grid">
     @foreach ($meja as $m)
         @php
@@ -6,9 +16,8 @@
             $statusClass = $isOccupied ? 'occupied' : 'empty';
             $statusText = $isOccupied ? ($isPaid ? 'PAID' : 'TERISI') : 'KOSONG';
             
-            if ($isPaid) $statusClass = 'pending'; // Use yellow/pending color for Paid but not cleared
+            if ($isPaid) $statusClass = 'pending'; 
 
-            // Calculate time if occupied
             $timer = '';
             if ($isOccupied && !empty($m->j_mulai)) {
                 $start = new DateTime($m->j_mulai);
@@ -18,59 +27,69 @@
             }
         @endphp
 
-        {{-- Hide empty tables as requested --}}
+        {{-- Hide empty tables as per user's request --}}
         @if($isOccupied)
         <div class="meja-card {{ $statusClass }}">
             <span class="timer-badge"><i class="fas fa-clock"></i> {{ $timer }}</span>
 
             <div class="card-body">
                 <div class="meja-number">{{ $m->nm_meja }}</div>
-                <div class="meja-status">{{ $statusText }}</div>
+                <div class="meja-status text-center w-100">{{ $statusText }}</div>
                 
                 <div class="occupied-info">
-                    <strong>{{ $m->no_order }}</strong><br>
-                    {{ $m->qty1 }} Items
+                    <strong style="color: #34495e; font-size: 0.8rem;">#{{ $m->no_order }}</strong><br>
+                    <span class="badge badge-secondary mb-1">{{ $m->qty1 }} Items</span><br>
+                    <div style="font-size: 1.2rem; font-weight: 900; color: #2c3e50; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 5px;">
+                        Rp {{ number_format($m->subtotal) }}
+                    </div>
                 </div>
             </div>
 
             <div class="meja-footer">
-                <!-- View Order -->
+                <!-- View Detail -->
                 <a class="btn-meja-action muncul" data-toggle="modal" 
-                   id_meja="{{ $m->id_meja }}" no_order="{{ $m->no_order }}" href="#view_menu" title="Detail">
-                    <i class="fas fa-eye"></i>
+                   id_meja="{{ $m->id_meja }}" no_order="{{ $m->no_order }}" href="#view_menu" title="Detail Pesanan">
+                    <i class="fas fa-search-plus"></i>
                 </a>
 
-                <!-- Add Order -->
+                <!-- Add Order Dropdown -->
                 <div class="dropdown">
-                    <a class="btn-meja-action" type="button" data-toggle="dropdown" title="Tambah">
-                        <i class="fas fa-plus"></i>
+                    <a class="btn-meja-action" type="button" data-toggle="dropdown" title="Tambah Pesanan">
+                        <i class="fas fa-cart-plus"></i>
                     </a>
                     <div class="dropdown-menu">
-                        {{-- Added no_meja attribute to match JS plusPesanan logic --}}
-                        <a data-toggle="modal" class="btn_tbh dropdown-item plusPesanan" 
-                           no_order="{{ $m->no_order }}" no_meja="{{ $m->id_meja }}" href="#tbh_menu">Resto</a>
+                        <a data-toggle="modal" class="btn_tbh dropdown-item" 
+                           no_order="{{ $m->no_order }}" href="#tbh_menu">Produk Resto</a>
                         <a data-toggle="modal" class="btn_tbh_majo dropdown-item" 
-                           no_order="{{ $m->no_order }}" href="#tbh_menu_majo">Stk</a>
+                           no_order="{{ $m->no_order }}" href="#tbh_menu_majo">Produk STK (Majoo)</a>
                     </div>
                 </div>
 
                 <!-- Print Bill -->
                 <a target="_blank" href="{{ route('billing', ['no' => $m->no_order]) }}" 
                    class="btn-meja-action" title="Print Bill">
-                    <i class="fas fa-file-invoice-dollar"></i>
+                    <i class="fas fa-print"></i>
                 </a>
 
-                <!-- Payment Button -->
+                <!-- Payment - Only if not paid yet -->
+                @if(!$isPaid)
                 <a href="javascript:void(0)" class="btn-meja-action btn_pembayaran" 
-                   no_order="{{ $m->no_order }}" title="Bayar" 
-                   style="background: {{ $isPaid ? '#bdc3c7' : '#2ecc71' }}; color: white;">
-                    <i class="fas fa-cash-register"></i>
+                   no_order="{{ $m->no_order }}" title="Bayar Sekarang" 
+                   style="background: #27ae60; color: white;">
+                    <i class="fas fa-money-bill-wave"></i>
                 </a>
+                @else
+                <a href="javascript:void(0)" class="btn-meja-action" title="Sudah Dibayar" 
+                   style="background: #bdc3c7; color: white; cursor: not-allowed;">
+                    <i class="fas fa-check-circle"></i>
+                </a>
+                @endif
                 
-                <!-- Clear Up - ONLY if paid -->
+                <!-- Clear Up - Only after payment -->
                 @if($isPaid)
-                <a class="btn-meja-action clear" kode="{{ $m->no_order }}" title="Clear Up" style="background: #3498db; color: white;">
-                    <i class="fas fa-hand-sparkles"></i>
+                <a class="btn-meja-action clear" kode="{{ $m->no_order }}" title="Clear Up Meja" 
+                   style="background: #2980b9; color: white;">
+                    <i class="fas fa-broom"></i>
                 </a>
                 @endif
             </div>

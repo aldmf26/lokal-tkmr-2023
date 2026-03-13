@@ -95,7 +95,8 @@ class MejaController extends Controller
         $meja = DB::select(
             "SELECT c.id_meja, c.nm_meja, a.warna, a.no_order, RIGHT(a.no_order,2) AS kd, a.selesai,
             a.pengantar, SUM(a.qty) AS qty1, e.qty2, min(a.print) as prn, min(a.copy_print) as c_prn, 
-            min(a.checker_tamu) as t_prn, MIN(a.j_mulai) as j_mulai, tr.no_order as paid_order
+            min(a.checker_tamu) as t_prn, MIN(a.j_mulai) as j_mulai, tr.no_order as paid_order,
+            SUM(a.qty * a.harga) as subtotal
             FROM tb_meja AS c
             INNER JOIN tb_order AS a ON c.id_meja = a.id_meja AND a.aktif = '1' AND a.void = 0
             LEFT JOIN ( 

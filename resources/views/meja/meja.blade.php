@@ -257,6 +257,7 @@
     </div>
 
 
+    <input type="hidden" id="id_distribusi" value="{{ $id }}">
     <div class="modal fade" id="view_menu" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
 
@@ -509,36 +510,6 @@
 
             });
 
-            $(document).on('click', '.btn_pembayaran', function() {
-
-                var no = $(this).attr('no_order');
-
-                $.ajax({
-                    url: "{{ route('check_pembayaran') }}",
-                    method: "GET",
-                    data: {
-                        no: no,
-
-                    },
-                    success: function(data) {
-                        if (data == 'ada') {
-                            window.location.href =
-                                "{{ route('list_orderan') }}?no=" + no
-                        } else {
-                            Swal.fire({
-                                toast: true,
-                                position: 'top-end',
-                                showConfirmButton: false,
-                                timer: 3000,
-                                icon: 'error',
-                                title: 'selesaikan pesanan terlebih dahulu dengan menekan tombol <i class="text-info fas fa-thumbs-up"></i>'
-                            });
-                        }
-
-                    }
-                });
-
-            });
 
             load_distribusi2();
 
@@ -617,18 +588,23 @@
             });
 
             $(document).on('click', '.btn_pembayaran', function() {
-
                 var no = $(this).attr('no_order');
-
                 $.ajax({
-                    url: "<?= route('check_pembayaran') ?>",
+                    url: "{{ route('check_pembayaran') }}",
                     method: "GET",
-                    data: {
-                        no: no
-                    },
+                    data: { no: no },
                     success: function(data) {
                         if (data == 'ada') {
-                            window.location.href = "<?= route('list_orderan') ?>?no=" + no
+                            window.location.href = "{{ route('list_orderan') }}?no=" + no
+                        } else if (data == 'sudah_bayar') {
+                            Swal.fire({
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 3000,
+                                icon: 'info',
+                                title: 'Pesanan ini sudah dibayar'
+                            });
                         } else {
                             Swal.fire({
                                 toast: true,
@@ -636,13 +612,11 @@
                                 showConfirmButton: false,
                                 timer: 3000,
                                 icon: 'error',
-                                title: 'selesaikan pesanan terlebih dahulu dengan menekan tombol <i class="text-info fas fa-thumbs-up"></i>'
+                                title: 'Selesaikan pesanan terlebih dahulu'
                             });
                         }
-
                     }
                 });
-
             });
 
             $(document).on('click', '.clear', function(event) {
