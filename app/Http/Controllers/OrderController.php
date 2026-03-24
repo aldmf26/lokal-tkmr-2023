@@ -7,17 +7,49 @@ use App\Models\Distribusi;
 use App\Models\Order;
 use App\Models\Orderan;
 use App\Models\Invoice;
-use App\Models\Limit;
-use App\Models\SoldOut;
 use App\Models\Pembelian;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Gloudemans\Shoppingcart\Facades\Cart;
 use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
+    private function resolveDistribusi($value): array
+    {
+        $idMe = empty($value) ? '1' : (string) $value;
+        $id = (empty($value) || $value != '2') ? '1' : '2';
+
+        return [$idMe, $id];
+    }
+
+    private function getAvailableMeja($idLokasi, $idDistribusi, $date)
+    {
+        return DB::select("SELECT *
+            FROM tb_meja AS a
+            WHERE a.id_meja NOT IN (SELECT b.id_meja from tb_order AS b WHERE b.tgl = '$date' or b.aktif = '1' )
+            and a.id_lokasi = '$idLokasi' and a.id_distribusi = '$idDistribusi'");
+    }
+
+    private function menuOrderLightQuery($idLokasi, $idDistribusi)
+    {
+        return DB::table('tb_harga as a')
+            ->join('tb_menu as b', 'a.id_menu', '=', 'b.id_menu')
+            ->select(
+                'a.id_harga',
+                'a.id_menu',
+                'a.harga',
+                'b.nm_menu',
+                'b.tipe',
+                'b.id_kategori'
+            )
+            ->where('b.lokasi', $idLokasi)
+            ->where('a.id_distribusi', $idDistribusi)
+            ->where('b.aktif', 'on');
+    }
+
     public function index(Request $request)
     {
         $id_user = Auth::user()->id;
@@ -28,19 +60,7 @@ class OrderController extends Controller
             return back();
         } else {
             $id_dis = $request->dis;
-
-            if (empty($id_dis)) {
-                $id_me = '1';
-            } else {
-                $id_me = $id_dis;
-            }
-            if (empty($id_dis)) {
-                $id = '1';
-            } elseif ($id_dis != '2') {
-                $id = '1';
-            } else {
-                $id = '2';
-            }
+            [$id_me, $id] = $this->resolveDistribusi($id_dis);
             $id_lokasi = $request->session()->get('id_lokasi');
             $date = date('Y-m-d');
             if ($id_lokasi == '1') {
@@ -50,21 +70,27 @@ class OrderController extends Controller
             }
             $tgl = date('Y-m-d');
 
-            $meja = DB::select("SELECT *
-                FROM tb_meja AS a
-                WHERE a.id_meja NOT IN (SELECT b.id_meja from tb_order AS b WHERE b.tgl = '$date' or b.aktif = '1' ) and a.id_lokasi = '$id_lokasi' and a.id_distribusi = '$id_me'");
+            $meja = $this->getAvailableMeja($id_lokasi, $id_me, $date);
+            $menusPerKategori = $this->menuOrderLightQuery($id_lokasi, $id)
+                ->get()
+                ->groupBy('id_kategori');
             $data = [
                 'title' => 'Order',
                 'logout' => $request->session()->get('logout'),
-                'distribusi' => Distribusi::all(),
+                'distribusi' => Cache::remember('order:distribusi:all', 300, function () {
+                    return Distribusi::all();
+                }),
                 'id' => $id,
                 'id_dis' => $id_me,
                 'meja' => $meja,
-                'kategori' => DB::table('tb_kategori')
-                    ->select(DB::raw('*, SUBSTRING(kategori, 1, 3) AS ket'))
-                    ->where('lokasi', $lokasi)
-                    ->orderBy('kategori', 'ASC')->groupBy('kategori')
-                    ->get(),
+                'kategori' => Cache::remember("order:kategori:$lokasi", 120, function () use ($lokasi) {
+                    return DB::table('tb_kategori')
+                        ->select(DB::raw('*, SUBSTRING(kategori, 1, 3) AS ket'))
+                        ->where('lokasi', $lokasi)
+                        ->orderBy('kategori', 'ASC')->groupBy('kategori')
+                        ->get();
+                }),
+                'menu_kategori' => $menusPerKategori,
                 'cart' => Cart::content(),
                 'id_distri' => DB::table('tb_distribusi')
                     ->where('id_distribusi', $id_me)
@@ -79,68 +105,14 @@ class OrderController extends Controller
 
     public function get(Request $request)
     {
-        if (empty($request->id_dis2)) {
-            $id_me = '1';
-        } else {
-            $id_me = $request->id_dis2;
-        }
-        if (empty($request->id_dis)) {
-            $id = '1';
-        } elseif ($request->id_dis != '2') {
-            $id = '1';
-        } else {
-            $id = '2';
-        }
-        $tgl = date('Y-m-d');
+        [$id_me] = $this->resolveDistribusi($request->id_dis2);
+        [, $id] = $this->resolveDistribusi($request->id_dis);
         $id_lokasi = $request->session()->get('id_lokasi');
 
-
-
-        // if($ids) {
-        //     $notin = "->whereNotIn('view_menu.id_menu', $ids)";
-        // } else {
-        //     $notin = "";
-        // }
-
-
-        $ids = [];
-        $sold_out = SoldOut::where('tgl', $tgl)->get();
-        foreach ($sold_out as $s) {
-            $ids[] = $s->id_menu;
-        }
-
-        $idl = [];
-        $limit = DB::select("SELECT tb_menu.id_menu as id_menu FROM tb_menu 
-        LEFT JOIN(SELECT SUM(qty) as jml_jual, tb_harga.id_menu FROM tb_order LEFT JOIN tb_harga ON tb_order.id_harga = tb_harga.id_harga WHERE tb_order.id_lokasi = $id_lokasi AND tb_order.tgl = '$tgl' AND tb_order.void = 0 GROUP BY tb_harga.id_menu) dt_order ON tb_menu.id_menu = dt_order.id_menu
-        LEFT JOIN(SELECT id_menu,batas_limit FROM tb_limit WHERE tgl = '$tgl' AND id_lokasi = $id_lokasi GROUP BY id_menu)dt_limit ON tb_menu.id_menu = dt_limit.id_menu
-        WHERE lokasi = $id_lokasi AND dt_order.jml_jual >= dt_limit.batas_limit");
-        foreach ($limit as $l) {
-            $idl[] = $l->id_menu;
-        }
-
-        $vm = DB::table('tb_harga as a')
-            ->select('b.tipe', 'a.id_harga', 'a.id_menu', 'a.id_distribusi', 'a.harga',
-                     'b.nm_menu', 'c.nm_distribusi', 'b.image', 'b.aktif as akv',
-                     'b.lokasi', 'b.id_station', 'b.id_kategori')
-            ->leftJoin('tb_menu as b', 'a.id_menu', '=', 'b.id_menu')
-            ->leftJoin('tb_distribusi as c', 'a.id_distribusi', '=', 'c.id_distribusi')
-            ->where('b.lokasi', $id_lokasi)
-            ->where('a.id_distribusi', $id)
-            ->where('b.aktif', 'on')
-            ->whereNotIn('a.id_menu', $ids)
-            ->whereNotIn('a.id_menu', $idl)
-            ->paginate(12);
+        $vm = $this->menuOrderLightQuery($id_lokasi, $id)->paginate(12);
 
         $data = [
             'menu2' => $vm,
-
-            'menu21' => DB::select("SELECT a.id_harga, a.id_distribusi, a.id_menu, b.nm_menu, c.nm_distribusi, a.harga,b.image
-                FROM tb_harga AS a 
-                LEFT JOIN tb_menu AS b ON b.id_menu = a.id_menu 
-                LEFT JOIN tb_distribusi AS c ON c.id_distribusi = a.id_distribusi
-                where a.id_distribusi = '$id' AND b.lokasi ='$id_lokasi' and b.aktif = 'on' AND b.id_menu NOT IN (SELECT tb_sold_out.id_menu FROM tb_sold_out WHERE tb_sold_out.tgl = '$tgl')
-                GROUP BY a.id_harga"),
-
             'id_dis' => $id_me,
             'title' => 'Order',
         ];
@@ -153,27 +125,10 @@ class OrderController extends Controller
     public function get_meja(Request $request)
     {
         $id_dis = $request->dis;
-
-        if (empty($id_dis)) {
-            $id_me = '1';
-        } else {
-            $id_me = $id_dis;
-        }
-        if (empty($id_dis)) {
-            $id = '1';
-        } elseif ($id_dis != '2') {
-            $id = '1';
-        } else {
-            $id = '2';
-        }
+        [$id_me] = $this->resolveDistribusi($id_dis);
         $id_lokasi = $request->session()->get('id_lokasi');
         $date = date('Y-m-d');
-
-        $meja = DB::select(
-            DB::raw("SELECT *
-        FROM tb_meja AS a
-        WHERE a.id_meja NOT IN (SELECT b.id_meja from tb_order AS b WHERE b.tgl = '$date' or b.aktif = '1' ) and a.id_lokasi = '$id_lokasi' and a.id_distribusi = '$id_me'"),
-        );
+        $meja = $this->getAvailableMeja($id_lokasi, $id_me, $date);
 
         foreach ($meja as $m) {
             echo '<option value="' . $m->id_meja . '">' . $m->nm_meja . '</option>';
@@ -182,49 +137,11 @@ class OrderController extends Controller
 
     public function cari(Request $request)
     {
-        if (empty($request->dis2)) {
-            $id_me = '1';
-        } else {
-            $id_me = $request->dis2;
-        }
-        if (empty($request->dis)) {
-            $id = '1';
-        } elseif ($request->dis != '2') {
-            $id = '1';
-        } else {
-            $id = '2';
-        }
-        $tgl = date('Y-m-d');
+        [$id_me] = $this->resolveDistribusi($request->dis2);
+        [, $id] = $this->resolveDistribusi($request->dis);
         $id_lokasi = $request->session()->get('id_lokasi');
-        // soldout
-        $ids = [];
-        $sold_out = SoldOut::where('tgl', $tgl)->get();
-        foreach ($sold_out as $s) {
-            $ids[] = $s->id_menu;
-        }
-
-        // limit
-        $idl = [];
-        $limit = DB::select("SELECT tb_menu.id_menu as id_menu FROM tb_menu 
-        LEFT JOIN(SELECT SUM(qty) as jml_jual, tb_harga.id_menu FROM tb_order LEFT JOIN tb_harga ON tb_order.id_harga = tb_harga.id_harga WHERE tb_order.id_lokasi = $id_lokasi AND tb_order.tgl = '$tgl' AND tb_order.void = 0 GROUP BY tb_harga.id_menu) dt_order ON tb_menu.id_menu = dt_order.id_menu
-        LEFT JOIN(SELECT id_menu,batas_limit FROM tb_limit WHERE tgl = '$tgl' AND id_lokasi = $id_lokasi GROUP BY id_menu)dt_limit ON tb_menu.id_menu = dt_limit.id_menu
-        WHERE lokasi = $id_lokasi AND dt_order.jml_jual >= dt_limit.batas_limit");
-        foreach ($limit as $l) {
-            $idl[] = $l->id_menu;
-        }
-
-        $vm = DB::table('tb_harga as a')
-            ->select('b.tipe', 'a.id_harga', 'a.id_menu', 'a.id_distribusi', 'a.harga',
-                     'b.nm_menu', 'c.nm_distribusi', 'b.image', 'b.aktif as akv',
-                     'b.lokasi', 'b.id_station', 'b.id_kategori')
-            ->leftJoin('tb_menu as b', 'a.id_menu', '=', 'b.id_menu')
-            ->leftJoin('tb_distribusi as c', 'a.id_distribusi', '=', 'c.id_distribusi')
-            ->where('b.lokasi', $id_lokasi)
-            ->where('a.id_distribusi', $id)
+        $vm = $this->menuOrderLightQuery($id_lokasi, $id)
             ->where('b.nm_menu', 'LIKE', '%' . $request->keyword . '%')
-            ->where('b.aktif', 'on')
-            ->whereNotIn('a.id_menu', $ids)
-            ->whereNotIn('a.id_menu', $idl)
             ->get();
 
         $data = [
@@ -257,8 +174,6 @@ class OrderController extends Controller
 
     public function cart(Request $request)
     {
-        $id_lokasi = $request->session()->get('id_lokasi');
-        $date = date('Y-m-d');
         $id = $request->id_harga2;
         $price = $request->price;
         $nama = $request->name;
@@ -275,47 +190,29 @@ class OrderController extends Controller
             $kry = DB::table('tb_karyawan_majo')->where('kd_karyawan', $id_kr)->first();
             $karyawan[] = preg_replace("/[^a-zA-Z0-9]/", " ", $kry->nm_karyawan);
         }
-
-
-        $detail = DB::selectOne("SELECT a.id_harga, a.id_menu, b.nm_menu, c.nm_distribusi, a.harga,b.image
-        FROM tb_harga AS a 
-        LEFT JOIN tb_menu AS b ON b.id_menu = a.id_menu 
-        LEFT JOIN tb_distribusi AS c ON c.id_distribusi = a.id_distribusi
-        where a.id_harga = '$id'
-        GROUP BY a.id_harga");
-
-
-        $dt_limit = DB::selectOne("SELECT dt_order.jml_jual as jml_jual, dt_limit.batas_limit as batas_limit  FROM tb_menu 
-        LEFT JOIN(SELECT SUM(qty) as jml_jual, tb_harga.id_menu FROM tb_order LEFT JOIN tb_harga ON tb_order.id_harga = tb_harga.id_harga WHERE tb_order.id_lokasi = $id_lokasi AND tb_order.tgl = '$date' AND tb_order.void = 0 GROUP BY tb_harga.id_menu) dt_order ON tb_menu.id_menu = dt_order.id_menu
-        LEFT JOIN(SELECT id_menu,batas_limit FROM tb_limit WHERE tgl = '$date' AND id_lokasi = $id_lokasi GROUP BY id_menu)dt_limit ON tb_menu.id_menu = dt_limit.id_menu
-        WHERE lokasi = $id_lokasi AND tb_menu.id_menu = $detail->id_menu");
-        if ($dt_limit->batas_limit > 0 && $dt_limit->jml_jual + $qty > $dt_limit->batas_limit) {
-            echo $dt_limit->batas_limit - $dt_limit->jml_jual;
+        if ($potonganJumlah > 0) {
+            $pricePotongan = $potonganJenis == 'rp' ? $price - $potonganJumlah : ($price * $potonganJumlah) / 100;
         } else {
-            if ($potonganJumlah > 0) {
-                $pricePotongan = $potonganJenis == 'rp' ? $price - $potonganJumlah : ($price * $potonganJumlah) / 100;
-            } else {
-                $pricePotongan = $price;
-            }
-            Cart::add(
-                [
-                    'id' => $id,
-                    'name' => $nama,
-                    'price' => $pricePotongan,
-                    'qty' => $qty,
-                    'options' => [
-                        'req' => $req,
-                        'nm_karyawan' => [$karyawan],
-                        'program' => 'resto',
-                        'id_menu' => $id_menu,
-                        'tipe' => $tipe,
-                        'hargaNormal' => $price,
-                        'potongan' => $potonganJumlah
-                    ]
-                ]
-            );
-            return $this->keranjang($request);
+            $pricePotongan = $price;
         }
+        Cart::add(
+            [
+                'id' => $id,
+                'name' => $nama,
+                'price' => $pricePotongan,
+                'qty' => $qty,
+                'options' => [
+                    'req' => $req,
+                    'nm_karyawan' => [$karyawan],
+                    'program' => 'resto',
+                    'id_menu' => $id_menu,
+                    'tipe' => $tipe,
+                    'hargaNormal' => $price,
+                    'potongan' => $potonganJumlah
+                ]
+            ]
+        );
+        return $this->keranjang($request);
     }
 
     public function destroy_card()

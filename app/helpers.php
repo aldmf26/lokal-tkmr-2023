@@ -12,3 +12,26 @@ if (!function_exists('asset_custom')) {
         return asset($directory . ($path ? '/' . ltrim($path, '/') : ''));
     }
 }
+
+if (!function_exists('cat_beverages')) {
+    // 5 = Takemori, 23 = Soondobu
+    function cat_beverages() { return [5, 23]; }
+}
+
+if (!function_exists('cat_beverages_ongkir')) {
+    // Minuman & Ongkir untuk filter Dapur
+    function cat_beverages_ongkir() { return [5, 11, 23, 24]; }
+}
+
+if (!function_exists('cat_shabu_sushi')) {
+    // Makanan spesifik checker pisah
+    function cat_shabu_sushi() { return ['14', '15', '17', '18']; }
+}
+
+if (!function_exists('cat_shabu_only')) {
+    function cat_shabu_only() { return ['14', '15', '17']; }
+}
+
+if (!function_exists('cat_sushi_only')) {
+    function cat_sushi_only() { return '18'; }
+}

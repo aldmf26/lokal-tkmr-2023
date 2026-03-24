@@ -1,4 +1,9 @@
 <body class="hold-transition layout-top-nav">
+    <div class="preloader">
+        <div class="loader">
+            <div class="loader-spinner"></div>
+        </div>
+    </div>
     <div class="wrapper">
         <!-- Navbar -->
         <nav class="main-header navbar navbar-expand-md navbar-light navbar-white"

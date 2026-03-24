@@ -53,7 +53,26 @@
         }
     }
 
+    $(window).on('load', function() {
+        $(".preloader").addClass('fade-out');
+        setTimeout(function() {
+            $(".preloader").css("display", "none");
+        }, 500);
+    });
+
     $(document).ready(function () {
+        // Show preloader on menu navigation
+        $('a').on('click', function(e) {
+            var href = $(this).attr('href');
+            var target = $(this).attr('target');
+            
+            // Exclude empty links, anchors, javascript links, and new tabs
+            if (href && href !== '#' && !href.startsWith('javascript:') && !href.startsWith('#') && (!target || target !== '_blank')) {
+                // Check if it's the logout link or other specific routes if needed
+                $(".preloader").css("display", "flex").removeClass('fade-out');
+            }
+        });
+
         $('.first-button').on('click', function (e) {
             if (doubleClicked($(this))) {
                 e.preventDefault(); // Prevent Default Action

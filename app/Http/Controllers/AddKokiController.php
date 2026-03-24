@@ -37,16 +37,23 @@ class AddKokiController extends Controller
     public function get_bar(Request $request)
     {
         $limit = $request->limit ?? '3';
+        $meja_search = $request->meja ?? '';
+
+        $whereMeja = '';
+        if ($meja_search != '') {
+            $whereMeja = " AND a.no_meja LIKE '%$meja_search%' ";
+        }
         $lokasi = $request->session()->get('id_lokasi');
         $tgl = date('Y-m-d');
+        $cat_bev = implode(',', cat_beverages());
         
-        // Priority: Only show tables that have beverages (kd_kategori = 5) waiting to be cooked
+        // Priority: Only show tables that have beverages waiting to be cooked
         $meja = DB::select("SELECT a.id_meja, a.no_meja as nm_meja, a.no_order, RIGHT(a.no_order,2) AS kd, b.nm_distribusi, a.selesai, a.id_distribusi
         FROM tb_order AS a
         LEFT JOIN tb_distribusi AS b ON b.id_distribusi = a.id_distribusi
         JOIN tb_harga h ON a.id_harga = h.id_harga
         JOIN tb_menu m_table ON h.id_menu = m_table.id_menu
-        WHERE a.aktif = '1' AND a.id_lokasi = '$lokasi' AND a.selesai = 'dimasak' AND a.void = 0 AND m_table.id_kategori = 5
+        WHERE a.aktif = '1' AND a.id_lokasi = '$lokasi' AND a.selesai = 'dimasak' AND a.void = 0 AND m_table.id_kategori IN ($cat_bev) $whereMeja
         GROUP BY a.no_order 
         ORDER BY MIN(a.j_mulai) ASC
         LIMIT $limit;
@@ -72,12 +79,16 @@ class AddKokiController extends Controller
                     GROUP BY d.id_harga
                 ) as f on a.id_harga = f.id_harga
                 LEFT JOIN (
-                    SELECT d.id_harga, GROUP_CONCAT(CONCAT('Meja ', d.no_meja, '(', d.qty, ')') SEPARATOR ', ') as other_tables
-                    FROM `tb_order` as d
-                    where d.id_lokasi = '$lokasi' and d.selesai = 'dimasak' and d.aktif = '1' and d.void = 0
-                    GROUP BY d.id_harga
+                    SELECT id_harga, GROUP_CONCAT(CONCAT('Meja ', no_meja, '(', sum_qty, ')') SEPARATOR ', ') as other_tables
+                    FROM (
+                        SELECT d.id_harga, d.no_meja, SUM(d.qty) as sum_qty
+                        FROM `tb_order` as d
+                        where d.id_lokasi = '$lokasi' and d.selesai = 'dimasak' and d.aktif = '1' and d.void = 0
+                        GROUP BY d.id_harga, d.no_meja
+                    ) as grouped
+                    GROUP BY id_harga
                 ) as g on a.id_harga = g.id_harga
-                where a.id_lokasi = '$lokasi' and a.no_order IN ($order_list) and a.selesai = 'dimasak' and a.aktif = '1' and a.void = 0 AND m_table.id_kategori = 5
+                where a.id_lokasi = '$lokasi' and a.no_order IN ($order_list) and a.selesai = 'dimasak' and a.aktif = '1' and a.void = 0 AND m_table.id_kategori IN ($cat_bev)
                 ORDER BY a.id_order");
 
             foreach ($all_menus as $menu) {

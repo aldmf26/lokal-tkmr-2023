@@ -46,7 +46,8 @@ class dataOrderanController extends Controller
                 'tb_order' => DB::select("SELECT a.* ,b.nm_menu, a.no_meja as nm_meja, d.nama AS koki1 , e.nama AS koki2, f.nama AS koki3,
             timestampdiff(MINUTE, a.j_mulai,a.wait) AS selisih, tb_order2.id_order1 as cek_bayar
             FROM tb_order as a 
-            left join view_menu as b on a.id_harga = b.id_harga
+            left join tb_harga as vh on a.id_harga = vh.id_harga
+            left join tb_menu as b on vh.id_menu = b.id_menu
             LEFT JOIN tb_meja AS c ON c.id_meja = a.id_meja
             LEFT JOIN tb_karyawan AS d ON d.id_karyawan = a.id_koki1
             LEFT JOIN tb_karyawan AS e ON e.id_karyawan = a.id_koki2
@@ -88,7 +89,8 @@ class dataOrderanController extends Controller
             'tb_order' => DB::select("SELECT a.* ,b.nm_menu, c.nm_meja, d.nama AS koki1 , e.nama AS koki2, f.nama AS koki3,
             timestampdiff(MINUTE, a.j_mulai,a.wait) AS selisih, tb_order2.id_order1 as cek_bayar
             FROM tb_order as a 
-            left join view_menu as b on a.id_harga = b.id_harga
+            left join tb_harga as vh on a.id_harga = vh.id_harga
+            left join tb_menu as b on vh.id_menu = b.id_menu
             LEFT JOIN tb_meja AS c ON c.id_meja = a.id_meja
             LEFT JOIN tb_karyawan AS d ON d.id_karyawan = a.id_koki1
             LEFT JOIN tb_karyawan AS e ON e.id_karyawan = a.id_koki2

@@ -96,12 +96,15 @@
                 @if ($j->nm_produk != '')
                     <tr class="header meja">
                         <td></td>
-                        <td>{{ $j->nm_produk }}</td>
+                        <td>
+                            {{ $j->nm_produk }}
+                            <br>
+                            <small class="text-muted font-weight-bold">STK / MAJOO (info)</small>
+                        </td>
                         <td></td>
                         <td>{{ $j->jumlah }}</td>
                         <td>
-                            <a kode="{{ $j->id_pembelian }}" no_order="{{ $m->no_order }}"
-                                class="btn btn-info btn-sm selesai_majo"><i class="fas fa-check"></i> Selesai</a>
+                            <span class="badge badge-secondary" style="font-size: 0.85rem;">Tidak perlu proses Head</span>
                         </td>
                         <td></td>
                     </tr>

@@ -3,7 +3,7 @@
     <?php
     $dt = date('Y-m-d');
     date_default_timezone_set('Asia/Jakarta');
-    ?>
+                ?>
     <style>
         .nav-pills .nav-link.active {
             color: #fff;
@@ -191,8 +191,8 @@
 
 
         /* .buying-selling.active .radio-dot:after {
-                                                                                             background-image: linear-gradient(to right, #f78ca0 0%, #f9748f 19%, #fd868c 60%, #fe9a8b 100%);
-                                                                                            } */
+                                                                                                         background-image: linear-gradient(to right, #f78ca0 0%, #f9748f 19%, #fd868c 60%, #fe9a8b 100%);
+                                                                                                        } */
 
         /* dot */
         .buying-selling:hover .radio-dot:after {
@@ -200,9 +200,9 @@
         }
 
         /* .buying-selling.active:hover .radio-dot:after {
-                                                                                             background-image: linear-gradient(to right, #f78ca0 0%, #f9748f 19%, #fd868c 60%, #fe9a8b 100%);
+                                                                                                         background-image: linear-gradient(to right, #f78ca0 0%, #f9748f 19%, #fd868c 60%, #fe9a8b 100%);
 
-                                                                                            } */
+                                                                                                        } */
 
         .quick_add:hover .card-order {
             background-color: #f8f9fa;
@@ -211,7 +211,7 @@
             transition: all 0.2s ease-in-out;
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
         }
-        
+
         .card-order {
             transition: all 0.2s ease-in-out;
             border: 1px solid #ddd;
@@ -232,15 +232,14 @@
                             <div class="card bg-gradient">
                                 <div class="card-body">
                                     <nav class=" nav-pills nav-fill">
-                                        <?php if ($d->id_distribusi == $id_dis) : ?>
+                                        <?php    if ($d->id_distribusi == $id_dis): ?>
                                         <a class="nav-item nav-link active"
                                             href="{{ route('order', ['dis' => $d->id_distribusi]) }}"
                                             style="font-weight: bold; color: #fff;">{{ $d->nm_distribusi }}</a>
-                                        <?php else : ?>
-                                        <a class="nav-item nav-link "
-                                            href="{{ route('order', ['dis' => $d->id_distribusi]) }}"
+                                        <?php    else: ?>
+                                        <a class="nav-item nav-link " href="{{ route('order', ['dis' => $d->id_distribusi]) }}"
                                             style="font-weight: bold; color: #fff;">{{ $d->nm_distribusi }}</a>
-                                        <?php endif ?>
+                                        <?php    endif ?>
                                     </nav>
                                 </div>
                             </div>
@@ -274,8 +273,8 @@
                                     </li>
                                     @foreach ($kategori as $k)
                                         <li class="nav-item">
-                                            <a class="nav-link" id="pills-profile-tab" data-toggle="pill"
-                                                href="#{{ $k->ket }}" role="tab" aria-controls="pills-profile"
+                                            <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#{{ $k->ket }}"
+                                                role="tab" aria-controls="pills-profile"
                                                 aria-selected="false"><strong>{{ $k->kategori }}</strong></a>
                                         </li>
                                     @endforeach
@@ -290,7 +289,7 @@
                         <input type="hidden" id='dis2' value="<?= $id_dis ?>">
 
                         <div class="tab-content" id="pills-tabContent">
-                            <div class="tab-pane fade show active" id="pills-home" role="tabpanel"
+                            <div class="tab-pane fadel show active" id="pills-home" role="tabpanel"
                                 aria-labelledby="pills-home-tab">
                                 <div class="card">
                                     <div class="card-body">
@@ -307,80 +306,52 @@
                                     </div>
                                 </div>
                             </div>
-                            @php
-                                $tgl = date('Y-m-d');
-                                $id_lokasi = Session::get('id_lokasi');
-                                $sold_out = DB::table('tb_sold_out')->where('tgl', $tgl)->get();
-                                $id_menu_sold_out = [];
-                                foreach ($sold_out as $s) {
-                                    $id_menu_sold_out[] = $s->id_menu;
-                                }
-
-                                $idl = [];
-                                $limit = DB::select("SELECT tb_menu.id_menu as id_menu FROM tb_menu
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        LEFT JOIN(SELECT SUM(qty) as jml_jual, tb_harga.id_menu FROM tb_order LEFT JOIN tb_harga ON tb_order.id_harga = tb_harga.id_harga WHERE tb_order.id_lokasi = $id_lokasi AND tb_order.tgl = '$tgl' AND tb_order.void = 0 GROUP BY tb_harga.id_menu) dt_order ON tb_menu.id_menu = dt_order.id_menu
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        LEFT JOIN(SELECT id_menu,batas_limit FROM tb_limit WHERE tgl = '$tgl' AND id_lokasi = $id_lokasi GROUP BY id_menu)dt_limit ON tb_menu.id_menu = dt_limit.id_menu
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        WHERE lokasi = $id_lokasi AND dt_order.jml_jual >= dt_limit.batas_limit");
-                                foreach ($limit as $l) {
-                                    $idl[] = $l->id_menu;
-                                }
-                            @endphp
                             @foreach ($kategori as $k)
-                                <div class="tab-pane fade" id="{{ $k->ket }}" role="tabpanel"
+                                <div class="tab-pane fadel" id="{{ $k->ket }}" role="tabpanel"
                                     aria-labelledby="pills-profile-tab">
                                     <div class="row">
-                                        @php
-                                            $menu = DB::table('view_menu_kategori')
-                                                ->join('tb_menu', 'view_menu_kategori.id_menu', 'tb_menu.id_menu')
-                                                ->where('view_menu_kategori.lokasi', $id_lokasi)
-                                                ->where('view_menu_kategori.id_distribusi', $id)
-                                                ->where('view_menu_kategori.id_kategori', $k->kd_kategori)
-                                                ->where('tb_menu.aktif', 'on')
-                                                ->whereNotIn('view_menu_kategori.id_menu', $id_menu_sold_out)
-                                                ->whereNotIn('view_menu_kategori.id_menu', $idl)
-                                                ->get();
-                                        @endphp
+                                        @php $menu = $menu_kategori[$k->kd_kategori] ?? collect(); @endphp
 
                                         @foreach ($menu as $t)
-                                             <div class="col-md-3 mb-3">
-                                                 <div class="card card-order h-100 quick_add" style="cursor: pointer;"
-                                                      data-id_harga="{{ $t->id_harga }}" 
-                                                      data-id_menu="{{ $t->id_menu }}"
-                                                      data-nm_menu="{{ $t->nm_menu }}"
-                                                      data-harga="{{ $t->harga }}"
-                                                      data-tipe="{{ $t->tipe }}">
-                                                     
-                                                     <div class="card-header p-0" style="background-color: rgba(0, 0, 0, 0.5); position: relative;">
-                                                         <h6 style="font-weight: bold; color:#fff; padding: 10px 5px;" class="text-center m-0">
-                                                             {{ ucwords(Str::lower($t->nm_menu)) }}
-                                                         </h6>
-                                                     </div>
-                                                     
-                                                     <div class="card-body d-flex flex-column justify-content-center align-items-center" style="padding:0.5rem;">
-                                                         <p class="m-0 text-center demoname" style="font-size:16px; color: #787878;">
-                                                             <strong>Rp. {{ number_format($t->harga) }}</strong>
-                                                         </p>
-                                                     </div>
+                                            <div class="col-md-3 mb-3">
+                                                <div class="card card-order h-100 quick_add" style="cursor: pointer;"
+                                                    data-id_harga="{{ $t->id_harga }}" data-id_menu="{{ $t->id_menu }}"
+                                                    data-nm_menu="{{ $t->nm_menu }}" data-harga="{{ $t->harga }}"
+                                                    data-tipe="{{ $t->tipe }}">
 
-                                                     <div class="card-footer p-1 bg-transparent border-0 text-right">
-                                                         <a href="javascript:void(0)" class="input_cart2 btn-edit-order" 
-                                                            data-toggle="modal" data-target="#myModal" 
-                                                            id_harga="{{ $t->id_harga }}" 
+                                                    <div class="card-header p-0"
+                                                        style="background-color: rgba(0, 0, 0, 0.5); position: relative;">
+                                                        <h6 style="font-weight: bold; color:#fff; padding: 10px 5px;"
+                                                            class="text-center m-0">
+                                                            {{ ucwords(Str::lower($t->nm_menu)) }}
+                                                        </h6>
+                                                    </div>
+
+                                                    <div class="card-body d-flex flex-column justify-content-center align-items-center"
+                                                        style="padding:0.5rem;">
+                                                        <p class="m-0 text-center demoname" style="font-size:16px; color: #787878;">
+                                                            <strong>Rp. {{ number_format($t->harga) }}</strong>
+                                                        </p>
+                                                    </div>
+
+                                                    <div class="card-footer p-1 bg-transparent border-0 text-right">
+                                                        <a href="javascript:void(0)" class="input_cart2 btn-edit-order"
+                                                            data-toggle="modal" data-target="#myModal" id_harga="{{ $t->id_harga }}"
                                                             id_dis="{{ $id_dis }}">
-                                                         </a>
-                                                     </div>
-                                                 </div>
-                                             </div>
-                                         @endforeach
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endforeach
                                     </div>
                                 </div>
                             @endforeach
-                            <div class="tab-pane fade" id="majoo" role="tabpanel" aria-labelledby="pills-profile-tab">
+                            <div class="tab-pane fadel" id="majoo" role="tabpanel" aria-labelledby="pills-profile-tab">
                                 <div class="col-lg-12">
                                     <div class="card">
                                         <div class="card-body">
-                                            <input type="text" name="search_text" id_dis="{{ $id }}"
-                                                id="search_majoo" class="form-control" placeholder="Cari Menu . . ." />
+                                            <input type="text" name="search_text" id_dis="{{ $id }}" id="search_majoo"
+                                                class="form-control" placeholder="Cari Menu . . ." />
                                         </div>
                                     </div>
                                 </div>
@@ -431,7 +402,7 @@
                                         </div>
                                         <div class="col-lg-4">
                                             <label for="">No Meja</label>
-                                            <input type="number" name="no_meja" required class="form-control" value="1">
+                                            <input type="number" name="no_meja" required class="form-control">
                                         </div>
                                         <div class="col-lg-4">
                                             <label for="">Orang</label>
@@ -459,8 +430,8 @@
     </div>
 
     <form method="get" class="input_cart">
-        <div class="modal fade modal-cart" id="myModal" tabindex="-1" role="dialog"
-            aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal fadel modal-cart" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
             <div class="modal-dialog modal-sm" role="document">
                 <div id="harga"></div>
             </div>
@@ -468,8 +439,8 @@
         </div>
     </form>
     <form method="get" class="input_cart_majo">
-        <div class="modal fade modal-cart" id="modal_majo" tabindex="-1" role="dialog"
-            aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal fadel modal-cart" id="modal_majo" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
 
@@ -487,7 +458,8 @@
                         <div id="harga_majoo">
 
                         </div>
-                        {{-- <hr>
+                        {{--
+                        <hr>
                         <h5 style="font-size: 1rem;">DIJUAL OLEH</h5>
 
                         <div class="buying-selling-group" id="buying-selling-group" data-toggle="buttons">
@@ -506,12 +478,12 @@
 
 @section('script')
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             var dis = $("#dis").val();
             var dis2 = $("#dis2").val();
             load_menu(1);
 
-            $(document).on('click', '.pagination a', function(event) {
+            $(document).on('click', '.pagination a', function (event) {
                 event.preventDefault();
                 var page = $(this).attr('href').split('page=')[1];
                 load_menu(page);
@@ -541,12 +513,12 @@
 
                     url: "{{ route('get_order') }}?page=" + page + "&id_dis=" + dis + "&id_dis2=" + dis2,
                     dataType: "html",
-                    success: function(hasil) {
+                    success: function (hasil) {
                         $('#menu').html(hasil);
                     }
                 });
             }
-            $('#search_field').keyup(function() {
+            $('#search_field').keyup(function () {
                 var keyword = $("#search_field").val();
                 if (keyword != '') {
                     $('#result2').show();
@@ -568,13 +540,13 @@
                         dis: dis,
                         dis2: dis2,
                     },
-                    success: function(hasil) {
+                    success: function (hasil) {
                         $('#result2').html(hasil);
                     }
                 });
             }
 
-            $(document).on('click', '.input_cart2', function() {
+            $(document).on('click', '.input_cart2', function () {
                 var id_harga = $(this).attr("id_harga");
                 var id_dis = $(this).attr("id_dis");
 
@@ -586,7 +558,7 @@
                         id_harga: id_harga,
                         id_dis: id_dis,
                     },
-                    success: function(data) {
+                    success: function (data) {
                         $('#harga').html(data);
                         // alert(data);
                     }
@@ -601,21 +573,21 @@
                 $.ajax({
                     method: "GET",
                     url: "{{ route('keranjang') }}?dis=" + dis2,
-                    success: function(hasil) {
+                    success: function (hasil) {
                         $('#keranjang').html(hasil);
                     }
                 });
             }
 
-            $(document).on('click', '.card-order', function(e) {
+            $(document).on('click', '.card-order', function (e) {
                 // If it's the edit button itself, let the native handler work
                 if ($(e.target).closest('.btn-edit-order').length) return;
-                
+
                 // Trigger the modal (the edit button in the footer)
                 $(this).find('.input_cart2').click();
             });
 
-            $(document).on('submit', '.input_cart', function(event) {
+            $(document).on('submit', '.input_cart', function (event) {
                 event.preventDefault();
                 $('.btn_to_cart').hide();
                 var id_harga2 = $("#id_harga2").val();
@@ -639,34 +611,22 @@
                         tipe: tipe,
                         dis: dis,
                     },
-                    success: function(data) {
-                        if (!$.isNumeric(data)) {
-                            $('#keranjang').html(data);
-                            $('.modal-cart').modal('hide');
-                            Swal.fire({
-                                toast: true,
-                                position: 'top-end',
-                                showConfirmButton: false,
-                                timer: 1500,
-                                icon: 'success',
-                                title: 'Berhasil ditambahkan ke keranjang'
-                            });
-                        } else {
-                            Swal.fire({
-                                toast: true,
-                                position: 'top-end',
-                                showConfirmButton: false,
-                                timer: 3000,
-                                icon: 'error',
-                                title: 'Jumlah melebihi batas limit, Maksimal order ' +
-                                    data + ' porsi'
-                            });
-                        }
+                    success: function (data) {
+                        $('#keranjang').html(data);
+                        $('.modal-cart').modal('hide');
+                        Swal.fire({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 1500,
+                            icon: 'success',
+                            title: 'Berhasil ditambahkan ke keranjang'
+                        });
                     }
                 });
             });
 
-            $(document).on('click', '.delete_cart', function(event) {
+            $(document).on('click', '.delete_cart', function (event) {
                 var rowid = $(this).attr("id");
                 // alert(rowId);
                 $.ajax({
@@ -675,7 +635,7 @@
                     data: {
                         rowid: rowid
                     },
-                    success: function(data) {
+                    success: function (data) {
                         Swal.fire({
                             toast: true,
                             position: 'top-end',
@@ -690,7 +650,7 @@
                 });
             });
 
-            $(document).on('click', '.min_cart', function(event) {
+            $(document).on('click', '.min_cart', function (event) {
                 var rowid = $(this).attr("id");
                 var qty = $(this).attr("qty");
 
@@ -702,13 +662,13 @@
                         rowid: rowid,
                         qty: qty
                     },
-                    success: function(data) {
+                    success: function (data) {
                         // $('#cart_session').html(data); 
                         load_cart();
                     }
                 });
             });
-            $(document).on('click', '.plus_cart', function(event) {
+            $(document).on('click', '.plus_cart', function (event) {
                 var rowid = $(this).attr("id");
                 var qty = $(this).attr("qty");
 
@@ -720,7 +680,7 @@
                         rowid: rowid,
                         qty: qty
                     },
-                    success: function(data) {
+                    success: function (data) {
                         // $('#cart_session').html(data); 
                         load_cart();
                     }
@@ -735,7 +695,7 @@
                     method: "GET",
                     url: "{{ route('get_meja2') }}?dis=" + dis2,
                     dataType: "html",
-                    success: function(hasil) {
+                    success: function (hasil) {
                         $('#meja').html(hasil);
                     }
                 });
@@ -743,15 +703,15 @@
         });
     </script>
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             var dis = $("#dis").val()
-            $(document).on('click', '.majoo', function(event) {
+            $(document).on('click', '.majoo', function (event) {
                 var id_dis = $(this).attr("id_dis");
                 var url = "{{ route('get_majo') }}?id_dis=" + id_dis
                 $('#produk_majo').load(url);
             });
 
-            $('#search_majoo').keyup(function() {
+            $('#search_majoo').keyup(function () {
                 var keyword = $("#search_majoo").val();
                 if (keyword != '') {
                     $('#result_majo').show();
@@ -773,12 +733,12 @@
                         dis: dis
 
                     },
-                    success: function(hasil) {
+                    success: function (hasil) {
                         $('#result_majo').html(hasil);
                     }
                 });
             }
-            $(document).on('click', '.stok_habis', function(event) {
+            $(document).on('click', '.stok_habis', function (event) {
                 Swal.fire({
                     toast: true,
                     position: 'top-end',
@@ -789,7 +749,7 @@
                 });
             });
 
-            $(document).on('click', '.input_cart3', function() {
+            $(document).on('click', '.input_cart3', function () {
                 var id_produk = $(this).attr("id_produk");
 
 
@@ -800,7 +760,7 @@
                     data: {
                         id_produk: id_produk,
                     },
-                    success: function(data) {
+                    success: function (data) {
                         $('#harga_majoo').html(data);
                         // alert(data);
                     }
@@ -809,7 +769,7 @@
                 $.ajax({
                     url: "{{ route('get_karyawan_majo') }}",
                     method: "GET",
-                    success: function(data) {
+                    success: function (data) {
                         $('.buying-selling-group').html(data);
 
                     }
@@ -824,7 +784,7 @@
                 $.ajax({
                     method: "GET",
                     url: "{{ route('keranjang') }}?dis=" + dis2,
-                    success: function(hasil) {
+                    success: function (hasil) {
                         $('#keranjang').html(hasil);
                     }
                 });
@@ -832,7 +792,7 @@
 
 
 
-            $(document).on('submit', '.input_cart_majo', function(event) {
+            $(document).on('submit', '.input_cart_majo', function (event) {
                 event.preventDefault();
                 var id = $("#cart_id").val();
                 var jumlah = $("#cart_jumlah").val();
@@ -840,7 +800,7 @@
                 var catatan = $("#cart_catatan").val();
                 //   var kd_karyawan = $('.cart_id_karyawan').val();
                 var kode = []
-                var kd_karyawan = $('input[name^="kd_karyawan"]:checked').each(function() {
+                var kd_karyawan = $('input[name^="kd_karyawan"]:checked').each(function () {
                     kode.push($(this).val())
 
                 });
@@ -854,7 +814,7 @@
                         catatan: catatan,
                         kd_karyawan: kode,
                     },
-                    success: function(data) {
+                    success: function (data) {
                         if (data == 'kosong') {
                             Swal.fire({
                                 toast: true,

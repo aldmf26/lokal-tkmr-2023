@@ -36,10 +36,7 @@
                     {{Session::get('id_lokasi') == 1 ? 'TAKEMORI' : 'SOONDOBU'}}
                 </td>
                 <td>
-                    <?php
-                    $Weddingdate = new DateTime($pesan_2->j_mulai);
-                    echo $Weddingdate->format("M j, h:i:s a");
-                    ?>
+                    {{ date('M j, h:i:s a', strtotime($pesan_2->j_mulai)) }}
                     <br>
                 </td>
                 <td>
@@ -62,7 +59,7 @@
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($order  as $d) : ?>
+            @foreach ($order as $d)
             <tr>
                 <td align="center">
                     {{$d->qty}}
@@ -78,7 +75,7 @@
             <tr>
                 <td colspan="2"></td>
             </tr>
-            <?php endforeach ?>
+            @endforeach
         </tbody>
         <tfoot>
             <tr>

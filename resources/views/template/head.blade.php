@@ -771,16 +771,42 @@ scratch. This page gets rid of all links and provides the needed markup only.
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 9999;
-            background-color: #F1F1F0;
+            z-index: 999999;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.4s ease-out, visibility 0.4s;
         }
 
-        .preloader .loading {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            font: 14px arial;
+        .preloader.fade-out {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader {
+            text-align: center;
+            vertical-align: middle;
+            position: relative;
+            display: flex;
+            background: white;
+            padding: 20px;
+            border-radius: 50%;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        }
+
+        .loader-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #197dab;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>

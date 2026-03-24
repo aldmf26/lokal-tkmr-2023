@@ -13,7 +13,7 @@ $total_total = $total_gojek->total + $total_not_gojek->total + $service_charge +
 
 <div class="card">
     <div class="card-header">
-        <a href="{{ route('ex_summary',['tgl1' => $tgl1,'tgl2'=>" $tgl2"]) }}"
+        <a href="{{ route('ex_summary', ['tgl1' => $tgl1, 'tgl2' => " $tgl2"]) }}"
             class="btn btn-info btn-sm float-right">Export
             Excel</a>
     </div>
@@ -62,34 +62,8 @@ $total_total = $total_gojek->total + $total_not_gojek->total + $service_charge +
                 <td style="text-align: right;"><?= number_format($total_total / $transaksi->unit, 0) ?></td>
             </tr>
 
+
             <tr>
-                <td>Jumlah pesanan telat masak telat masak 25 Menit</td>
-                <td width="1%">:</td>
-                <td></td>
-                <td style="text-align: right;"><a href="#koki_masak" id="btn_telat" data-toggle="modal"
-                        tgl1="<?= $tgl1 ?>" tgl2="<?= $tgl2 ?>"><?= number_format($jml_telat->jml_telat, 0) ?> /
-                        <?= $jml_telat->jml_telat > 0 ? number_format(($jml_telat->jml_telat * 100) / ($jml_telat->jml_telat + $jml_ontime->jml_ontime), 0) : 0 ?>%</a>
-                </td>
-            </tr>
-            <tr>
-                <td>Jumlah pesanan telat masak 20 Menit</td>
-                <td width="1%">:</td>
-                <td></td>
-                <td style="text-align: right;"><a href="#koki_masak" id="btn_telat" data-toggle="modal"
-                        tgl1="<?= $tgl1 ?>" tgl2="<?= $tgl2 ?>"><?= number_format($jml_telat20->jml_telat, 0) ?> /
-                        <?= $jml_telat->jml_telat > 0 ? number_format(($jml_telat20->jml_telat * 100) / ($jml_telat20->jml_telat + $jml_ontime->jml_ontime), 0) : 0 ?>%</a>
-                </td>
-            </tr>
-            <tr>
-                <td>Jumlah pesanan ontime masak</td>
-                <td width="1%">:</td>
-                <td></td>
-                <td style="text-align: right;"><a href="#koki_masak" id="btn_ontime" data-toggle="modal"
-                        tgl1="<?= $tgl1 ?>" tgl2="<?= $tgl2 ?>"><?= number_format($jml_ontime->jml_ontime, 0) ?> /
-                        <?= $jml_ontime->jml_ontime > 0 ? number_format(($jml_ontime->jml_ontime * 100) / ($jml_telat->jml_telat + $jml_ontime->jml_ontime), 0) : 0 ?>%</a>
-                </td>
-            </tr>
-             <tr>
                 <td colspan="4" style="text-align: center;">
                     <hr style="border-top: 2px dashed black">
                 </td>
@@ -148,7 +122,8 @@ $total_total = $total_gojek->total + $total_not_gojek->total + $service_charge +
                 <td style="font-weight: bold;">subtotal gojek</td>
                 <td style="font-weight: bold;" width="1%">:</td>
                 <td></td>
-                <td style="text-align: right;font-weight: bold;"><?= number_format(($total_gojek->total + $majo_gojek->bayar_majo) - $pb1_gojek, 0) ?></td>
+                <td style="text-align: right;font-weight: bold;">
+                    <?= number_format(($total_gojek->total + $majo_gojek->bayar_majo) - $pb1_gojek, 0) ?></td>
             </tr>
 
 
@@ -161,17 +136,18 @@ $total_total = $total_gojek->total + $total_not_gojek->total + $service_charge +
             </tr>
             <tr>
                 <td colspan="4" style="text-align: center;">
-                   <hr style="border-top: 2px dashed black">
+                    <hr style="border-top: 2px dashed black">
                 </td>
             </tr>
             <tr>
                 <td style="font-weight: bold;">total pb1</td>
                 <td style="font-weight: bold;" width="1%">:</td>
                 <td></td>
-                <td style="text-align: right;font-weight: bold;"><?= number_format($pb1_gojek + $pb1_not_gojek + ($majo->bayar_majo * 0.1), 0) ?>
+                <td style="text-align: right;font-weight: bold;">
+                    <?= number_format($pb1_gojek + $pb1_not_gojek + ($majo->bayar_majo * 0.1), 0) ?>
                 </td>
             </tr>
-            
+
             <!--<tr>-->
             <!--    <td style="font-weight: bold;">total majoo</td>-->
             <!--    <td style="font-weight: bold;" width="1%">:</td>-->
@@ -179,33 +155,34 @@ $total_total = $total_gojek->total + $total_not_gojek->total + $service_charge +
             <!--    <td style="text-align: right;font-weight: bold;">-->
             <!--        <?= number_format($majo->bayar_majo + $majo_gojek->bayar_majo, 0) ?></td>-->
             <!--</tr>-->
-            
+
             <tr>
                 <td style="font-weight: bold;">total subtotal</td>
                 <td style="font-weight: bold;" width="1%">:</td>
                 <td></td>
                 <td style="text-align: right;font-weight: bold;">
-                    <?= number_format((($total_gojek->total + $majo_gojek->bayar_majo) - $pb1_gojek) + ($total_not_gojek->total + $majo->bayar_majo)   , 0) ?></td>
+                    <?= number_format((($total_gojek->total + $majo_gojek->bayar_majo) - $pb1_gojek) + ($total_not_gojek->total + $majo->bayar_majo), 0) ?>
+                </td>
             </tr>
 
 
             <?php
-            $total_transaksi = $transaksi->rp + $transaksi->tax + $transaksi->ser + $transaksi->rounding - $transaksi->dp;
-            $kembalian = $transaksi->total_bayar - $total_transaksi;
-            $kurangan = $transaksi->tax + $transaksi->ser + $transaksi->rounding - $transaksi->dp;
+$total_transaksi = $transaksi->rp + $transaksi->tax + $transaksi->ser + $transaksi->rounding - $transaksi->dp;
+$kembalian = $transaksi->total_bayar - $total_transaksi;
+$kurangan = $transaksi->tax + $transaksi->ser + $transaksi->rounding - $transaksi->dp;
             
             ?>
             <tr>
                 <td colspan="4" style="text-align: center;">
-                   <hr style="border-top: 2px dashed black">
+                    <hr style="border-top: 2px dashed black">
                 </td>
             </tr>
             <tr>
                 <td>Cash</td>
                 <td width="1%">:</td>
                 <td></td>
-                <td style="text-align: right;"><?= number_format($transaksi->cash , 0) ?> 
-                <!--/ <?= number_format($transaksi->cash - $transaksi->total_bayar, 0) ?>-->
+                <td style="text-align: right;"><?= number_format($transaksi->cash, 0) ?>
+                    <!--/ <?= number_format($transaksi->cash - $transaksi->total_bayar, 0) ?>-->
                 </td>
             </tr>
 
@@ -247,7 +224,7 @@ $total_total = $total_gojek->total + $total_not_gojek->total + $service_charge +
                     <hr style="border-top: 2px dashed black">
                 </td>
             </tr>
-            
+
 
             <tr>
                 <td>discount</td>
@@ -290,7 +267,7 @@ $total_total = $total_gojek->total + $total_not_gojek->total + $service_charge +
                 <td>total total + dp</td>
                 <td width="1%">:</td>
                 <td></td>
-                <td style="text-align: right;"><?= number_format($transaksi->dp  + $transaksi->total_bayar, 0) ?></td>
+                <td style="text-align: right;"><?= number_format($transaksi->dp + $transaksi->total_bayar, 0) ?></td>
             </tr>
             <tr>
                 <td>gosend</td>
@@ -315,12 +292,12 @@ $total_total = $total_gojek->total + $total_not_gojek->total + $service_charge +
                 <td style="text-align: right;"></td>
             </tr>
             @foreach($void as $v)
-            <tr>
-                <td style="white-space: nowrap;">{{$v->kategori}}</td>
-                <td width="1%">:</td>
-                <td style="text-align: center;" width="50%"><?= $v->void ?></td>
-                <td style="text-align: right;"><?= number_format($v->harga, 0) ?></td>
-            </tr>
+                <tr>
+                    <td style="white-space: nowrap;">{{$v->kategori}}</td>
+                    <td width="1%">:</td>
+                    <td style="text-align: center;" width="50%"><?= $v->void ?></td>
+                    <td style="text-align: right;"><?= number_format($v->harga, 0) ?></td>
+                </tr>
             @endforeach
             <tr>
                 <td style="font-weight: bold;">Dine In / Takeaway</td>
@@ -328,7 +305,7 @@ $total_total = $total_gojek->total + $total_not_gojek->total + $service_charge +
                 <td style="text-align: center;"></td>
                 <td style="text-align: right;"></td>
             </tr>
-            <?php foreach ($kategori as $k) : ?>
+            <?php foreach ($kategori as $k): ?>
             <tr>
                 <td style="white-space: nowrap;"><?= $k->kategori ?></td>
                 <td width="1%">:</td>
@@ -342,7 +319,7 @@ $total_total = $total_gojek->total + $total_not_gojek->total + $service_charge +
                 <td style="text-align: center;"></td>
                 <td style="text-align: right;"></td>
             </tr>
-            <?php foreach ($gojek as $k) : ?>
+            <?php foreach ($gojek as $k): ?>
             <tr>
                 <td style="white-space: nowrap;"><?= $k->kategori ?></td>
                 <td width="1%">:</td>

@@ -31,14 +31,15 @@ class OrderanController extends Controller
         $data = [
             'title'    => 'Order Permeja',
             'logout' => $request->session()->get('logout'),
-            'tb_order' => DB::join('view_menu', 'view_menu.id_harga = tb_order.id_harga')->where('tb_order.aktif', 1)->where('tb_order.id_meja', $id)->get(),
+            'tb_order' => DB::table('tb_order')->join('tb_harga as vh', 'vh.id_harga', '=', 'tb_order.id_harga')->join('tb_menu as vm', 'vh.id_menu', '=', 'vm.id_menu')->where('tb_order.aktif', 1)->where('tb_order.id_meja', $id)->get(),
             'no_meja' => DB::join('tb_distribusi', 'tb_distribusi.id_distribusi = tb_order.id_distribusi')->where('tb_order.no_order', $id)->get(),
             'waitress' => DB::table('tb_karyawan')->where('id_status', '2')->get(),
             'driver' => DB::table('tb_karyawan')->get(),
             'order' => DB::select("SELECT a.id_order, b.nm_menu, a.qty, a.request, c.nama AS koki1 , d.nama AS koki2, e.nama AS koki3, 
             a.pengantar, a.id_meja, a.j_mulai, a.j_selesai, a.wait, a.selesai, a.no_order, a.id_distribusi
             FROM tb_order as a 
-            left join view_menu as b on a.id_harga = b.id_harga 
+            left join tb_harga as vh on a.id_harga = vh.id_harga
+            left join tb_menu as b on vh.id_menu = b.id_menu 
             left join tb_karyawan as c on c.id_karyawan = a.id_koki1
             left join tb_karyawan as d on d.id_karyawan = a.id_koki2
             left join tb_karyawan as e ON e.id_karyawan = a.id_koki3
@@ -68,12 +69,17 @@ class OrderanController extends Controller
             }
         }
 
-        $cek_transaksi = DB::table('tb_transaksi')->where('no_order', $no)->first();
+        $isPaidLegacy = DB::table('tb_transaksi')->where('no_order', $no)->exists();
+        $isPaidFromOrder2 = DB::table('tb_order2 as o2')
+            ->join('tb_transaksi as t', 't.no_order', '=', 'o2.no_order2')
+            ->where('o2.no_order', $no)
+            ->exists();
+        $isPaid = $isPaidLegacy || $isPaidFromOrder2;
 
         if ($can_pay) {
-            echo "ada";
+            echo $isPaid ? "sudah_bayar" : "ada";
         } else {
-            if ($cek_transaksi) {
+            if ($isPaid) {
                 echo "sudah_bayar";
             } else {
                 echo "kosong";
@@ -89,7 +95,8 @@ class OrderanController extends Controller
         a.pengantar, a.id_meja, a.j_mulai, a.j_selesai, a.wait, a.selesai, a.harga,
         timestampdiff(MINUTE, a.j_mulai,a.wait) AS selisih
         FROM tb_order as a 
-        left join view_menu as b on a.id_harga = b.id_harga 
+        left join tb_harga as vh on a.id_harga = vh.id_harga
+        left join tb_menu as b on vh.id_menu = b.id_menu 
         left join tb_karyawan as c on c.id_karyawan = a.id_koki1
         left join tb_karyawan as d on d.id_karyawan = a.id_koki2
         left join tb_karyawan as e ON e.id_karyawan = a.id_koki3
@@ -117,7 +124,8 @@ class OrderanController extends Controller
         a.pengantar, a.id_meja, a.j_mulai, a.j_selesai, a.wait, a.selesai, a.harga,
         timestampdiff(MINUTE, a.j_mulai,a.wait) AS selisih, if(f.qty IS NULL ,0,f.qty) AS qty2, a.no_meja as nm_meja
         FROM tb_order as a 
-        left join view_menu as b on a.id_harga = b.id_harga 
+        left join tb_harga as vh on a.id_harga = vh.id_harga
+        left join tb_menu as b on vh.id_menu = b.id_menu 
         left join tb_karyawan as c on c.id_karyawan = a.id_koki1
         left join tb_karyawan as d on d.id_karyawan = a.id_koki2
         left join tb_karyawan as e ON e.id_karyawan = a.id_koki3
@@ -408,7 +416,8 @@ class OrderanController extends Controller
         $no = $request->no;
         $order = DB::select("SELECT a.*, SUM(a.qty) as qty_produk, b.nm_menu, c.nm_meja
         FROM tb_order2 as a 
-        left join view_menu as b on a.id_harga = b.id_harga 
+        left join tb_harga as vh on a.id_harga = vh.id_harga
+        left join tb_menu as b on vh.id_menu = b.id_menu 
         left join tb_meja as c on c.id_meja = a.id_meja
         
         where   a.no_order2 = '$no' 
@@ -457,7 +466,8 @@ class OrderanController extends Controller
         timestampdiff(MINUTE, MIN(c.j_mulai),MAX(c.j_selesai)) AS selisih, timestampdiff(MINUTE, MIN(c.j_selesai),MAX(c.wait)) AS selisih2
         FROM tb_order2 as a 
         left join tb_order as c on c.id_order = a.id_order1
-        left join view_menu as b on a.id_harga = b.id_harga 
+        left join tb_harga as vh on a.id_harga = vh.id_harga
+        left join tb_menu as b on vh.id_menu = b.id_menu 
         where   a.no_order2 = '$no'
         GROUP BY a.id_harga
         ");
@@ -502,7 +512,8 @@ class OrderanController extends Controller
         a.pengantar, a.id_meja, a.j_mulai, a.j_selesai, a.wait, a.selesai,
         timestampdiff(MINUTE, a.j_mulai,a.wait) AS selisih, a.no_checker , a.print, a.copy_print
         FROM tb_order as a 
-        left join view_menu as b on a.id_harga = b.id_harga 
+        left join tb_harga as vh on a.id_harga = vh.id_harga
+        left join tb_menu as b on vh.id_menu = b.id_menu 
         left join tb_karyawan as c on c.id_karyawan = a.id_koki1
         left join tb_karyawan as d on d.id_karyawan = a.id_koki2
         left join tb_karyawan as e ON e.id_karyawan = a.id_koki3

@@ -1,9 +1,4 @@
 <div class="modal-content">
-    <?php if (file_exists("./assets/tb_menu/$menu->image")) : ?>
-    <img width="100%" height="100%" src="{{ asset_custom('') }}/tb_menu/{{ $menu->image }}" alt="">
-    <?php else : ?>
-    <img width=" 100%" height="100%" src="{{ asset_custom('') }}/tb_menu/notfound.png" alt="">
-    <?php endif ?>
     <div style="background-color: rgba(0, 0, 0, 0.5); padding:5px 0 5px;">
         <h5 style="font-weight: bold; color:#fff;" class="text-center">Rp. <?= number_format($menu->harga) ?></h5>
     </div>
@@ -24,8 +19,7 @@
                             <input type="number" min="1" id="qty" class="form-control" value="1" required="">
                             <br>
                             <textarea id="req" class="form-control" placeholder="Request (Opsional)"></textarea>
-                            <input type="hidden" id="dis" class="form-control" value="{{ $id_dis }}"
-                                required="">
+                            <input type="hidden" id="dis" class="form-control" value="{{ $id_dis }}" required="">
                             <input type="hidden" id="id_harga" value="{{ $menu->id_harga }}">
                             <input type="hidden" id="price" value="{{ $menu->harga }}">
                             <input type="hidden" id="name" value="{{ $menu->nm_menu }}">

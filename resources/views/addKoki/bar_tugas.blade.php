@@ -34,13 +34,18 @@
                         {{ $prefix }} {{ $m->nm_meja }}
                     </td>
                     <td class="{{ $bgColor }}" style="vertical-align: middle;">
-                        <!-- Options for bar staff -->
+                        <a class="muncul muncul{{ $m->id_meja }} btn btn-light btn-sm" style="font-weight: bold; color: #2c3e50 !important;" id_meja="{{ $m->id_meja }}"
+                            no_order="{{ $m->no_order }}">View Selesai</a>
+                        <a class="hilang hilang{{ $m->id_meja }} btn btn-light btn-sm" style="display:none; font-weight: bold; color: #2c3e50 !important;" id_meja="{{ $m->id_meja }}">Hide Selesai</a>
                     </td>
                     <td class="{{ $bgColor }}"></td>
                     <td class="{{ $bgColor }}"></td>
                     <td class="{{ $bgColor }}"></td>
                     <td colspan="50" class="{{ $bgColor }}"></td>
                 </tr>
+
+                <tbody class="load_menu_s{{ $m->id_meja }}"></tbody>
+                <tbody class="addmeja{{ $m->id_meja }}"></tbody>
 
                 @foreach ($menus as $menu)
                     <tr class="header">

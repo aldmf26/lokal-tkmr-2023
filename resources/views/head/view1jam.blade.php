@@ -27,6 +27,16 @@
   padding: 0.3rem;
 }
 </style>
+<div class="row mb-2">
+    <div class="col-md-5 offset-md-7">
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text bg-info text-white"><i class="fas fa-search"></i></span>
+            </div>
+            <input type="text" id="search_history" class="form-control" placeholder="Cari Table / No Order...">
+        </div>
+    </div>
+</div>
 <div class="row">
     <div class="col-12">
         <table class="table1" id="tableJam">
@@ -39,12 +49,7 @@
                     <th>Qty</th>
                     <th>Harga</th>
                     <th>Time Order</th>
-                    <th>Server</th>
-                    <th>Koki</th>
-                    <th>Waitress</th>
-                    <th>Time Delay</th>
-                    <th>Status</th>
-                    <th>Admin</th>
+                    <th>Time Selesai</th>
                 </tr>
             </thead>
             <tbody>
@@ -59,15 +64,8 @@
                     <td><?= number_format($t->qty * $t->harga, 0) ?></td>
                     <?php $waktu1 = new DateTime($t->j_mulai); ?>
                     <?php $waktu2 = new DateTime($t->j_selesai); ?>
-                    <td><?= $waktu1->format('h.i A') ?></td>
-                    <td><?= $t->admin ?></td>
-                    <td style="white-space: nowrap;">
-                        <?= $t->koki1 ?>,<?= $t->koki2 ?>,<?= $t->koki3 ?></td>
-                    <td><?= $t->pengantar ?></td>
-                    <td><?= number_format($t->selisih, 0) ?></td>
-                    <td><?= $t->selesai ?></td>
-                    <td><?= $t->admin ?></td>
-                    
+                    <td><?= $waktu1->format('h:i A') ?></td>
+                    <td><?= $waktu2->format('h:i A') ?></td>
                 </tr>
                 <?php endforeach ?>
 
@@ -75,3 +73,19 @@
         </table>
     </div>
 </div>
+
+<script>
+    $(document).ready(function() {
+        $("#search_history").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $("#tableJam tbody tr").filter(function() {
+                // Ambil text dari kolom No Order (index 1) dan Table (index 2)
+                var noOrder = $(this).find('td').eq(1).text().toLowerCase();
+                var table = $(this).find('td').eq(2).text().toLowerCase();
+                
+                // Cari kecocokan di kedua kolom tersebut
+                $(this).toggle(noOrder.indexOf(value) > -1 || table.indexOf(value) > -1);
+            });
+        });
+    });
+</script>

@@ -87,6 +87,7 @@
 
                     <div class="occupied-info">
                         <div class="text-muted mb-1" style="font-size: 0.85rem; font-weight: 600;">#{{ $m->no_order }}</div>
+                        <div class="text-muted mb-1" style="font-size: 0.85rem; font-weight: 400;">Subtotal :</div>
                         <div class="font-weight-bold" style="font-size: 1.1rem; color: #2c3e50;">
                             Rp {{ number_format($m->subtotal) }}
                         </div>
@@ -100,17 +101,24 @@
                         DETAIL
                     </a>
 
-                    <div class="dropdown">
-                        <a class="btn-meja-action btn-text-action w-100" type="button" data-toggle="dropdown">
-                            TAMBAH
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right">
-                            <a data-toggle="modal" class="btn_tbh dropdown-item plusPesanan" no_order="{{ $m->no_order }}"
-                                no_meja="{{ $m->id_meja }}" href="#tbh_menu">Resto</a>
-                            <a data-toggle="modal" class="btn_tbh_majo dropdown-item plusPesanan" no_order="{{ $m->no_order }}"
-                                no_meja="{{ $m->id_meja }}" href="#tbh_menu_majo">STK (Majoo)</a>
+                    @if(!$isPaid)
+                        <div class="dropdown">
+                            <a class="btn-meja-action btn-text-action w-100" type="button" data-toggle="dropdown">
+                                TAMBAH
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <a data-toggle="modal" class="btn_tbh dropdown-item plusPesanan" no_order="{{ $m->no_order }}"
+                                    no_meja="{{ $tableNum }}" href="#tbh_menu">Resto</a>
+                                <a data-toggle="modal" class="btn_tbh_majo dropdown-item plusPesanan" no_order="{{ $m->no_order }}"
+                                    no_meja="{{ $tableNum }}" href="#tbh_menu_majo">STK (Majoo)</a>
+                            </div>
                         </div>
-                    </div>
+                    @else
+                        <div class="btn-meja-action btn-text-action w-100 bg-light text-muted"
+                            style="cursor: not-allowed; opacity: 0.6;">
+                            TAMBAH (PAID)
+                        </div>
+                    @endif
 
                     <!-- Baris 2 -->
                     <a target="_blank" href="{{ route('billing', ['no' => $m->no_order]) }}"
