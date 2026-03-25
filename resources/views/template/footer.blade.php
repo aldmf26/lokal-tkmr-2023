@@ -175,7 +175,29 @@
         $('html, body').animate({ scrollTop: 0 }, 600);
         return false;
     });
+document.addEventListener('keydown', function(e) {
+        // Pastikan tidak sedang focus di input/textarea
+        const tag = document.activeElement.tagName.toLowerCase();
+        if (['input', 'textarea', 'select'].includes(tag)) return;
 
+        switch (e.key.toLowerCase()) {
+            case 'o':
+                window.location.href = '{{ route('order') }}';
+                break;
+            case 'm':
+                window.location.href = '{{ route('meja') }}';
+                break;
+            case 'h':
+                window.location.href = '{{ route('head') }}';
+                break;
+            case 'b':
+                window.location.href = '{{ route('addKoki') }}';
+                break;
+            case 'l':
+                window.location.href = '{{ route('laporan') }}';
+                break;
+        }
+    });
 </script>
 
 @yield('script')

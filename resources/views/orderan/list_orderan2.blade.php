@@ -52,8 +52,8 @@
                 </td>
                 <td style="white-space: nowrap;">
                     <!-- <a href=""><i class="fas fa-minus"></i></a> -->
-                    <input name="qty[]" type="number" max="<?= $o->qty ?>" min="0" detail="<?= $no ?>"
-                        class="text-center qty form-control" value="<?= $o->qty ?>">
+                    <input name="qty[]" readonly type="number" max="<?= $o->qty ?>" min="0"
+                        detail="<?= $no ?>" class="text-center qty form-control" value="<?= $o->qty ?>">
                     <!-- <a href=""><i class="fas fa-plus"></i></a> -->
 
                     <input name="harga[]" type="hidden" class="harga<?= $no ?>" value="<?= $o->harga ?>">
@@ -106,9 +106,7 @@
         </tr>
         <?php endforeach ?>
     </tbody>
-    <?php $tb_dis = DB::table('tb_distribusi')
-        ->where('id_distribusi', $id_distribusi)
-        ->first(); ?>
+    <?php $tb_dis = DB::table('tb_distribusi')->where('id_distribusi', $id_distribusi)->first(); ?>
     <tbody>
         <tr>
             <th style=" background-color: #25C584;color:white;font-size: 16px;" colspan="2">Subtotal</th>
@@ -146,9 +144,7 @@
     <input type="hidden" id="batas" value="<?= $batas->rupiah ?>">
     <input type="hidden" id="ong" value="<?= $batas->rupiah ?>">
     <tbody>
-        <?php $tb_dis = DB::table('tb_distribusi')
-            ->where('id_distribusi', $id_distribusi)
-            ->first(); ?>
+        <?php $tb_dis = DB::table('tb_distribusi')->where('id_distribusi', $id_distribusi)->first(); ?>
         <?php if ($tb_dis->service == 'Y') : ?>
         <?php $service = $total2 * 0.07; ?>
         <?php else : ?>
@@ -272,7 +268,7 @@
         {{-- promo bank --}}
         @php
             $klasifikasiPromoBank = DB::table('akun_pembayaran')
-                ->where([['id_klasifikasi', 5],['nonaktif', 'T']])
+                ->where([['id_klasifikasi', 5], ['nonaktif', 'T']])
                 ->get();
         @endphp
         <tr>
@@ -294,7 +290,8 @@
                         value="0" name="pembayaranPromo[]" class="form-control pembayaranPromo">
                 </td>
                 <td style="white-space: nowrap;">
-                    <a class="btn btn-info btn-sm cek_promo" id_akun="{{ $a->id_akun_pembayaran }}"><i class="fas fa-sync-alt"></i> cek</a>
+                    <a class="btn btn-info btn-sm cek_promo" id_akun="{{ $a->id_akun_pembayaran }}"><i
+                            class="fas fa-sync-alt"></i> cek</a>
                     <a class="btn btn-danger btn-sm batal_promo"><i class="fas fa-undo-alt"></i> batal</a>
                 </td>
                 {{-- <td class="diskonPromo"></td> --}}
@@ -305,7 +302,6 @@
                                 name="nm_pengirim[]">
                         </td> --}}
             </tr>
-            
         @endforeach
         <tr>
             <td colspan="3">&nbsp;</td>
@@ -361,7 +357,7 @@
             </tr> --}}
         {{-- end promo bank --}}
 
-        
+
 
         {{-- --}}
         <?php if ($tb_dis->service == 'Y') : ?>
@@ -402,17 +398,17 @@
             <td></td>
         </tr>
         <?php
-                $x = round($total);
-                $y = number_format(substr($x, -3), 0);
-
-                if ($y == '000') {
-                    $z = $x;
-                    $round = '000';
-                } elseif ($y < 1000) {
-                    $z= $x - $y + 1000;
-                    $round = 1000 - $y;
-                }
-                ?>
+        $x = round($total);
+        $y = number_format(substr($x, -3), 0);
+        
+        if ($y == '000') {
+            $z = $x;
+            $round = '000';
+        } elseif ($y < 1000) {
+            $z = $x - $y + 1000;
+            $round = 1000 - $y;
+        }
+        ?>
         <tr>
             <td colspan="2" style="font-weight: bold;">Total </td>
             <td></td>
@@ -518,17 +514,14 @@
                 </td>
             </tr>
             @php
-                $akun = DB::table('akun_pembayaran')
-                    ->where('id_klasifikasi', $k->id_klasifikasi_pembayaran)
-                    ->get();
+                $akun = DB::table('akun_pembayaran')->where('id_klasifikasi', $k->id_klasifikasi_pembayaran)->get();
             @endphp
 
             @foreach ($akun as $a)
                 <tr x-show="openRows.includes({{ $i }})">
                     <td colspan="3">{{ $a->nm_akun }}</td>
                     <td>:</td>
-                    <td><input type="number" value="0" name="pembayaran[]"
-                            class="form-control pembayaran">
+                    <td><input type="number" value="0" name="pembayaran[]" class="form-control pembayaran">
                     </td>
                     <td>
                         <input type="hidden" name="id_akun[]" value="{{ $a->id_akun_pembayaran }}">
