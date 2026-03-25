@@ -2,13 +2,64 @@
 @section('content')
     <style>
         /* .icon-menu:hover{
-                                                                                                                                                                                        background: #C8BED8;
-                                                                                                                                                                                        border-radius: 50px;
-                                                                                                                                                                                    } */
+                                                                                                                                                                                            background: #C8BED8;
+                                                                                                                                                                                            border-radius: 50px;
+                                                                                                                                                                                        } */
 
         h6 {
             color: #155592;
             font-weight: bold;
+        }
+
+        /* Progress Bar Loading */
+        .progress-loading {
+            display: none;
+            margin-bottom: 20px;
+        }
+
+        .progress-loading.active {
+            display: block;
+        }
+
+        .progress-bar-animated {
+            height: 4px;
+            background: linear-gradient(90deg, #3498db, #2ecc71, #f39c12, #e74c3c);
+            background-size: 200% 100%;
+            animation: progress-animation 2s ease-in-out infinite;
+            border-radius: 2px;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+        }
+
+        @keyframes progress-animation {
+            0% {
+                background-position: 0% 0;
+                width: 10%;
+            }
+
+            25% {
+                width: 40%;
+            }
+
+            50% {
+                width: 70%;
+                background-position: 50% 0;
+            }
+
+            75% {
+                width: 90%;
+            }
+
+            100% {
+                width: 100%;
+                background-position: 100% 0;
+            }
+        }
+
+        .loading-text {
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+            margin-top: 5px;
         }
     </style>
     <div class="content-wrapper">
@@ -69,6 +120,12 @@
                         </form>
                     </div>
                     <div class="col-lg-6">
+                        <!-- Progress Bar Loading -->
+                        <div id="progress-loading" class="progress-loading">
+                            <div class="progress-bar-animated"></div>
+                            <div class="loading-text">Memuat laporan...</div>
+                        </div>
+
                         <div id="data-laporan">
 
                         </div>
@@ -116,9 +173,9 @@
 
                 </div>
                 <!-- <div class="modal-footer">
-                                                                                                                                                                                                        <button type="button" class="btn btn-costume" data-dismiss="modal">Close</button>
-                                                                                                                                                                                                        <button type="submit" class="btn btn-costume">Edit/Save</button>
-                                                                                                                                                                                                    </div> -->
+                                                                                                                                                                                                            <button type="button" class="btn btn-costume" data-dismiss="modal">Close</button>
+                                                                                                                                                                                                            <button type="submit" class="btn btn-costume">Edit/Save</button>
+                                                                                                                                                                                                        </div> -->
             </div>
         </div>
     </div>
@@ -136,34 +193,49 @@
                 console.log(tgl2);
                 console.log(kat);
 
+                // Show progress bar
+                $('#progress-loading').addClass('active');
+
                 if (kat == '1') {
                     var url = "<?= route('summary') ?>?tgl1=" + tgl1 + '&tgl2=' + tgl2;
-                    $('#data-laporan').show();
-                    $('#data-laporan').load(url);
                     $('#data-item').hide();
                     $('#data-server').hide();
                     $('#cek-nota').hide();
+
+                    $('#data-laporan').load(url, function() {
+                        $('#progress-loading').removeClass('active');
+                        $('#data-laporan').show();
+                    });
                 } else if (kat == 2) {
                     var url = "<?= route('item') ?>?tgl1=" + tgl1 + '&tgl2=' + tgl2;
-                    $('#data-item').show();
-                    $('#data-item').load(url);
                     $('#data-laporan').hide();
                     $('#data-server').hide();
                     $('#cek-nota').hide();
+
+                    $('#data-item').load(url, function() {
+                        $('#progress-loading').removeClass('active');
+                        $('#data-item').show();
+                    });
                 } else if (kat == 3) {
                     var url = "<?= route('item_majo') ?>?tgl1=" + tgl1 + '&tgl2=' + tgl2;
-                    $('#data-server').show();
-                    $('#data-server').load(url);
                     $('#data-laporan').hide();
                     $('#data-item').hide();
                     $('#cek-nota').hide();
+
+                    $('#data-server').load(url, function() {
+                        $('#progress-loading').removeClass('active');
+                        $('#data-server').show();
+                    });
                 } else if (kat == 4) {
                     var url = "<?= route('cek_invoice') ?>?tgl1=" + tgl1 + '&tgl2=' + tgl2;
-                    $('#cek-nota').show();
-                    $('#cek-nota').load(url);
                     $('#data-server').hide();
                     $('#data-laporan').hide();
                     $('#data-item').hide();
+
+                    $('#cek-nota').load(url, function() {
+                        $('#progress-loading').removeClass('active');
+                        $('#cek-nota').show();
+                    });
                 }
 
 

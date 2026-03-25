@@ -1,6 +1,6 @@
 <div class="modal-content">
     <div style="background-color: rgba(0, 0, 0, 0.5); padding:5px 0 5px;">
-        <h5 style="font-weight: bold; color:#fff;" class="text-center">Rp. <?= number_format($menu->harga) ?></h5>
+        <h5 style="font-weight: bold; color:#fff;" class="text-center pt-2">{{ $menu->nm_menu }}</h5>
     </div>
     <div class="modal-body">
         <div class="row">
@@ -8,7 +8,8 @@
 
             </div>
             <div class="col-sm-12 col-md-12">
-                <h6 style="font-weight: bold; text-align: center;" class="mt-2">{{ $menu->nm_menu }}</h6>
+                <h5 style="font-weight: bold; text-align: center;" class="mt-2">Rp. {{ number_format($menu->harga) }}
+                </h5>
                 <input type="hidden" id="id_harga2" value="{{ $menu->id_harga }}">
                 <br>
                 <input type="hidden" id="id_dis" value="{{ $menu->id_harga }}">
@@ -16,10 +17,12 @@
                 <div class="row">
                     <div class="col-sm-12 col-md-12">
                         <div class="form-group">
-                            <input type="number" min="1" id="qty" class="form-control" value="1" required="">
+                            <input type="number" min="1" id="qty" class="form-control" value="1"
+                                required="">
                             <br>
                             <textarea id="req" class="form-control" placeholder="Request (Opsional)"></textarea>
-                            <input type="hidden" id="dis" class="form-control" value="{{ $id_dis }}" required="">
+                            <input type="hidden" id="dis" class="form-control" value="{{ $id_dis }}"
+                                required="">
                             <input type="hidden" id="id_harga" value="{{ $menu->id_harga }}">
                             <input type="hidden" id="price" value="{{ $menu->harga }}">
                             <input type="hidden" id="name" value="{{ $menu->nm_menu }}">

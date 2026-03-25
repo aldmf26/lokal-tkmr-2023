@@ -39,12 +39,12 @@
             $tableNum = str_ireplace(['Meja ', 'Gojek ', 'Gojek', 'Grab ', 'Grab'], '', $m->nm_meja);
 
             // Checker Dapur Logic
-            $hasPrintedDapur = ($m->prn == 'Y' || $m->c_prn == 'Y');
+            $hasPrintedDapur = $m->prn == 'Y' || $m->c_prn == 'Y';
             $dapurLabel = $hasPrintedDapur ? 'COPY CHK DPUR' : 'CHK DPUR';
             $dapurRoute = $hasPrintedDapur ? 'copy_checker' : 'checker';
 
             // Checker Tamu Logic
-            $hasPrintedTamu = ($m->t_prn == 'Y' || $m->ct_prn == 'Y');
+            $hasPrintedTamu = $m->t_prn == 'Y' || $m->ct_prn == 'Y';
             $tamuLabel = $hasPrintedTamu ? 'COPY CHK TAMU' : 'CHK TAMU';
             $tamuRoute = $hasPrintedTamu ? 'copy_checker_tamu' : 'checker_tamu';
         @endphp
@@ -71,13 +71,10 @@
             }
         </style>
 
-        @if($isOccupied)
+        @if ($isOccupied)
             @php
-                $distriType = 'DINE IN';
-                if (stripos($m->nm_meja, 'Gojek') !== false)
-                    $distriType = 'GOJEK';
-                if (stripos($m->nm_meja, 'Grab') !== false)
-                    $distriType = 'GRAB';
+                $distriType = $id == 1 ? 'DINE IN' : 'GOJEK';
+
             @endphp
             <div class="meja-card {{ $statusClass }}">
                 <div class="card-body">
@@ -86,7 +83,8 @@
                     <div class="meja-status text-center w-100 mb-2">{{ $statusText }}</div>
 
                     <div class="occupied-info">
-                        <div class="text-muted mb-1" style="font-size: 0.85rem; font-weight: 600;">#{{ $m->no_order }}</div>
+                        <div class="text-muted mb-1" style="font-size: 0.85rem; font-weight: 600;">#{{ $m->no_order }}
+                        </div>
                         <div class="text-muted mb-1" style="font-size: 0.85rem; font-weight: 400;">Subtotal :</div>
                         <div class="font-weight-bold" style="font-size: 1.1rem; color: #2c3e50;">
                             Rp {{ number_format($m->subtotal) }}
@@ -101,16 +99,18 @@
                         DETAIL
                     </a>
 
-                    @if(!$isPaid)
+                    @if (!$isPaid)
                         <div class="dropdown">
                             <a class="btn-meja-action btn-text-action w-100" type="button" data-toggle="dropdown">
                                 TAMBAH
                             </a>
                             <div class="dropdown-menu dropdown-menu-right">
-                                <a data-toggle="modal" class="btn_tbh dropdown-item plusPesanan" no_order="{{ $m->no_order }}"
-                                    no_meja="{{ $tableNum }}" href="#tbh_menu">Resto</a>
-                                <a data-toggle="modal" class="btn_tbh_majo dropdown-item plusPesanan" no_order="{{ $m->no_order }}"
-                                    no_meja="{{ $tableNum }}" href="#tbh_menu_majo">STK (Majoo)</a>
+                                <a data-toggle="modal" class="btn_tbh dropdown-item plusPesanan"
+                                    no_order="{{ $m->no_order }}" no_meja="{{ $tableNum }}"
+                                    href="#tbh_menu">Resto</a>
+                                <a data-toggle="modal" class="btn_tbh_majo dropdown-item plusPesanan"
+                                    no_order="{{ $m->no_order }}" no_meja="{{ $tableNum }}"
+                                    href="#tbh_menu_majo">STK (Majoo)</a>
                             </div>
                         </div>
                     @else
@@ -126,7 +126,7 @@
                         BILL
                     </a>
 
-                    @if(!$isPaid)
+                    @if (!$isPaid)
                         <a href="javascript:void(0)" class="btn-meja-action btn-text-action btn_pembayaran"
                             no_order="{{ $m->no_order }}"
                             style="background: {{ $isCooking ? '#95a5a6' : '#27ae60' }}; color: white; border-color: transparent;">
