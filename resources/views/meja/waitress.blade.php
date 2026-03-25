@@ -1,15 +1,26 @@
-<div class="row mb-3">
-    <div class="col-12 text-center">
-        <div class="d-inline-flex border rounded-pill px-4 py-2 bg-white shadow-sm"
-            style="gap: 20px; font-size: 0.8rem; font-weight: 700;">
-            <div class="d-flex align-items-center"><span class="mr-2"
-                    style="width: 12px; height: 12px; background: #e74c3c; border-radius: 4px;"></span> DIMASAK</div>
-            <div class="d-flex align-items-center"><span class="mr-2"
-                    style="width: 12px; height: 12px; background: #3498db; border-radius: 4px;"></span> SIAP BAYAR</div>
-            <div class="d-flex align-items-center"><span class="mr-2"
-                    style="width: 12px; height: 12px; background: #f1c40f; border-radius: 4px;"></span> SUDAH BAYAR
-            </div>
+<div class="d-flex justify-content-between mb-3">
+    <div class="d-inline-flex border rounded-pill px-4 py-2 bg-white shadow-sm"
+        style="gap: 20px; font-size: 0.8rem; font-weight: 700;">
+        <div class="d-flex align-items-center"><span class="mr-2"
+                style="width: 12px; height: 12px; background: #e74c3c; border-radius: 4px;"></span> DIMASAK</div>
+        <div class="d-flex align-items-center"><span class="mr-2"
+                style="width: 12px; height: 12px; background: #3498db; border-radius: 4px;"></span> SIAP BAYAR</div>
+        <div class="d-flex align-items-center"><span class="mr-2"
+                style="width: 12px; height: 12px; background: #f1c40f; border-radius: 4px;"></span> SUDAH BAYAR
         </div>
+    </div>
+    {{-- Pencarian Meja dan Filter --}}
+    <div class="d-inline-flex border rounded-pill px-4 py-2 bg-white shadow-sm"
+        style="gap: 15px; font-size: 0.8rem; font-weight: 700; align-items: center;">
+        <input type="text" id="searchMeja" placeholder="🔍 Cari Meja"
+            style="border: 1px solid #ddd; border-radius: 6px; padding: 6px 10px; font-size: 0.8rem; width: 120px;">
+        <select id="filterStatus" class='form-select'
+            style="border: 1px solid #ddd; border-radius: 6px; padding: 6px 8px; font-size: 0.8rem;">
+            <option value="">Semua Status</option>
+            <option value="occupied">Dimasak</option>
+            <option value="ready">Siap Bayar</option>
+            <option value="pending">Sudah Bayar</option>
+        </select>
     </div>
 </div>
 
@@ -76,7 +87,8 @@
                 $distriType = $id == 1 ? 'DINE IN' : 'GOJEK';
 
             @endphp
-            <div class="meja-card {{ $statusClass }}">
+            <div class="meja-card {{ $statusClass }}" data-meja="{{ $tableNum }}"
+                data-status="{{ $statusClass }}">
                 <div class="card-body">
                     <div class="distri-type">{{ $distriType }}</div>
                     <div class="meja-number">{{ $tableNum }}</div>
@@ -160,3 +172,31 @@
         @endif
     @endforeach
 </div>
+
+<script>
+    $(document).ready(function() {
+        // Fungsi filter meja
+        function filterMeja() {
+            let searchValue = $('#searchMeja').val().toLowerCase().trim();
+            let filterValue = $('#filterStatus').val();
+
+            $('.meja-card').each(function() {
+                let mejaNumber = $(this).data('meja').toString();
+                let mejaStatus = $(this).data('status');
+
+                // Match search: jika kosong atau nomor meja cocok
+                let matchSearch = !searchValue || mejaNumber.includes(searchValue);
+
+                // Match filter: jika kosong (semua) atau status cocok
+                let matchFilter = !filterValue || mejaStatus === filterValue;
+
+                // Tampilkan hanya jika kedua kondisi terpenuhi
+                $(this).toggle(matchSearch && matchFilter);
+            });
+        }
+
+        // Event listener untuk search dan filter
+        $('#searchMeja').on('keyup', filterMeja);
+        $('#filterStatus').on('change', filterMeja);
+    });
+</script>
