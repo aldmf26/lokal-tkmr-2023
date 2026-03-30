@@ -48,15 +48,12 @@ class HeadController extends Controller
         $data = [
             'title' => 'Data Orderan',
             'logout' => $r->session()->get('logout'),
-            'tb_order' => DB::select("SELECT a.*,b.id_menu ,b.nm_menu, c.nm_meja, d.nama AS koki1 , e.nama AS koki2, f.nama AS koki3,
+            'tb_order' => DB::select("SELECT a.*,b.id_menu ,b.nm_menu, c.nm_meja, 
         timestampdiff(MINUTE, a.j_mulai,a.wait) AS selisih, tb_order2.id_order1 as cek_bayar
         FROM tb_order as a 
         left join tb_harga as vh on a.id_harga = vh.id_harga
         left join tb_menu as b on vh.id_menu = b.id_menu
         LEFT JOIN tb_meja AS c ON c.id_meja = a.id_meja
-        LEFT JOIN tb_karyawan AS d ON d.id_karyawan = a.id_koki1
-        LEFT JOIN tb_karyawan AS e ON e.id_karyawan = a.id_koki2
-        LEFT JOIN tb_karyawan AS f ON f.id_karyawan = a.id_koki3
         LEFT JOIN tb_order2 ON a.id_order = tb_order2.id_order1
         WHERE a.j_selesai BETWEEN NOW() - INTERVAL 1 HOUR AND NOW() AND a.selesai = 'selesai' and a.tgl = '$tgl' and a.id_lokasi = '$loc'  and a.void = 0 order by a.id_order DESC"),
 
@@ -151,7 +148,7 @@ class HeadController extends Controller
 
         if (!empty($no_orders)) {
             $order_list = "'" . implode("','", $no_orders) . "'";
-            
+
             $all_menus = DB::select("SELECT m_table.nm_menu, a.no_meja as nm_meja, a.request, a.qty, a.selesai, a.id_order, a.j_mulai, a.no_order, f.ttlMenuSemua, g.other_tables 
                 FROM tb_order AS a 
                 JOIN tb_harga h ON a.id_harga = h.id_harga
@@ -261,65 +258,7 @@ class HeadController extends Controller
         return view('head.jumlah', $data);
     }
 
-    public function koki1(Request $request)
-    {
-        $id_order = $request->kode;
-        $koki1 = $request->kry;
 
-        $data = array(
-            'id_koki1'   => $koki1,
-        );
-
-        DB::table('tb_order')->where('id_order', $id_order)->update($data);
-    }
-
-    public function koki2(Request $request)
-    {
-        $id_order = $request->kode;
-        $koki2 = $request->kry;
-
-        $data = array(
-            'id_koki2'   => $koki2,
-        );
-        DB::table('tb_order')->where('id_order', $id_order)->update($data);
-    }
-    public function koki3(Request $request)
-    {
-        $id_order = $request->kode;
-        $koki3 = $request->kry;
-
-        $data = array(
-            'id_koki3'   => $koki3,
-        );
-        DB::table('tb_order')->where('id_order', $id_order)->update($data);
-    }
-    public function un_koki1(Request $request)
-    {
-        $id_order = $request->kode;
-        $data = array(
-            'id_koki1'   => '0',
-            'id_koki2'   => '0',
-            'id_koki3'   => '0',
-        );
-        DB::table('tb_order')->where('id_order', $id_order)->update($data);
-    }
-    public function un_koki2(Request $request)
-    {
-        $id_order = $request->kode;
-        $data = array(
-            'id_koki2'   => '0',
-            'id_koki3'   => '0',
-        );
-        DB::table('tb_order')->where('id_order', $id_order)->update($data);
-    }
-    public function un_koki3(Request $request)
-    {
-        $id_order = $request->kode;
-        $data = array(
-            'id_koki3'   => '0',
-        );
-        DB::table('tb_order')->where('id_order', $id_order)->update($data);
-    }
     public function head_selesei(Request $request)
     {
         date_default_timezone_set('Asia/Makassar');
@@ -364,7 +303,7 @@ class HeadController extends Controller
             LEFT JOIN tb_meja AS c ON c.id_meja = a.id_meja where a.id_lokasi = '$lokasi' and a.id_meja = '$id_meja' and a.selesai = 'dimasak' and aktif = '1' and void = 0 ORDER BY a.id_order"
         );
 
-       
+
 
         $data = [
             'm' => $meja,
