@@ -84,7 +84,12 @@
 
         @if ($isOccupied)
             @php
-                $distriType = $id == 1 ? 'DINE IN' : 'GOJEK';
+                $dists = [
+                    1 => 'DINE IN',
+                    2 => 'GOJEK',
+                    3 => 'AYCE',
+                ];
+                $distriType = $dists[$id];
 
             @endphp
             <div class="meja-card {{ $statusClass }}" data-meja="{{ $tableNum }}"

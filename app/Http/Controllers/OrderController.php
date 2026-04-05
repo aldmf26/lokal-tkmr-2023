@@ -20,7 +20,7 @@ class OrderController extends Controller
     private function resolveDistribusi($value): array
     {
         $idMe = empty($value) ? '1' : (string) $value;
-        $id = (empty($value) || $value != '2') ? '1' : '2';
+        $id = empty($value) ? '1' : (string) $value;
 
         return [$idMe, $id];
     }
@@ -77,9 +77,7 @@ class OrderController extends Controller
             $data = [
                 'title' => 'Order',
                 'logout' => $request->session()->get('logout'),
-                'distribusi' => Cache::remember('order:distribusi:all', 300, function () {
-                    return Distribusi::all();
-                }),
+                'distribusi' => Distribusi::all(),
                 'id' => $id,
                 'id_dis' => $id_me,
                 'meja' => $meja,
@@ -158,9 +156,20 @@ class OrderController extends Controller
         $id_harga = $request->id_harga;
         $id_dis = $request->id_dis;
         $menu = DB::table('tb_harga as a')
-            ->select('b.tipe', 'a.id_harga', 'a.id_menu', 'a.id_distribusi', 'a.harga',
-                     'b.nm_menu', 'c.nm_distribusi', 'b.image', 'b.aktif as akv',
-                     'b.lokasi', 'b.id_station', 'b.id_kategori')
+            ->select(
+                'b.tipe',
+                'a.id_harga',
+                'a.id_menu',
+                'a.id_distribusi',
+                'a.harga',
+                'b.nm_menu',
+                'c.nm_distribusi',
+                'b.image',
+                'b.aktif as akv',
+                'b.lokasi',
+                'b.id_station',
+                'b.id_kategori'
+            )
             ->leftJoin('tb_menu as b', 'a.id_menu', '=', 'b.id_menu')
             ->leftJoin('tb_distribusi as c', 'a.id_distribusi', '=', 'c.id_distribusi')
             ->where('a.id_harga', $id_harga)
@@ -183,7 +192,7 @@ class OrderController extends Controller
         $tipe = $request->tipe;
         $id_karyawan = [0 => '1'];
         $dis = $request->dis;
-        $potongan = Discount::diskonPeritem($id_menu, $dis, $price);
+        $potongan = Discount::diskonPeritem($id_menu, $dis);
         $potonganJumlah = $potongan['potongan'];
         $potonganJenis = $potongan['jenis'];
         foreach ($id_karyawan as $id_kr) {
@@ -282,6 +291,14 @@ class OrderController extends Controller
             ->select(DB::raw('*, SUM(rupiah) AS rupiah'))
             ->first();
 
+        $dis = DB::table('tb_distribusi')
+            ->where('id_distribusi', $id_distribusi)
+            ->first();
+
+        // AYCE Logic: Calculate based on number of people if AYCE
+        $is_ayce = is_ayce_distribusi($dis->nm_distribusi);
+        $ayce_harga_total = $is_ayce ? ($orang * ayce_harga_paket()) : 0;
+
         $data = [
             'cart' => Cart::content(),
             'id_distri' => DB::table('tb_distribusi')
@@ -292,14 +309,15 @@ class OrderController extends Controller
             'page' => DB::table('tb_meja')
                 ->where('id_meja', $meja)
                 ->first(),
-            'dis' => DB::table('tb_distribusi')
-                ->where('id_distribusi', $id_distribusi)
-                ->first(),
+            'dis' => $dis,
             'orang' => $orang,
             'no_meja' => $no_meja,
             // 'warna' => $warna,
             // 'admin' => $admin,
             'distribusi' => $id_distribusi,
+            'is_ayce' => $is_ayce,
+            'ayce_harga_total' => $ayce_harga_total,
+            'ayce_harga_paket' => ayce_harga_paket(),
         ];
 
         return view('order.payment', $data)->render();
@@ -308,7 +326,7 @@ class OrderController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
     public function create(Request $request)
     {
@@ -333,8 +351,13 @@ class OrderController extends Controller
         $dis = DB::table('tb_distribusi')
             ->where('id_distribusi', $id_dis)
             ->first();
+
+        // Check if this is AYCE distribution
+        $is_ayce = is_ayce_distribusi($dis->nm_distribusi);
+        $ayce_harga_paket = ayce_harga_paket();
+
         $kode = strtoupper(substr($dis->nm_distribusi, 0, 2));
-        $loc = $loc;
+
         if ($loc == '1') {
             $hasil = "T$kode-$no_invoice";
         } else {
@@ -377,6 +400,7 @@ class OrderController extends Controller
             }
 
             if ($c->options->program == 'resto') {
+                $item_harga = $c->price;
 
                 if ($c->qty > 1) {
                     for ($x = 0; $x < $c->qty; $x++) {
@@ -385,7 +409,7 @@ class OrderController extends Controller
                             'no_order' => $hasil,
                             'id_harga' => $c->id,
                             'qty' => 1,
-                            'harga' => $c->price,
+                            'harga' => $item_harga,
                             'request' => $c->options->req,
                             'id_meja' => $last_meja->id_meja,
                             'id_distribusi' => $id_dis,
@@ -398,7 +422,6 @@ class OrderController extends Controller
                             'ongkir' => $ongkir,
                             'orang' => $orang,
                             'no_meja' => $no_meja,
-
                             'warna' => 'hijau'
                         ];
                         Orderan::create($data2);
@@ -409,7 +432,7 @@ class OrderController extends Controller
                         'no_order' => $hasil,
                         'id_harga' => $c->id,
                         'qty' => $c->qty,
-                        'harga' => $c->price,
+                        'harga' => $item_harga,
                         'request' => $c->options->req,
                         'id_meja' => $last_meja->id_meja,
                         'id_distribusi' => $id_dis,
@@ -422,7 +445,6 @@ class OrderController extends Controller
                         'ongkir' => $ongkir,
                         'orang' => $orang,
                         'no_meja' => $no_meja,
-
                         'warna' => 'hijau'
                     ];
                     Orderan::create($data2);

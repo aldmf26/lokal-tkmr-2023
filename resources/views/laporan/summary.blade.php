@@ -77,7 +77,7 @@ $total_total = $total_gojek->total + $total_not_gojek->total + $service_charge +
             </tr>
 
             <tr>
-                <td style="font-weight: bold;">subtotal dinein, take away & delivery</td>
+                <td style="font-weight: bold;">subtotal dinein, take away & ayce</td>
                 <td style="font-weight: bold;" width="1%">:</td>
                 <td></td>
                 <td style="text-align: right;font-weight: bold;"><?= number_format($total_not_gojek->total, 0) ?></td>
@@ -90,7 +90,7 @@ $total_total = $total_gojek->total + $total_not_gojek->total + $service_charge +
                 <td style="text-align: right;font-weight: bold;"><?= number_format($service_charge, 0) ?></td>
             </tr>
             <tr>
-                <td style="font-weight: bold;">pb1 dinein, take away & delivery</td>
+                <td style="font-weight: bold;">pb1 dinein, take away & ayce</td>
                 <td style="font-weight: bold;" width="1%">:</td>
                 <td></td>
                 <td style="text-align: right;font-weight: bold;"><?= number_format($pb1_not_gojek, 0) ?></td>

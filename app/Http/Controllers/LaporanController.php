@@ -37,27 +37,60 @@ class LaporanController extends Controller
         LEFT JOIN(SELECT tb_order2.no_order2 as no_order, tb_order2.id_distribusi as id_distribusi FROM tb_order2 GROUP BY tb_order2.no_order2) dt_order ON tb_transaksi.no_order = dt_order.no_order
         WHERE id_lokasi = $loc AND dt_order.id_distribusi = 2 AND tb_transaksi.tgl_transaksi >= '$tgl1' AND tb_transaksi.tgl_transaksi <= '$tgl2'");
 
+        $total_dinein = DB::selectOne("SELECT SUM(if(tb_transaksi.total_orderan - discount - voucher < 0 ,0,tb_transaksi.total_orderan - discount - voucher)) as total FROM `tb_transaksi`
+        LEFT JOIN(SELECT tb_order2.no_order2 as no_order, tb_order2.id_distribusi as id_distribusi FROM tb_order2 GROUP BY tb_order2.no_order2) dt_order ON tb_transaksi.no_order = dt_order.no_order
+        WHERE id_lokasi = $loc AND dt_order.id_distribusi = 1 AND tb_transaksi.tgl_transaksi >= '$tgl1' AND tb_transaksi.tgl_transaksi <= '$tgl2'");
+
+        $total_ayce = DB::selectOne("SELECT SUM(if(tb_transaksi.total_orderan - discount - voucher < 0 ,0,tb_transaksi.total_orderan - discount - voucher)) as total FROM `tb_transaksi`
+        LEFT JOIN(SELECT tb_order2.no_order2 as no_order, tb_order2.id_distribusi as id_distribusi FROM tb_order2 GROUP BY tb_order2.no_order2) dt_order ON tb_transaksi.no_order = dt_order.no_order
+        WHERE id_lokasi = $loc AND dt_order.id_distribusi = 3 AND tb_transaksi.tgl_transaksi >= '$tgl1' AND tb_transaksi.tgl_transaksi <= '$tgl2'");
+
         $total_not_gojek = DB::selectOne("SELECT SUM(if(tb_transaksi.total_orderan - discount - voucher < 0 ,0,tb_transaksi.total_orderan - discount - voucher)) as total FROM `tb_transaksi`
         LEFT JOIN(SELECT tb_order2.no_order2 as no_order, tb_order2.id_distribusi as id_distribusi FROM tb_order2 GROUP BY tb_order2.no_order2) dt_order ON tb_transaksi.no_order = dt_order.no_order
-        WHERE id_lokasi = $loc AND dt_order.id_distribusi != 2 AND tb_transaksi.tgl_transaksi >= '$tgl1' AND tb_transaksi.tgl_transaksi <= '$tgl2'");
+        WHERE id_lokasi = $loc AND dt_order.id_distribusi IN (1, 3) AND tb_transaksi.tgl_transaksi >= '$tgl1' AND tb_transaksi.tgl_transaksi <= '$tgl2'");
 
         $majo = DB::selectOne("SELECT SUM(a.bayar) AS bayar_majo
         FROM tb_invoice AS a
         WHERE a.tgl_jam BETWEEN '$tgl1' AND '$tgl2' and a.lokasi = '$loc' and a.id_distribusi = '1'");
-        
+
         $majo_gojek = DB::selectOne("SELECT SUM(a.bayar) AS bayar_majo
         FROM tb_invoice AS a
         WHERE a.tgl_jam BETWEEN '$tgl1' AND '$tgl2' and a.lokasi = '$loc' and a.id_distribusi = '2'");
-        
+
         $dp = DB::selectOne("SELECT SUM(a.jumlah) AS jumlah_dp
         FROM tb_dp AS a
         WHERE a.tgl BETWEEN '$tgl1' AND '$tgl2' and a.id_lokasi = '$loc'");
-    
+
+        // Count total people for AYCE - get distinct orders first to avoid summing duplicate orang values
+        $count_ayce = DB::selectOne("SELECT COUNT(DISTINCT no_order) as total_order, SUM(orang) as total_orang
+        FROM (
+            SELECT DISTINCT no_order, orang
+            FROM tb_order AS a
+            WHERE a.tgl BETWEEN '$tgl1' AND '$tgl2' and a.id_lokasi = '$loc' and a.id_distribusi = 3
+        ) as distinct_orders");
+
+        // Count DINE IN
+        $count_dinein = DB::selectOne("SELECT COUNT(DISTINCT a.no_order) as total_order, SUM(a.qty) as total_menu
+        FROM tb_order AS a
+        WHERE a.tgl BETWEEN '$tgl1' AND '$tgl2' and a.id_lokasi = '$loc' and a.id_distribusi = 1 AND a.void = 0 group by a.no_order");
+
+        // Calculate separate service charges and pb1
+        $service_charge_dinein = ($total_dinein->total ?? 0) * 0.07;
+        $pb1_dinein = (($total_dinein->total ?? 0) + $service_charge_dinein) * 0.1;
+        $service_charge_ayce = ($total_ayce->total ?? 0) * 0.07;
+        $pb1_ayce = (($total_ayce->total ?? 0) + $service_charge_ayce) * 0.1;
+
         $data = [
             'title'    => 'Summary',
             'tgl1' => $tgl1,
             'tgl2' => $tgl2,
             'dp' => $dp,
+            'count_ayce' => $count_ayce,
+            'count_dinein' => $count_dinein,
+            'service_charge_dinein' => $service_charge_dinein,
+            'pb1_dinein' => $pb1_dinein,
+            'service_charge_ayce' => $service_charge_ayce,
+            'pb1_ayce' => $pb1_ayce,
             'transaksi' => DB::selectOne("SELECT COUNT(a.no_order) AS ttl_invoice, SUM(a.discount) as discount, SUM(a.voucher) as voucher, sum(if(total_bayar = 0 ,0,a.round)) as rounding, a.id_lokasi, 
             SUM(a.total_orderan) AS rp, d.unit, a.no_order, sum(a.dp) as dp, sum(a.gosen) as gosend, sum(a.service) as ser, sum(a.tax) as tax,f.qty_void, f.void,
             SUM(a.cash) as cash, SUM(a.d_bca) as d_bca, SUM(a.k_bca) as k_bca, SUM(a.d_mandiri) as d_mandiri, SUM(a.k_mandiri) as k_mandiri, SUM(total_bayar) as total_bayar
@@ -107,6 +140,8 @@ group by d.id_order) as e on e.id_order = a.id_order
             GROUP BY b.id_kategori"),
 
             'total_gojek' => $total_gojek,
+            'total_dinein' => $total_dinein,
+            'total_ayce' => $total_ayce,
             'total_not_gojek' => $total_not_gojek,
             'lokasi' => $loc,
             'majo' => $majo,
@@ -117,7 +152,7 @@ group by d.id_order) as e on e.id_order = a.id_order
                         left join tb_kategori as c on b.id_kategori = c.kd_kategori
                         WHERE a.tgl BETWEEN '$tgl1' AND '$tgl2' AND a.void = 1 AND id_lokasi = '$loc'
                         GROUP BY c.kd_kategori"),
-                        'pembayaran' => DB::select("SELECT b.nm_akun, c.nm_klasifikasi, sum(a.nominal) as nominal, a.pengirim
+            'pembayaran' => DB::select("SELECT b.nm_akun, c.nm_klasifikasi, sum(a.nominal) as nominal, a.pengirim
                         FROM pembayaran as a 
                         left join akun_pembayaran as b on b.id_akun_pembayaran = a.id_akun_pembayaran
                         left join klasifikasi_pembayaran as c on c.id_klasifikasi_pembayaran = b.id_klasifikasi
@@ -138,26 +173,60 @@ group by d.id_order) as e on e.id_order = a.id_order
         LEFT JOIN(SELECT tb_order2.no_order2 as no_order, tb_order2.id_distribusi as id_distribusi FROM tb_order2 GROUP BY tb_order2.no_order2) dt_order ON tb_transaksi.no_order = dt_order.no_order
         WHERE id_lokasi = $loc AND dt_order.id_distribusi = 2 AND tb_transaksi.tgl_transaksi >= '$tgl1' AND tb_transaksi.tgl_transaksi <= '$tgl2'");
 
+        $total_dinein = DB::selectOne("SELECT SUM(if(tb_transaksi.total_orderan - discount - voucher < 0 ,0,tb_transaksi.total_orderan - discount - voucher)) as total FROM `tb_transaksi`
+        LEFT JOIN(SELECT tb_order2.no_order2 as no_order, tb_order2.id_distribusi as id_distribusi FROM tb_order2 GROUP BY tb_order2.no_order2) dt_order ON tb_transaksi.no_order = dt_order.no_order
+        WHERE id_lokasi = $loc AND dt_order.id_distribusi = 1 AND tb_transaksi.tgl_transaksi >= '$tgl1' AND tb_transaksi.tgl_transaksi <= '$tgl2'");
+
+        $total_ayce = DB::selectOne("SELECT SUM(if(tb_transaksi.total_orderan - discount - voucher < 0 ,0,tb_transaksi.total_orderan - discount - voucher)) as total FROM `tb_transaksi`
+        LEFT JOIN(SELECT tb_order2.no_order2 as no_order, tb_order2.id_distribusi as id_distribusi FROM tb_order2 GROUP BY tb_order2.no_order2) dt_order ON tb_transaksi.no_order = dt_order.no_order
+        WHERE id_lokasi = $loc AND dt_order.id_distribusi = 3 AND tb_transaksi.tgl_transaksi >= '$tgl1' AND tb_transaksi.tgl_transaksi <= '$tgl2'");
+
         $total_not_gojek = DB::selectOne("SELECT SUM(if(tb_transaksi.total_orderan - discount - voucher < 0 ,0,tb_transaksi.total_orderan - discount - voucher)) as total FROM `tb_transaksi`
         LEFT JOIN(SELECT tb_order2.no_order2 as no_order, tb_order2.id_distribusi as id_distribusi FROM tb_order2 GROUP BY tb_order2.no_order2) dt_order ON tb_transaksi.no_order = dt_order.no_order
-        WHERE id_lokasi = $loc AND dt_order.id_distribusi != 2 AND tb_transaksi.tgl_transaksi >= '$tgl1' AND tb_transaksi.tgl_transaksi <= '$tgl2'");
+        WHERE id_lokasi = $loc AND dt_order.id_distribusi IN (1, 3) AND tb_transaksi.tgl_transaksi >= '$tgl1' AND tb_transaksi.tgl_transaksi <= '$tgl2'");
+
         $majo = DB::selectOne("SELECT SUM(a.bayar) AS bayar_majo
         FROM tb_invoice AS a
         WHERE a.tgl_jam BETWEEN '$tgl1' AND '$tgl2' and a.lokasi = '$loc' and a.id_distribusi = '1'");
-        
+
         $majo_gojek = DB::selectOne("SELECT SUM(a.bayar) AS bayar_majo
         FROM tb_invoice AS a
         WHERE a.tgl_jam BETWEEN '$tgl1' AND '$tgl2' and a.lokasi = '$loc' and a.id_distribusi = '2'");
-        
+
         $dp = DB::selectOne("SELECT SUM(a.jumlah) AS jumlah_dp
         FROM tb_dp AS a
         WHERE a.tgl BETWEEN '$tgl1' AND '$tgl2' and a.id_lokasi = '$loc'");
-    
+
+        // Count total people for AYCE - get distinct orders first to avoid summing duplicate orang values
+        $count_ayce = DB::selectOne("SELECT COUNT(DISTINCT no_order) as total_order, SUM(orang) as total_orang
+        FROM (
+            SELECT DISTINCT no_order, orang
+            FROM tb_order AS a
+            WHERE a.tgl BETWEEN '$tgl1' AND '$tgl2' and a.id_lokasi = '$loc' and a.id_distribusi = 3
+        ) as distinct_orders");
+
+        // Count DINE IN
+        $count_dinein = DB::selectOne("SELECT COUNT(DISTINCT a.no_order) as total_order, SUM(a.qty) as total_menu
+        FROM tb_order AS a
+        WHERE a.tgl BETWEEN '$tgl1' AND '$tgl2' and a.id_lokasi = '$loc' and a.id_distribusi = 1 AND a.void = 0 group by a.no_order");
+
+        // Calculate separate service charges and pb1
+        $service_charge_dinein = ($total_dinein->total ?? 0) * 0.07;
+        $pb1_dinein = (($total_dinein->total ?? 0) + $service_charge_dinein) * 0.1;
+        $service_charge_ayce = ($total_ayce->total ?? 0) * 0.07;
+        $pb1_ayce = (($total_ayce->total ?? 0) + $service_charge_ayce) * 0.1;
+
         $data = [
             'title'    => 'Summary',
             'tgl1' => $tgl1,
             'tgl2' => $tgl2,
             'dp' => $dp,
+            'count_ayce' => $count_ayce,
+            'count_dinein' => $count_dinein,
+            'service_charge_dinein' => $service_charge_dinein,
+            'pb1_dinein' => $pb1_dinein,
+            'service_charge_ayce' => $service_charge_ayce,
+            'pb1_ayce' => $pb1_ayce,
             'transaksi' => DB::selectOne("SELECT COUNT(a.no_order) AS ttl_invoice, SUM(a.discount) as discount, SUM(a.voucher) as voucher, sum(if(total_bayar = 0 ,0,a.round)) as rounding, a.id_lokasi, 
             SUM(a.total_orderan) AS rp, d.unit, a.no_order, sum(a.dp) as dp, sum(a.gosen) as gosend, sum(a.service) as ser, sum(a.tax) as tax,f.qty_void, f.void,
             SUM(a.cash) as cash, SUM(a.d_bca) as d_bca, SUM(a.k_bca) as k_bca, SUM(a.d_mandiri) as d_mandiri, SUM(a.k_mandiri) as k_mandiri, SUM(total_bayar) as total_bayar
@@ -207,6 +276,8 @@ group by d.id_order) as e on e.id_order = a.id_order
             GROUP BY b.id_kategori"),
 
             'total_gojek' => $total_gojek,
+            'total_dinein' => $total_dinein,
+            'total_ayce' => $total_ayce,
             'total_not_gojek' => $total_not_gojek,
             'lokasi' => $loc,
             'majo' => $majo,
@@ -264,7 +335,7 @@ group by d.id_order) as e on e.id_order = a.id_order
         $spreadsheet->getActiveSheet()->setCellValue('B1', 'Nama Menu');
         $spreadsheet->getActiveSheet()->setCellValue('C1', 'Qty');
         $spreadsheet->getActiveSheet()->setCellValue('D1', 'Subtotal');
-        
+
 
         $style = array(
             'font' => array(
@@ -290,7 +361,7 @@ group by d.id_order) as e on e.id_order = a.id_order
         $kolom = 2;
         $no = 1;
         foreach ($dt_item as $d) {
-            if($d->nm_menu == '') {
+            if ($d->nm_menu == '') {
                 continue;
             }
             $spreadsheet->setActiveSheetIndex(0);
@@ -315,23 +386,19 @@ group by d.id_order) as e on e.id_order = a.id_order
         $writer = new Xlsx($spreadsheet);
 
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename='.$lokasi);
+        header('Content-Disposition: attachment;filename=' . $lokasi);
         header('Cache-Control: max-age=0');
 
         $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
         $writer->save('php://output');
     }
 
-    public function get_telat(Request $request)
-    {
-    }
+    public function get_telat(Request $request) {}
 
-    public function get_ontime(Request $request)
-    {
-    }
-    
-   
-    
+    public function get_ontime(Request $request) {}
+
+
+
     public function item_majo(Request $r)
     {
         $loc = $r->session()->get('id_lokasi');

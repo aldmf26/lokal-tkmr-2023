@@ -307,7 +307,7 @@ class OrderanController extends Controller
                     $getAkunPembayaran = DB::table('akun_pembayaran as a')
                         ->where('a.id_akun_pembayaran', $id_akunBayar)
                         ->first();
-                    
+
                     $data = [
                         'id_akun_pembayaran' => $id_akunBayar,
                         'no_nota' => $hasil,
@@ -386,7 +386,6 @@ class OrderanController extends Controller
             ]);
             // Anda dapat menangani kesalahan atau logging di sini
         }
-        
     }
 
     public function pembayaran2(Request $request)
@@ -505,9 +504,7 @@ class OrderanController extends Controller
         return view('meja.print_all', $data);
     }
 
-    public function voucher(Request $request)
-    {
-    }
+    public function voucher(Request $request) {}
 
     public function get_dp(Request $request)
     {

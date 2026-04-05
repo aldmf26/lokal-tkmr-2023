@@ -40,7 +40,7 @@ class MejaController extends Controller
                 'menu' => DB::table('tb_harga as vh')
                     ->join('tb_menu as vm', 'vh.id_menu', '=', 'vm.id_menu')
                     ->select('vh.id_harga', 'vh.harga', 'vm.nm_menu', 'vm.tipe', 'vm.id_kategori', 'vh.id_distribusi', 'vm.aktif as akv', 'vm.lokasi', 'vh.id_menu')
-                    ->where('vh.id_distribusi', $id == 1 || $id == 3 ? 1 : 2)
+                    ->where('vh.id_distribusi', $id)
                     ->where('vm.aktif', 'on')
                     ->where('vm.lokasi', $lokasi)
                     ->get(),
@@ -124,10 +124,10 @@ class MejaController extends Controller
             SUM(a.qty * a.harga) + MAX(IFNULL(m.total_majo, 0)) as subtotal,
             COUNT(CASE WHEN IFNULL(a.selesai, 'dimasak') != 'selesai' THEN 1 END) as items_cooking,
             MIN(a.j_mulai) as j_mulai,
-            MAX(a.print) as prn,
-            MAX(a.copy_print) as c_prn,
-            MAX(a.checker_tamu) as t_prn,
-            MAX(a.copy_checker_tamu) as ct_prn
+            MIN(a.print) as prn,
+            MIN(a.copy_print) as c_prn,
+            MIN(a.checker_tamu) as t_prn,
+            MIN(a.copy_checker_tamu) as ct_prn
             FROM tb_meja AS c
             INNER JOIN (
                 SELECT o_last.id_meja, o_ref.no_order
@@ -207,7 +207,7 @@ class MejaController extends Controller
             'menu' => DB::table('tb_harga as vh')
                 ->join('tb_menu as vm', 'vh.id_menu', '=', 'vm.id_menu')
                 ->select('vh.id_harga', 'vh.harga', 'vm.nm_menu', 'vm.tipe', 'vm.id_kategori', 'vh.id_distribusi', 'vm.aktif as akv', 'vm.lokasi','vh.id_menu')
-                ->where('vh.id_distribusi', $id == 1 || $id == 3 ? 1 : 2)
+                ->where('vh.id_distribusi', $id)
                 ->where('vm.aktif', 'on')
                 ->where('vm.lokasi', $lokasi)
                 ->get()
@@ -664,7 +664,7 @@ class MejaController extends Controller
         $no_order = $request->no;
         $id_dis = $request->id;
 
-        if ($id_dis == '1' || $id_dis == '3') {
+        if ($id_dis != '2') {
             $produk =  DB::select("SELECT a.id_produk, a.komisi,  a.nm_produk, a.sku, a.harga, b.satuan , c.nm_kategori, a.id_lokasi, d.debit, d.kredit,e.kredit_penjualan
             FROM tb_produk AS a
             LEFT JOIN tb_satuan_majo AS b ON b.id_satuan = a.id_satuan
@@ -821,11 +821,21 @@ class MejaController extends Controller
                  WHERE a.tgl = '$tgl' AND b.id_status = 2 and a.id_lokasi = '$loc'"
         );
 
+        $ord = DB::table('tb_order as a')
+            ->leftJoin('tb_distribusi as b', 'a.id_distribusi', '=', 'b.id_distribusi')
+            ->where('a.no_order', $r->no_order)
+            ->select('a.no_meja', 'b.nm_distribusi', 'a.id_distribusi')
+            ->first();
+
+        $prefix = 'Meja';
+        if ($ord->id_distribusi == 2) { $prefix = 'Gojek'; }
+        if ($ord->id_distribusi == 3) { $prefix = 'AYCE'; }
+
         $data = [
             'menu2' => $menu2,
             'majo_hide' => $majo_hide,
             'waitress' => $waitress,
-            'meja' => DB::table('tb_meja')->where('id_meja', $r->id_meja)->first()->nm_meja
+            'meja' => $prefix . ' ' . $ord->no_meja
         ];
 
         return view('meja.load_waitress_selesai', $data);

@@ -792,7 +792,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             background: white;
             padding: 20px;
             border-radius: 50%;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
         }
 
         .loader-spinner {
@@ -805,8 +805,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
     </style>
 </head>

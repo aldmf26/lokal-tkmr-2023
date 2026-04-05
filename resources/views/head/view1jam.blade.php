@@ -58,7 +58,14 @@
                 <tr>
                     <td><?= $i++ ?></td>
                     <td><?= $t->no_order ?></td>
-                    <td><?= $t->nm_meja ?></td>
+                    <td>
+                        @php
+                            $prefix = 'Meja';
+                            if ($t->id_distribusi == 2) { $prefix = 'Gojek'; }
+                            if ($t->id_distribusi == 3) { $prefix = 'AYCE'; }
+                        @endphp
+                        {{ $prefix }} {{ $t->no_meja }}
+                    </td>
                     <td><?= $t->nm_menu ?></td>
                     <td><?= $t->qty ?></td>
                     <td><?= number_format($t->qty * $t->harga, 0) ?></td>

@@ -43,7 +43,13 @@
                     ?>
                     <br>
                 </td>
-                <td><?= $pesan_2[0]->nm_meja ?></td>
+                <td>
+                    @if ($pesan_2[0]->id_distribusi == 3)
+                        Meja Ayce <?= $pesan_2[0]->no_meja ?>
+                    @else
+                        <?= $pesan_2[0]->nm_meja ?>
+                    @endif
+                </td>
             </tr>
         </tbody>
     </table>

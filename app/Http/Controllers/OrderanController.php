@@ -489,7 +489,7 @@ class OrderanController extends Controller
             'kembalian' => $kembalian,
             'dp' => Dp::all(),
             'majo' => $majo,
-            'pesan_2' => DB::select("SELECT a.*, sum(a.qty) as sum_qty ,  b.nm_meja , c.j_mulai, c.j_selesai, c.wait,c.orang
+            'pesan_2' => DB::select("SELECT a.*, sum(a.qty) as sum_qty ,  b.nm_meja , c.j_mulai, c.j_selesai, c.wait,c.orang, c.no_meja as meja_order, c.id_distribusi as distribusi_order
             FROM tb_order2 as a 
             left join tb_meja as b on a.id_meja = b.id_meja 
             LEFT JOIN tb_order AS c ON c.id_order = a.id_order1

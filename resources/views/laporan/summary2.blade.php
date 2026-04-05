@@ -77,24 +77,67 @@ $total_total = $total_gojek->total + $total_not_gojek->total + $service_charge +
             </tr>
 
             <tr>
-                <td style="font-weight: bold;">subtotal dinein, take away & delivery</td>
+                <td style="font-weight: bold;">subtotal dinein</td>
                 <td style="font-weight: bold;" width="1%">:</td>
                 <td></td>
-                <td style="text-align: right;font-weight: bold;"><?= number_format($total_not_gojek->total, 0) ?></td>
+                <td style="text-align: right;font-weight: bold;"><?= number_format($total_dinein->total, 0) ?></td>
+            </tr>
+            <tr>
+                <td>order</td>
+                <td width="1%">: </td>
+                <td></td>
+                <td style="text-align: right;"><?= $count_dinein->total_order ?? 0 ?></td>
+            </tr>
+            <tr>
+                <td>service charge dinein</td>
+                <td width="1%">:</td>
+                <td></td>
+                <td style="text-align: right;"><?= number_format($service_charge_dinein, 0) ?></td>
+            </tr>
+            <tr>
+                <td>pb1 dinein</td>
+                <td width="1%">:</td>
+                <td></td>
+                <td style="text-align: right;"><?= number_format($pb1_dinein, 0) ?></td>
             </tr>
 
             <tr>
-                <td style="font-weight: bold;">service charge</td>
+                <td colspan="4" style="text-align: center;">
+                    <hr style="border-top: 2px dashed black">
+                </td>
+            </tr>
+
+            <tr>
+                <td style="font-weight: bold;">subtotal ayce</td>
                 <td style="font-weight: bold;" width="1%">:</td>
                 <td></td>
-                <td style="text-align: right;font-weight: bold;"><?= number_format($service_charge, 0) ?></td>
+                <td style="text-align: right;font-weight: bold;"><?= number_format($total_ayce->total ?? 0, 0) ?></td>
             </tr>
             <tr>
-                <td style="font-weight: bold;">pb1 dinein, take away & delivery</td>
-                <td style="font-weight: bold;" width="1%">:</td>
+                <td>order</td>
+                <td width="1%">: </td>
                 <td></td>
-                <td style="text-align: right;font-weight: bold;"><?= number_format($pb1_not_gojek, 0) ?></td>
+                <td style="text-align: right;"><?= $count_ayce->total_order ?? 0 ?></td>
             </tr>
+            <tr>
+                <td>orang</td>
+                <td width="1%">: </td>
+                <td></td>
+                <td style="text-align: right;"><?= $count_ayce->total_orang ?? 0 ?></td>
+            </tr>
+            <tr>
+                <td>service charge ayce</td>
+                <td width="1%">:</td>
+                <td></td>
+                <td style="text-align: right;"><?= number_format($service_charge_ayce, 0) ?></td>
+            </tr>
+            <tr>
+                <td>pb1 ayce</td>
+                <td width="1%">:</td>
+                <td></td>
+                <td style="text-align: right;"><?= number_format($pb1_ayce, 0) ?></td>
+            </tr>
+
             <tr>
                 <td colspan="4" style="text-align: center;">
                     <hr style="border-top: 2px dashed black">
@@ -165,9 +208,9 @@ $total_total = $total_gojek->total + $total_not_gojek->total + $service_charge +
 
 
             <?php
-$total_transaksi = $transaksi->rp + $transaksi->tax + $transaksi->ser + $transaksi->rounding - $transaksi->dp;
-$kembalian = $transaksi->total_bayar - $total_transaksi;
-$kurangan = $transaksi->tax + $transaksi->ser + $transaksi->rounding - $transaksi->dp;
+            $total_transaksi = $transaksi->rp + $transaksi->tax + $transaksi->ser + $transaksi->rounding - $transaksi->dp;
+            $kembalian = $transaksi->total_bayar - $total_transaksi;
+            $kurangan = $transaksi->tax + $transaksi->ser + $transaksi->rounding - $transaksi->dp;
             
             ?>
             <tr>

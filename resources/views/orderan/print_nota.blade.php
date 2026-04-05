@@ -35,7 +35,11 @@
             </td>
 
             <td style="text-align: right;">
-                <?= $pesan_2[0]->nm_meja ?>
+                @if ($pesan_2[0]->distribusi_order == 3)
+                    Meja Ayce <?= $pesan_2[0]->meja_order ?>
+                @else
+                    <?= $pesan_2[0]->nm_meja ?>
+                @endif
             </td>
 
         </tr>

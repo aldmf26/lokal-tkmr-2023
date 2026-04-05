@@ -35,3 +35,15 @@ if (!function_exists('cat_shabu_only')) {
 if (!function_exists('cat_sushi_only')) {
     function cat_sushi_only() { return '18'; }
 }
+if (!function_exists('is_ayce_distribusi')) {
+    function is_ayce_distribusi($distribusi_name) {
+        return stripos($distribusi_name, 'AYCE') !== false;
+    }
+}
+
+if (!function_exists('ayce_harga_paket')) {
+    function ayce_harga_paket() {
+        // You can change this value as needed, or fetch it from a setting/database
+        return 0; 
+    }
+}
