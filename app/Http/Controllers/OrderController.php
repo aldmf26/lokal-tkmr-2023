@@ -77,7 +77,9 @@ class OrderController extends Controller
             $data = [
                 'title' => 'Order',
                 'logout' => $request->session()->get('logout'),
-                'distribusi' => Distribusi::all(),
+                'distribusi' => Cache::remember("order:distribusi", 120, function () {
+                    return Distribusi::all();
+                }),
                 'id' => $id,
                 'id_dis' => $id_me,
                 'meja' => $meja,
