@@ -125,9 +125,15 @@ class MejaController extends Controller
                 '=',
                 'o_ref.no_order'
             )
-            ->leftJoin('tb_transaksi as t_legacy', 't_legacy.no_order', '=', 'o_ref.no_order')
-            ->leftJoin('tb_order2 as o2', 'o2.no_order', '=', 'o_ref.no_order')
-            ->leftJoin('tb_transaksi as t2', 't2.no_order', '=', 'o2.no_order2')
+            ->leftJoinSub(
+                DB::table('tb_order2')
+                    ->select('no_order', DB::raw('MAX(no_order2) as no_order2'))
+                    ->groupBy('no_order'),
+                'o2',
+                'o2.no_order',
+                '=',
+                'o_ref.no_order'
+            )
             ->select(
                 'c.id_meja',
                 'o2.no_order2',
@@ -137,8 +143,15 @@ class MejaController extends Controller
                 DB::raw("SUM(a.qty) AS qty1"),
                 DB::raw("
                     CASE 
-                        WHEN (t_legacy.id_transaksi IS NOT NULL OR t2.id_transaksi IS NOT NULL)
-                             AND COUNT(CASE WHEN a.aktif = '1' AND a.void = 0 AND IFNULL(a.selesai, 'dimasak') != 'selesai' THEN 1 END) = 0
+                        WHEN (
+                            EXISTS (SELECT 1 FROM tb_transaksi WHERE no_order = o_ref.no_order LIMIT 1)
+                            OR EXISTS (
+                                SELECT 1 FROM tb_order2 
+                                INNER JOIN tb_transaksi ON tb_transaksi.no_order = tb_order2.no_order2 
+                                WHERE tb_order2.no_order = o_ref.no_order 
+                                LIMIT 1
+                            )
+                        ) AND COUNT(CASE WHEN a.aktif = '1' AND a.void = 0 AND IFNULL(a.selesai, 'dimasak') != 'selesai' THEN 1 END) = 0
                         THEN o_ref.no_order 
                         ELSE NULL 
                     END as paid_order
@@ -153,7 +166,7 @@ class MejaController extends Controller
             )
             ->where('c.id_lokasi', $loc)
             ->where('c.id_distribusi', $id_distribusi)
-            ->groupBy('c.id_meja', 'c.nm_meja', 'o_ref.no_order', 't_legacy.id_transaksi', 't2.id_transaksi')
+            ->groupBy('c.id_meja', 'c.nm_meja', 'o_ref.no_order', 'o2.no_order2')
             ->orderBy('nm_meja', 'ASC')
             ->get();
 
@@ -297,33 +310,38 @@ class MejaController extends Controller
 
     public function edit_pembayaran(Request $request)
     {
-        DB::table('pembayaran')->where('no_nota', $request->no_order)->delete();
+        $no_order = $request->no_order;
+        $id_akun = $request->id_akun;
+        $nominal = $request->nominal;
         $lokasi = $request->session()->get('id_lokasi');
-        for ($i = 0; $i < count($request->id_akun); $i++) {
 
-            if ($request->pembayaran[$i] == 0) {
-                # code...
-            } else {
-                $data = [
-                    'id_akun_pembayaran' => $request->id_akun[$i],
-                    'no_nota' => $request->no_order,
-                    'nominal' => $request->pembayaran[$i],
-                    // 'pengirim' => $request->nm_pengirim[$i],
-                    'tgl' => date('Y-m-d'),
-                    'id_lokasi' => $lokasi
-                ];
-                DB::table('pembayaran')->insert($data);
-            }
-        }
+        // Hapus pembayaran lama
+        DB::table('pembayaran')->where('no_nota', $no_order)->delete();
+
+        // Input pembayaran baru (Single payment method)
+        $data = [
+            'id_akun_pembayaran' => $id_akun,
+            'no_nota' => $no_order,
+            'nominal' => $nominal,
+            'tgl' => date('Y-m-d'),
+            'id_lokasi' => $lokasi
+        ];
+        DB::table('pembayaran')->insert($data);
+
         return redirect()->route('meja');
     }
 
     public function get_pembayaran(Request $request)
     {
         $no_order = $request->no_order;
+
+        // Cek apakah ada mapping ke no_order2 (Nota baru) di tb_order2
+        $order2 = DB::table('tb_order2')->where('no_order', $no_order)->first();
+        $no_tagihan = $order2 ? $order2->no_order2 : $no_order;
+
         $data = [
-            'dt_pembayaran' => Transaksi::where('no_order', $no_order)->first(),
-            'no_order' => $no_order,
+            'dt_pembayaran' => Transaksi::where('no_order', $no_tagihan)->first(),
+            'no_order' => $no_tagihan, // Kirim nomor nota yang benar ke view agar sinkron saat save
             'klasifikasi_pembayaran' => DB::table('klasifikasi_pembayaran')->get(),
         ];
         return view('meja.edit_pembayaran', $data);

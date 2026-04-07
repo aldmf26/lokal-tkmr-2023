@@ -177,6 +177,11 @@
                             style="background: #f1ba89ff; color: white; border-color: transparent;">
                             INVOICE
                         </a>
+                        <a href="javascript:void(0)" class="btn-meja-action btn-text-action btn_edit_pembayaran" 
+                            no_order="{{ $m->no_order }}" data-toggle="modal" data-target="#edit_pembayaran"
+                            style="background: #34495e; color: white; border-color: transparent; grid-column: span 2;">
+                            EDIT BAYAR
+                        </a>
                     @endif
                 </div>
             </div>

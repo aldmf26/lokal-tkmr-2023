@@ -530,20 +530,14 @@
                     success: function(data) {
                         $('#form_edit_pembayaran').html(data);
 
-                        var total_tagihan = parseInt($('#total_tagihan').val());
-                        var cash = parseInt($('#cash').val());
-                        var d_bca = parseInt($('#d_bca').val());
-                        var k_bca = parseInt($('#k_bca').val());
-                        var d_mandiri = parseInt($('#d_mandiri').val());
-                        var k_mandiri = parseInt($('#k_mandiri').val());
+                        // Hapus atribut disabled karena nominal sekarang sudah otomatis pas
+                        $('#btn_e_pembayaran').removeAttr('disabled');
 
-                        var total_bayar = cash + d_bca + k_bca + d_mandiri + k_mandiri;
-
-                        if (total_tagihan <= total_bayar) {
-                            $('#btn_e_pembayaran').removeAttr('disabled');
-                        } else {
-                            $('#btn_e_pembayaran').attr('disabled', 'true');
-                        }
+                        // Inisialisasi Select2 setelah konten di-load
+                        $('.select2-edit').select2({
+                            theme: 'bootstrap4',
+                            dropdownParent: $('#edit_pembayaran')
+                        });
 
                     }
                 });

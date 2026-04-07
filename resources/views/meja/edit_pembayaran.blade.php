@@ -1,68 +1,40 @@
 <?php
 $total_tagihan = $dt_pembayaran->total_bayar;
+// Cek akun yang saat ini terpakai (ambil satu saja karena sekarang single payment)
+$current_payment = DB::table('pembayaran')->where('no_nota', $no_order)->first();
+$current_id_akun = $current_payment ? $current_payment->id_akun_pembayaran : '13';
+// Join dengan klasifikasi agar informatif
+$akun_pembayaran = DB::table('akun_pembayaran as a')
+    ->join('klasifikasi_pembayaran as b', 'a.id_klasifikasi', '=', 'b.id_klasifikasi_pembayaran')
+    ->select('a.*', 'b.nm_klasifikasi')
+    ->get();
 ?>
 <div class="row">
     <input type="hidden" id="no_order" name="no_order" value="<?= $no_order ?>">
+    <input type="hidden" name="nominal" value="<?= $total_tagihan ?>">
 
-    <div class="col-12">
-        <div class="form-group">
-            <label>Total Tagihan</label>
-            <input type="number" class="form-control" id="total_tagihan" value="<?= $total_tagihan ?>" disabled>
+    <div class="col-12 text-center mb-3">
+        <div class="p-3 rounded" style="background: #e1f5fe; border: 1px solid #01579b;">
+            <label class="mb-1 text-muted">Total Tagihan:</label>
+            <h3 class="font-weight-bold" style="color: #0d47a1;">Rp <?= number_format($total_tagihan) ?></h3>
         </div>
     </div>
-    <table width="100%" style="padding: 2px;">
-        @php
-            $cash = DB::selectOne(" SELECT a.id_akun_pembayaran, a.nm_akun, b.nominal
-                FROM akun_pembayaran as a 
-                left join pembayaran as b on b.id_akun_pembayaran = a.id_akun_pembayaran and b.no_nota = '$no_order'
-                where a.id_akun_pembayaran = '13'
-                ");
-        @endphp
-        <tr>
-            <td>{{ $cash->nm_akun }}</td>
-            <td width="5%">:</td>
-            <td>
-                <input type="number" name="pembayaran[]" value="{{ empty($cash->nominal) ? '0' : $cash->nominal }}"
-                    class="form-control pembayaran ">
-            </td>
-            <td>
-                <input type="hidden" name="id_akun[]" value="{{ $cash->id_akun_pembayaran }}">
-            </td>
-        </tr>
-        @foreach ($klasifikasi_pembayaran as $k)
-            <tr>
-                <td colspan="3">&nbsp;</td>
-            </tr>
-            <tr>
-                <td style="font-weight: bold; text-align: center" colspan="3">
-                    {{ $k->nm_klasifikasi }}
-                </td>
-            </tr>
-            <tr>
-                <td colspan="3">&nbsp;</td>
-            </tr>
-            @php
-                $akun = DB::select(" SELECT a.id_akun_pembayaran, a.nm_akun, b.nominal
-                FROM akun_pembayaran as a 
-                left join pembayaran as b on b.id_akun_pembayaran = a.id_akun_pembayaran and b.no_nota = '$no_order'
-                where a.id_klasifikasi = '$k->id_klasifikasi_pembayaran'
-                ");
-            @endphp
-            @foreach ($akun as $a)
-                <tr>
-                    <td>{{ $a->nm_akun }}</td>
-                    <td width="5%">:</td>
-                    <td>
-                        <input type="number" name="pembayaran[]" value="{{ empty($a->nominal) ? '0' : $a->nominal }}"
-                            class="form-control pembayaran ">
-                    </td>
-                    <td>
-                        <input type="hidden" name="id_akun[]" value="{{ $a->id_akun_pembayaran }}">
-                    </td>
-                </tr>
-            @endforeach
-        @endforeach
-    </table>
+
+    <div class="col-12">
+        <div class="form-group border-top pt-3">
+            <label style="font-weight: 800; color: #555;">Pilih Metode Pembayaran Baru:</label>
+            <select name="id_akun" class="form-control select2-edit" style="width: 100%;">
+                @foreach ($akun_pembayaran as $akun)
+                    <option value="{{ $akun->id_akun_pembayaran }}" 
+                        {{ $akun->id_akun_pembayaran == $current_id_akun ? 'selected' : '' }}>
+                        {{ $akun->nm_klasifikasi }} - {{ $akun->nm_akun }}
+                    </option>
+                @endforeach
+            </select>
+            <small class="text-info mt-1 d-block"><i class="fas fa-info-circle mr-1"></i> Pilih metode untuk memindahkan seluruh nominal di atas.</small>
+        </div>
+    </div>
+</div>
 
 
     {{-- <div class="col-12">
