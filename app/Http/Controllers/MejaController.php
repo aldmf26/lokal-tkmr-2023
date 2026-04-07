@@ -125,33 +125,20 @@ class MejaController extends Controller
                 '=',
                 'o_ref.no_order'
             )
-            ->leftJoinSub(
-                DB::table('tb_order2')
-                    ->select('no_order', DB::raw('MAX(no_order2) as no_order2'))
-                    ->groupBy('no_order'),
-                'o2',
-                'o2.no_order',
-                '=',
-                'o_ref.no_order'
-            )
+            ->leftJoin('tb_transaksi as t_legacy', 't_legacy.no_order', '=', 'o_ref.no_order')
+            ->leftJoin('tb_order2 as o2', 'o2.no_order', '=', 'o_ref.no_order')
+            ->leftJoin('tb_transaksi as t2', 't2.no_order', '=', 'o2.no_order2')
             ->select(
                 'c.id_meja',
-                'o2.no_order2',
+                DB::raw('MAX(o2.no_order2) as no_order2'),
                 DB::raw("COALESCE(NULLIF(MAX(a.no_meja), ''), c.nm_meja) as nm_meja"),
                 'o_ref.no_order',
                 DB::raw("RIGHT(o_ref.no_order, 2) AS kd"),
                 DB::raw("SUM(a.qty) AS qty1"),
                 DB::raw("
                     CASE 
-                        WHEN (
-                            EXISTS (SELECT 1 FROM tb_transaksi WHERE no_order = o_ref.no_order LIMIT 1)
-                            OR EXISTS (
-                                SELECT 1 FROM tb_order2 
-                                INNER JOIN tb_transaksi ON tb_transaksi.no_order = tb_order2.no_order2 
-                                WHERE tb_order2.no_order = o_ref.no_order 
-                                LIMIT 1
-                            )
-                        ) AND COUNT(CASE WHEN a.aktif = '1' AND a.void = 0 AND IFNULL(a.selesai, 'dimasak') != 'selesai' THEN 1 END) = 0
+                        WHEN (MAX(t_legacy.id_transaksi) IS NOT NULL OR MAX(t2.id_transaksi) IS NOT NULL)
+                             AND COUNT(CASE WHEN a.aktif = '1' AND a.void = 0 AND IFNULL(a.selesai, 'dimasak') != 'selesai' THEN 1 END) = 0
                         THEN o_ref.no_order 
                         ELSE NULL 
                     END as paid_order
@@ -166,7 +153,7 @@ class MejaController extends Controller
             )
             ->where('c.id_lokasi', $loc)
             ->where('c.id_distribusi', $id_distribusi)
-            ->groupBy('c.id_meja', 'c.nm_meja', 'o_ref.no_order', 'o2.no_order2')
+            ->groupBy('c.id_meja', 'c.nm_meja', 'o_ref.no_order')
             ->orderBy('nm_meja', 'ASC')
             ->get();
 
