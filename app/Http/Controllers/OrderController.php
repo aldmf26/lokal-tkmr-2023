@@ -332,85 +332,116 @@ class OrderController extends Controller
      */
     public function create(Request $request)
     {
-        $id_dis = $request->id_distribusi;
-        $loc = $request->session()->get('id_lokasi');
-        $q = DB::select(
-            DB::raw("SELECT MAX(RIGHT(a.no_order,4)) AS kd_max FROM tb_order AS a
-        WHERE DATE(a.tgl)=CURDATE() AND a.id_lokasi = '$loc' AND a.id_distribusi = '$id_dis'"),
-        );
-        $kd = '';
-        if (count($q) > 0) {
-            foreach ($q as $k) {
-                $tmp = ((int) $k->kd_max) + 1;
+        return DB::transaction(function () use ($request) {
+            $id_dis = $request->id_distribusi;
+            $loc = $request->session()->get('id_lokasi');
+
+            // Penguncian baris (lockForUpdate) untuk mencegah nomor order ganda saat diklik bersamaan
+            $q = DB::table('tb_order')
+                ->whereDate('tgl', now())
+                ->where('id_lokasi', $loc)
+                ->where('id_distribusi', $id_dis)
+                ->select(DB::raw('MAX(RIGHT(no_order, 4)) as kd_max'))
+                ->lockForUpdate()
+                ->first();
+
+            $kd = '0001';
+            if ($q && $q->kd_max) {
+                $tmp = ((int) $q->kd_max) + 1;
                 $kd = sprintf('%04s', $tmp);
             }
-        } else {
-            $kd = '0001';
-        }
-        date_default_timezone_set('Asia/Makassar');
-        $no_invoice = date('ymd') . $kd;
 
-        $dis = DB::table('tb_distribusi')
-            ->where('id_distribusi', $id_dis)
-            ->first();
+            date_default_timezone_set('Asia/Makassar');
+            $no_invoice = date('ymd') . $kd;
 
-        // Check if this is AYCE distribution
-        $is_ayce = is_ayce_distribusi($dis->nm_distribusi);
-        $ayce_harga_paket = ayce_harga_paket();
+            $dis = DB::table('tb_distribusi')
+                ->where('id_distribusi', $id_dis)
+                ->first();
 
-        $kode = strtoupper(substr($dis->nm_distribusi, 0, 2));
+            // Check if this is AYCE distribution
+            $is_ayce = is_ayce_distribusi($dis->nm_distribusi);
+            $ayce_harga_paket = ayce_harga_paket();
 
-        if ($loc == '1') {
-            $hasil = "T$kode-$no_invoice";
-        } else {
-            $hasil = "S$kode-$no_invoice";
-        }
-        $data = [
-            'no_invoice' => $hasil,
-            'tanggal' => date('Y-m-d'),
-        ];
-        Invoice::create($data);
+            $kode = strtoupper(substr($dis->nm_distribusi, 0, 2));
 
-        // dd($request->req);
-        $meja = $request->id_meja;
-        $id_harga = $request->id_harga;
-        $qty = $request->qty;
-        $price = $request->harga;
-        $ongkir = $request->ongkir;
-        $orang = $request->orang;
-        $no_meja = $request->no_meja;
-        $lokasi = $request->session()->get('id_lokasi');
-        $pesan = $request->req;
-        // $warna = $request->warna;
-        // $admin = $request->admin;
+            if ($loc == '1') {
+                $hasil = "T$kode-$no_invoice";
+            } else {
+                $hasil = "S$kode-$no_invoice";
+            }
+            $data = [
+                'no_invoice' => $hasil,
+                'tanggal' => date('Y-m-d'),
+            ];
+            Invoice::create($data);
 
-        if ($request->id_meja) {
-            $last_meja = DB::table('tb_meja')->where('id_meja', $request->id_meja)->first();
-        } else {
-            $date = date('Y-m-d');
-            $last_meja = DB::selectOne("SELECT *
+            // dd($request->req);
+            $meja = $request->id_meja;
+            $id_harga = $request->id_harga;
+            $qty = $request->qty;
+            $price = $request->harga;
+            $ongkir = $request->ongkir;
+            $orang = $request->orang;
+            $no_meja = $request->no_meja;
+            $lokasi = $request->session()->get('id_lokasi');
+            $pesan = $request->req;
+            // $warna = $request->warna;
+            // $admin = $request->admin;
+
+            if ($request->id_meja) {
+                $last_meja = DB::table('tb_meja')->where('id_meja', $request->id_meja)->first();
+            } else {
+                $date = date('Y-m-d');
+                $last_meja = DB::selectOne("SELECT *
             FROM tb_meja AS a
             WHERE a.id_meja NOT IN (SELECT b.id_meja from tb_order AS b WHERE b.tgl = '$date' or b.aktif = '1' ) and a.id_lokasi = '$lokasi' and a.id_distribusi = '$id_dis' ORDER BY a.id_meja ASC");
-        }
-
-        $total = 0;
-        foreach (Cart::content() as $c) {
-            if ($c->options->program == 'majo') {
-                $total += $c->price * $c->qty;
-            } else {
-                # code...
             }
 
-            if ($c->options->program == 'resto') {
-                $item_harga = $c->price;
+            if (!$last_meja) {
+                return back()->with('error', 'Meja tidak tersedia.');
+            }
 
-                if ($c->qty > 1) {
-                    for ($x = 0; $x < $c->qty; $x++) {
+            $total = 0;
+            foreach (Cart::content() as $c) {
+                if ($c->options->program == 'majo') {
+                    $total += $c->price * $c->qty;
+                } else {
+                    # code...
+                }
+
+                if ($c->options->program == 'resto') {
+                    $item_harga = $c->price;
+
+                    if ($c->qty > 1) {
+                        for ($x = 0; $x < $c->qty; $x++) {
+
+                            $data2 = [
+                                'no_order' => $hasil,
+                                'id_harga' => $c->id,
+                                'qty' => 1,
+                                'harga' => $item_harga,
+                                'request' => $c->options->req,
+                                'id_meja' => $last_meja->id_meja,
+                                'id_distribusi' => $id_dis,
+                                'selesai' => 'dimasak',
+                                'id_lokasi' => $lokasi,
+                                'tgl' => date('Y-m-d'),
+                                'admin' => Auth::user()->nama,
+                                'j_mulai' => date('Y-m-d H:i:s'),
+                                'aktif' => '1',
+                                'ongkir' => $ongkir,
+                                'orang' => $orang,
+                                'no_meja' => $no_meja,
+                                'warna' => 'hijau'
+                            ];
+                            Orderan::create($data2);
+                        }
+                    } else {
 
                         $data2 = [
                             'no_order' => $hasil,
                             'id_harga' => $c->id,
-                            'qty' => 1,
+                            'qty' => $c->qty,
                             'harga' => $item_harga,
                             'request' => $c->options->req,
                             'id_meja' => $last_meja->id_meja,
@@ -429,112 +460,61 @@ class OrderController extends Controller
                         Orderan::create($data2);
                     }
                 } else {
+                    $d_produk = DB::table('tb_produk')->where('id_produk', $c->id)->where('id_lokasi', $lokasi)->first();
+                    // dd(Auth::user()->nama);
+                    $data = [
+                        'id_karyawan'  => '1',
+                        'id_produk' => $c->id,
+                        'nm_karyawan' => 'kosong',
+                        'no_nota' => $hasil,
+                        'jumlah' => $c->qty,
+                        'harga' => $c->price,
+                        'total' => $c->price * $c->qty,
+                        'tanggal' => date('Y-m-d'),
+                        'tgl_input' => date('Y-m-d H:i:s'),
+                        'admin' => Auth::user()->nama,
+                        'lokasi' => $lokasi,
+                        'no_meja' => $last_meja->id_meja,
+                        'jml_komisi' => $d_produk->komisi
+                    ];
+                    $dataInsert = Pembelian::create($data);
+
+                    $id_pembelian = $dataInsert->id;
+
+                    $stok_baru = [
+                        'stok' => $d_produk->stok -  $c->qty
+                    ];
+
+                    DB::table('tb_produk')->where('id_produk', $c->id)->update($stok_baru);
 
                     $data2 = [
                         'no_order' => $hasil,
-                        'id_harga' => $c->id,
-                        'qty' => $c->qty,
-                        'harga' => $item_harga,
-                        'request' => $c->options->req,
+                        'qty' => '1',
                         'id_meja' => $last_meja->id_meja,
                         'id_distribusi' => $id_dis,
-                        'selesai' => 'dimasak',
+                        'selesai' => 'selesai',
                         'id_lokasi' => $lokasi,
                         'tgl' => date('Y-m-d'),
-                        'admin' => Auth::user()->nama,
                         'j_mulai' => date('Y-m-d H:i:s'),
                         'aktif' => '1',
-                        'ongkir' => $ongkir,
                         'orang' => $orang,
                         'no_meja' => $no_meja,
-                        'warna' => 'hijau'
+                        'warna' => ''
                     ];
                     Orderan::create($data2);
+
+                    if ($c->price > 0) {
+                        $subharga = $c->qty * $c->price;
+                    } else {
+                        $subharga = 0;
+                    }
+                    $komisi1 = $subharga * $d_produk->komisi / 100;
                 }
-            } else {
-                // $nm_karyawan = '';
-                // $length = count($c->options->nm_karyawan[0]);
-                // $number = 1;
-                // foreach ($c->options->nm_karyawan as $key => $karyawan) {
-                //     foreach ($karyawan as $kar) {
-                //         $nm_karyawan .= $kar;
-                //         if ($number !== $length) {
-                //             $nm_karyawan .= ', ';
-                //         }
-                //         $number++;
-                //     }
-                // }
-                $d_produk = DB::table('tb_produk')->where('id_produk', $c->id)->where('id_lokasi', $lokasi)->first();
-                // dd(Auth::user()->nama);
-                $data = [
-                    'id_karyawan'  => '1',
-                    'id_produk' => $c->id,
-                    'nm_karyawan' => 'kosong',
-                    'no_nota' => $hasil,
-                    'jumlah' => $c->qty,
-                    'harga' => $c->price,
-                    'total' => $c->price * $c->qty,
-                    'tanggal' => date('Y-m-d'),
-                    'tgl_input' => date('Y-m-d H:i:s'),
-                    'admin' => Auth::user()->nama,
-                    'lokasi' => $lokasi,
-                    'no_meja' => $last_meja->id_meja,
-                    'jml_komisi' => $d_produk->komisi
-                ];
-                $dataInsert = Pembelian::create($data);
-
-                $id_pembelian = $dataInsert->id;
-
-
-
-                $stok_baru = [
-                    'stok' => $d_produk->stok -  $c->qty
-                ];
-
-                DB::table('tb_produk')->where('id_produk', $c->id)->update($stok_baru);
-
-                $data2 = [
-                    'no_order' => $hasil,
-                    'qty' => '1',
-                    'id_meja' => $last_meja->id_meja,
-                    'id_distribusi' => $id_dis,
-                    'selesai' => 'selesai',
-                    'id_lokasi' => $lokasi,
-                    'tgl' => date('Y-m-d'),
-                    'j_mulai' => date('Y-m-d H:i:s'),
-                    'aktif' => '1',
-                    'orang' => $orang,
-                    'no_meja' => $no_meja,
-                    'warna' => ''
-                ];
-                Orderan::create($data2);
-
-
-
-
-                if ($c->price > 0) {
-                    $subharga = $c->qty * $c->price;
-                } else {
-                    $subharga = 0;
-                }
-                $komisi1 = $subharga * $d_produk->komisi / 100;
-                // $komisi = $komisi1 / count($c->options->id_karyawan);
-                // foreach ($c->options->id_karyawan as $id_karyawan) {
-                //     $data_komisi = [
-                //         'id_pembelian' => $id_pembelian,
-                //         'id_kry'  => $id_karyawan,
-                //         'komisi' => $komisi,
-                //         'tgl' => date('Y-m-d'),
-                //         'id_lokasi' => '1'
-                //     ];
-                //     DB::table('komisi')->insert($data_komisi);
-                // }
             }
-        }
 
-
-        Cart::destroy();
-        return redirect()->route('meja');
+            Cart::destroy();
+            return redirect()->route('meja');
+        });
     }
 
     public function get_majo(Request $request)
