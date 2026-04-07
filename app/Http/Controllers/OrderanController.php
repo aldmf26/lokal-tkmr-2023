@@ -414,11 +414,12 @@ class OrderanController extends Controller
     public function pembayaran2(Request $request)
     {
         $no = $request->no;
-        $order = DB::select("SELECT a.*, SUM(a.qty) as qty_produk, b.nm_menu, c.nm_meja
+        $order = DB::select("SELECT a.*, SUM(a.qty) as qty_produk, b.nm_menu, d.no_meja as nm_meja
         FROM tb_order2 as a 
         left join tb_harga as vh on a.id_harga = vh.id_harga
         left join tb_menu as b on vh.id_menu = b.id_menu 
         left join tb_meja as c on c.id_meja = a.id_meja
+        left join tb_order as d on a.no_order = d.no_order
         
         where   a.no_order2 = '$no' 
         GROUP BY a.id_harga
@@ -435,6 +436,11 @@ class OrderanController extends Controller
         WHERE  a.no_nota2 = '$no'
         ");
 
+        $labels = [
+            1 => 'Meja',
+            2 => 'Gojek',
+            3 => 'AYCE'
+        ];
         $data = [
             'title' => 'Pembayaran',
             'logout' => $request->session()->get('logout'),
@@ -453,6 +459,8 @@ class OrderanController extends Controller
             left join akun_pembayaran as b on b.id_akun_pembayaran = a.id_akun_pembayaran
             left join klasifikasi_pembayaran as c on c.id_klasifikasi_pembayaran = b.id_klasifikasi
             where a.no_nota ='$no';"),
+            'label' => $labels[$dis->id_distribusi],
+
         ];
 
         return view('orderan.pembayaran2', $data);
@@ -479,8 +487,18 @@ class OrderanController extends Controller
         left join tb_meja as c on c.id_meja = a.no_meja
         WHERE a.no_nota2= '$no'
         ");
+        $pesan_2 = DB::select("SELECT a.*, sum(a.qty) as sum_qty ,  c.no_meja as nm_meja , c.j_mulai, c.j_selesai, c.wait,c.orang, c.no_meja as meja_order, c.id_distribusi as distribusi_order
+            FROM tb_order2 as a 
+            left join tb_meja as b on a.id_meja = b.id_meja 
+            LEFT JOIN tb_order AS c ON c.id_order = a.id_order1
+            where a.no_order2 = '$no' 
+            group by a.no_order2");
 
-
+        $labels = [
+            1 => 'Meja',
+            2 => 'Gojek',
+            3 => 'AYCE'
+        ];
         $data = [
             'title' => 'Pembayaran',
             'transaksi' => Transaksi::where('no_order', $no)->first(),
@@ -489,17 +507,13 @@ class OrderanController extends Controller
             'kembalian' => $kembalian,
             'dp' => Dp::all(),
             'majo' => $majo,
-            'pesan_2' => DB::select("SELECT a.*, sum(a.qty) as sum_qty ,  b.nm_meja , c.j_mulai, c.j_selesai, c.wait,c.orang, c.no_meja as meja_order, c.id_distribusi as distribusi_order
-            FROM tb_order2 as a 
-            left join tb_meja as b on a.id_meja = b.id_meja 
-            LEFT JOIN tb_order AS c ON c.id_order = a.id_order1
-            where a.no_order2 = '$no' 
-            group by a.no_order2"),
+            'pesan_2' => $pesan_2,
             'pembayaran' => DB::select("SELECT b.nm_akun, c.nm_klasifikasi, a.nominal, a.pengirim
             FROM pembayaran as a 
             left join akun_pembayaran as b on b.id_akun_pembayaran = a.id_akun_pembayaran
             left join klasifikasi_pembayaran as c on c.id_klasifikasi_pembayaran = b.id_klasifikasi
             where a.no_nota ='$no';"),
+            'label' => $labels[$pesan_2[0]->distribusi_order],
         ];
 
         return view('orderan.print_nota', $data);

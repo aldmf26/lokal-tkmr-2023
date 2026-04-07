@@ -1,4 +1,3 @@
-
 <style>
     .invoice {
         margin: auto;
@@ -38,7 +37,7 @@
                 @if ($pesan_2[0]->distribusi_order == 3)
                     Meja Ayce <?= $pesan_2[0]->meja_order ?>
                 @else
-                    <?= $pesan_2[0]->nm_meja ?>
+                    <?= $label . ' ' . $pesan_2[0]->nm_meja ?>
                 @endif
             </td>
 
@@ -49,16 +48,16 @@
 
     <table width="100%">
         <?php
-        $s_total = 0;
-        $qty = 0;
-        $harga = 0;
-        foreach ($order  as $d) :
+$s_total = 0;
+$qty = 0;
+$harga = 0;
+foreach ($order as $d):
 
-       
-            $s_total += $d->harga * $d->qty_produk;
-            $qty = $d->qty_produk;
-            $harga += $d->harga;
-            $dis = $d->id_distribusi;
+
+    $s_total += $d->harga * $d->qty_produk;
+    $qty = $d->qty_produk;
+    $harga += $d->harga;
+    $dis = $d->id_distribusi;
         ?>
         @if ($d->nm_menu == '')
         @else
@@ -81,9 +80,9 @@
         <?php endforeach ?>
 
         <?php
-        $s_total_majo = 0;
-        foreach ($majo as $m):
-        $s_total_majo += $m->harga * $m->jumlah;
+$s_total_majo = 0;
+foreach ($majo as $m):
+    $s_total_majo += $m->harga * $m->jumlah;
         ?>
         <tr>
             <td style="text-align: left;" width="6%">
@@ -103,8 +102,8 @@
         <?php endforeach ?>
 
         <?php $tb_dis = DB::table('tb_distribusi')
-            ->where('id_distribusi', $dis)
-            ->first(); ?>
+    ->where('id_distribusi', $dis)
+    ->first(); ?>
     </table>
     <table width="100%">
         <tr>
@@ -127,7 +126,7 @@
             </td>
         </tr>
 
-        <?php if ($transaksi->voucher) : ?>
+        <?php if ($transaksi->voucher): ?>
         <tr>
             <td style="text-align: left;" width="6%"></td>
             <td style="font-size: 20px;">
@@ -142,7 +141,7 @@
             </td>
         </tr>
         <?php endif; ?>
-        <?php if ($transaksi->diskon_bank) : ?>
+        <?php if ($transaksi->diskon_bank): ?>
         <tr>
             <td style="text-align: left;" width="6%"></td>
             <td style="font-size: 20px;">
@@ -166,9 +165,9 @@
                 <span style="font-weight: bold;">DISC VOUCHER </span>
             </td>
             <td width="22%" style="font-size: 20px;">
-                <?php if ($totO < 0) : ?>
+                <?php if ($totO < 0): ?>
                 <span style="font-weight: bold;">0</span>
-                <?php else : ?>
+                <?php else: ?>
                 <span style="font-weight: bold;">
                     <?= number_format($totO) ?>
                 </span>
@@ -181,7 +180,7 @@
             </td>
         </tr>
 
-        <?php if ($tb_dis->service == 'Y') : ?>
+        <?php if ($tb_dis->service == 'Y'): ?>
         <tr>
             <td style="text-align: left;" width="6%"></td>
             <td style="font-size: 20px;">
@@ -195,9 +194,9 @@
 
             </td>
         </tr>
-        <?php else : ?>
+        <?php else: ?>
         <?php endif ?>
-        <?php if ($tb_dis->ongkir == 'Y') : ?>
+        <?php if ($tb_dis->ongkir == 'Y'): ?>
         <tr>
             <td style="text-align: left;" width="6%"></td>
             <td style="font-size: 20px;">
@@ -211,10 +210,10 @@
 
             </td>
         </tr>
-        <?php else : ?>
+        <?php else: ?>
         <?php endif ?>
 
-        <?php if ($tb_dis->tax == 'Y') : ?>
+        <?php if ($tb_dis->tax == 'Y'): ?>
         <tr>
             <td style="text-align: left;" width="6%"></td>
             <td style="font-size: 20px;">
@@ -243,7 +242,7 @@
             // }
             $c = $totO + $transaksi->service + $transaksi->tax + $transaksi->ongkir + $transaksi->round
         @endphp
-      
+
         <tr>
             <td style="text-align: left;" width="6%"></td>
             <td style="font-size: 20px; font-weight: bold;">
@@ -270,7 +269,7 @@
 
 
 
-        <?php if ($transaksi->discount) : ?>
+        <?php if ($transaksi->discount): ?>
         <tr>
             <td style="text-align: left;" width="6%"></td>
             <td style="font-size: 20px;">
@@ -287,7 +286,7 @@
             </td>
         </tr>
         <?php endif; ?>
-        <?php if ($transaksi->dp) : ?>
+        <?php if ($transaksi->dp): ?>
         <tr>
             <td style="text-align: left;" width="6%"></td>
             <td style="font-size: 20px;">
@@ -303,7 +302,7 @@
         </tr>
         <?php endif; ?>
 
-        <?php if ($transaksi->gosen) : ?>
+        <?php if ($transaksi->gosen): ?>
         <tr>
             <td style="text-align: left;" width="6%"></td>
             <td style="font-size: 20px;">
@@ -335,7 +334,8 @@
         <tr>
             <td style="text-align: left;" width="6%"></td>
             <td style="font-size: 20px;">
-                {{-- <?php if (empty($transaksi->cash)) : ?>
+                {{--
+                <?php if (empty($transaksi->cash)) : ?>
                 <?php else : ?>
                 Cash <div style="margin-top: 5px;"></div>
                 <?php endif ?>
@@ -357,11 +357,13 @@
                 <?php endif ?> --}}
 
                 @foreach ($pembayaran as $p)
-                    {{ $p->nm_akun }} {{ $p->nm_klasifikasi }} <div style="margin-top: 5px;"></div> 
+                    {{ $p->nm_akun }} {{ $p->nm_klasifikasi }}
+                    <div style="margin-top: 5px;"></div>
                 @endforeach
             </td>
             <td width="22%" style="font-size: 20px;">
-                {{-- <?php if (empty($transaksi->cash)) : ?>
+                {{--
+                <?php if (empty($transaksi->cash)) : ?>
                 <?php else : ?>
                 <?= number_format($transaksi->cash) ?>
                 <div style="margin-top: 5px;"></div>
@@ -390,7 +392,8 @@
                     $total_p = 0;
                 @endphp
                 @foreach ($pembayaran as $p)
-                    {{ number_format($p->nominal, 0) }}<div style="margin-top: 5px;"></div>
+                    {{ number_format($p->nominal, 0) }}
+                    <div style="margin-top: 5px;"></div>
                     @php
                         $total_p += $p->nominal;
                     @endphp
@@ -404,17 +407,18 @@
             <td style="text-align: left;" width="6%"></td>
             <td style="font-size: 20px;">
                 @foreach ($pembayaran as $p)
-                    {{ $p->pengirim }} <div style="margin-top: 5px;"></div> 
+                    {{ $p->pengirim }}
+                    <div style="margin-top: 5px;"></div>
                 @endforeach
             </td>
-           
+
             <td width="22%" style="font-size: 20px;">
-                
+
             </td>
             <td width="15%" align="right">
 
             </td>
-            
+
         </tr>
         <tr>
             <td style="text-align: left;" width="6%"></td>
@@ -455,8 +459,8 @@
         <?= $Weddingdate->format('h:i a') ?><br>
         Closed
         <?php
-        date_default_timezone_set('Asia/Makassar');
-        echo date('M j, Y h:i a'); ?>
+date_default_timezone_set('Asia/Makassar');
+echo date('M j, Y h:i a'); ?>
     </p>
     <hr>
     <p align="center"> ** Thank you. See you next time! **</p>

@@ -169,9 +169,15 @@
 
                     <!-- Baris 4 -->
                     <a target="_blank" href="{{ route('all_checker', ['no' => $m->no_order]) }}"
-                        class="btn-meja-action btn-text-action" style="grid-column: span 2;">
+                        class="btn-meja-action btn-text-action" style="grid-column: span 1;">
                         PRINT ALL
                     </a>
+                    @if ($isPaid)
+                        <a href="/print_nota?no={{ $m->no_order2 }}" target="_blank" class="btn-meja-action btn-text-action" 
+                            style="background: #f1ba89ff; color: white; border-color: transparent;">
+                            INVOICE
+                        </a>
+                    @endif
                 </div>
             </div>
         @endif

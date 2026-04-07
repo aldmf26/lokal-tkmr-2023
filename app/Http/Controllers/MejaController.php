@@ -130,6 +130,7 @@ class MejaController extends Controller
             ->leftJoin('tb_transaksi as t2', 't2.no_order', '=', 'o2.no_order2')
             ->select(
                 'c.id_meja',
+                'o2.no_order2',
                 DB::raw("COALESCE(NULLIF(MAX(a.no_meja), ''), c.nm_meja) as nm_meja"),
                 'o_ref.no_order',
                 DB::raw("RIGHT(o_ref.no_order, 2) AS kd"),
