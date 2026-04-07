@@ -454,20 +454,13 @@
                     </div>
                     <!-- Modal body -->
                     <div class="modal-body">
-
                         <div id="harga_majoo">
 
                         </div>
-                        {{--
-                        <hr>
-                        <h5 style="font-size: 1rem;">DIJUAL OLEH</h5>
-
-                        <div class="buying-selling-group" id="buying-selling-group" data-toggle="buttons">
-
-
-                        </div> --}}
-
-
+                    </div>
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-info btn-block" style="font-weight: bold;">Masukkan Keranjang</button>
                     </div>
                 </div>
             </div>

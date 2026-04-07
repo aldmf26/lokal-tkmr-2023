@@ -489,12 +489,15 @@ class OrderController extends Controller
 
                     $data2 = [
                         'no_order' => $hasil,
-                        'qty' => '1',
+                        'id_harga' => $c->id,
+                        'qty' => $c->qty,
+                        'harga' => $c->price,
                         'id_meja' => $last_meja->id_meja,
                         'id_distribusi' => $id_dis,
                         'selesai' => 'selesai',
                         'id_lokasi' => $lokasi,
                         'tgl' => date('Y-m-d'),
+                        'admin' => Auth::user()->nama,
                         'j_mulai' => date('Y-m-d H:i:s'),
                         'aktif' => '1',
                         'orang' => $orang,

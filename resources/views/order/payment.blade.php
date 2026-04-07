@@ -75,9 +75,6 @@
                                                             value="{{ $c->options->program }}">
                                                     </td>
                                                 </tr>
-                                                <input type="hidden" name="id_meja" value="{{ $page->id_meja }}">
-
-
                                                 <input type="hidden" name="id_harga[]" value="{{ $c->id }} ">
                                                 <input type="hidden" name="qty[]" value="{{ $c->qty }}">
                                                 <input type="hidden" name="harga[]" value="{{ $c->price }}">
@@ -171,6 +168,7 @@
                                             <td>Rp. {{ number_format($c, 0) }}</td>
                                         </tr>
 
+                                        <input type="hidden" name="id_meja" value="{{ $page->id_meja }}">
                                         <input type="hidden" name="ongkir" value="{{ $ongkir }}">
                                         <input type="hidden" name="orang" value="{{ $orang }}">
                                         <input type="hidden" name="no_meja" value="{{ $no_meja }}">
