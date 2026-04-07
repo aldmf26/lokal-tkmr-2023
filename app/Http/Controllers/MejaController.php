@@ -154,7 +154,7 @@ class MejaController extends Controller
             ->where('c.id_lokasi', $loc)
             ->where('c.id_distribusi', $id_distribusi)
             ->groupBy('c.id_meja', 'c.nm_meja', 'o_ref.no_order')
-            ->orderBy('nm_meja', 'ASC')
+            ->orderBy('o_ref.no_order', 'ASC')
             ->get();
 
         $data = [
