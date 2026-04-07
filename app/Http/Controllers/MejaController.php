@@ -94,62 +94,67 @@ class MejaController extends Controller
 
 
 
-        $meja = DB::select(
-            "SELECT c.id_meja,
-            COALESCE(NULLIF(MAX(a.no_meja), ''), c.nm_meja) as nm_meja,
-            lo.no_order,
-            RIGHT(lo.no_order,2) AS kd,
-            SUM(a.qty) AS qty1,
-            CASE
-                WHEN (
-                    EXISTS (
-                        SELECT 1 FROM tb_transaksi t_legacy
-                        WHERE t_legacy.no_order = lo.no_order
-                    ) OR EXISTS (
-                        SELECT 1
-                        FROM tb_order2 o2
-                        INNER JOIN tb_transaksi t2 ON t2.no_order = o2.no_order2
-                        WHERE o2.no_order = lo.no_order
-                    )
-                ) AND NOT EXISTS (
-                    SELECT 1
-                    FROM tb_order p
-                    WHERE p.no_order = lo.no_order
-                      AND p.aktif = '1'
-                      AND p.void = 0
-                      AND IFNULL(p.selesai, 'dimasak') != 'selesai'
-                ) THEN lo.no_order
-                ELSE NULL
-            END as paid_order,
-            SUM(a.qty * a.harga) + MAX(IFNULL(m.total_majo, 0)) as subtotal,
-            COUNT(CASE WHEN IFNULL(a.selesai, 'dimasak') != 'selesai' THEN 1 END) as items_cooking,
-            MIN(a.j_mulai) as j_mulai,
-            MIN(a.print) as prn,
-            MIN(a.copy_print) as c_prn,
-            MIN(a.checker_tamu) as t_prn,
-            MIN(a.copy_checker_tamu) as ct_prn
-            FROM tb_meja AS c
-            INNER JOIN (
-                SELECT o_last.id_meja, o_ref.no_order
-                FROM (
-                    SELECT id_meja, MAX(id_order) AS last_id_order
-                    FROM tb_order
-                    WHERE aktif = '1' AND void = 0 AND id_lokasi = '$loc'
-                    GROUP BY id_meja
-                ) o_last
-                INNER JOIN tb_order o_ref ON o_ref.id_order = o_last.last_id_order
-            ) lo ON lo.id_meja = c.id_meja
-            INNER JOIN tb_order AS a ON a.id_meja = lo.id_meja AND a.no_order = lo.no_order AND a.aktif = '1' AND a.void = 0
-            LEFT JOIN (
-                SELECT no_nota, SUM(total) as total_majo 
-                FROM tb_pembelian 
-                WHERE lokasi = '$loc' AND void = 0 
-                GROUP BY no_nota
-            ) AS m ON m.no_nota = lo.no_order
-            WHERE c.id_lokasi = '$loc' AND c.id_distribusi = '$id_distribusi'
-            GROUP BY c.id_meja, c.nm_meja, lo.no_order
-            ORDER BY a.no_meja ASC;"
-        );
+        $meja = DB::table('tb_meja as c')
+            ->joinSub(
+                DB::table('tb_order')
+                    ->select('id_meja', DB::raw('MAX(id_order) as last_id_order'))
+                    ->where('aktif', '1')
+                    ->where('void', 0)
+                    ->where('id_lokasi', $loc)
+                    ->groupBy('id_meja'),
+                'o_last',
+                'c.id_meja',
+                '=',
+                'o_last.id_meja'
+            )
+            ->join('tb_order as o_ref', 'o_ref.id_order', '=', 'o_last.last_id_order')
+            ->join('tb_order as a', function ($join) {
+                $join->on('a.id_meja', '=', 'o_last.id_meja')
+                    ->on('a.no_order', '=', 'o_ref.no_order')
+                    ->where('a.aktif', '1')
+                    ->where('a.void', 0);
+            })
+            ->leftJoinSub(
+                DB::table('tb_pembelian')
+                    ->select('no_nota', DB::raw('SUM(total) as total_majo'))
+                    ->where('lokasi', $loc)
+                    ->where('void', 0)
+                    ->groupBy('no_nota'),
+                'm',
+                'm.no_nota',
+                '=',
+                'o_ref.no_order'
+            )
+            ->leftJoin('tb_transaksi as t_legacy', 't_legacy.no_order', '=', 'o_ref.no_order')
+            ->leftJoin('tb_order2 as o2', 'o2.no_order', '=', 'o_ref.no_order')
+            ->leftJoin('tb_transaksi as t2', 't2.no_order', '=', 'o2.no_order2')
+            ->select(
+                'c.id_meja',
+                DB::raw("COALESCE(NULLIF(MAX(a.no_meja), ''), c.nm_meja) as nm_meja"),
+                'o_ref.no_order',
+                DB::raw("RIGHT(o_ref.no_order, 2) AS kd"),
+                DB::raw("SUM(a.qty) AS qty1"),
+                DB::raw("
+                    CASE 
+                        WHEN (t_legacy.id_transaksi IS NOT NULL OR t2.id_transaksi IS NOT NULL)
+                             AND COUNT(CASE WHEN a.aktif = '1' AND a.void = 0 AND IFNULL(a.selesai, 'dimasak') != 'selesai' THEN 1 END) = 0
+                        THEN o_ref.no_order 
+                        ELSE NULL 
+                    END as paid_order
+                "),
+                DB::raw("SUM(a.qty * a.harga) + MAX(IFNULL(m.total_majo, 0)) as subtotal"),
+                DB::raw("COUNT(CASE WHEN IFNULL(a.selesai, 'dimasak') != 'selesai' THEN 1 END) as items_cooking"),
+                DB::raw("MIN(a.j_mulai) as j_mulai"),
+                DB::raw("MIN(a.print) as prn"),
+                DB::raw("MIN(a.copy_print) as c_prn"),
+                DB::raw("MIN(a.checker_tamu) as t_prn"),
+                DB::raw("MIN(a.copy_checker_tamu) as ct_prn")
+            )
+            ->where('c.id_lokasi', $loc)
+            ->where('c.id_distribusi', $id_distribusi)
+            ->groupBy('c.id_meja', 'c.nm_meja', 'o_ref.no_order', 't_legacy.id_transaksi', 't2.id_transaksi')
+            ->orderBy('nm_meja', 'ASC')
+            ->get();
 
         $data = [
             'meja' => $meja,
