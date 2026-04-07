@@ -277,10 +277,28 @@ class HeadController extends Controller
     {
         date_default_timezone_set('Asia/Makassar');
         $id_order = $request->kode;
+
+        // Validasi: Cek apakah sudah dibayar
+        $cek_bayar = DB::table('tb_order2')->where('id_order1', $id_order)->first();
+        if ($cek_bayar) {
+            return response()->json(['status' => 'error', 'message' => 'Item sudah diproses ke pembayaran/dibayar, tidak bisa di-cancel!']);
+        }
+
+        // Validasi: Cek apakah sudah lewat 1 jam
+        $order = DB::table('tb_order')->where('id_order', $id_order)->first();
+        if ($order && $order->j_selesai) {
+            $selisih = (strtotime(date('Y-m-d H:i:s')) - strtotime($order->j_selesai)) / 3600;
+            if ($selisih > 1) {
+                return response()->json(['status' => 'error', 'message' => 'Sudah lewat 1 jam dari waktu selesai, tidak bisa di-cancel!']);
+            }
+        }
+
         $data = array(
             'selesai'   => 'dimasak',
         );
         DB::table('tb_order')->where('id_order', $id_order)->update($data);
+
+        return response()->json(['status' => 'success', 'message' => 'Berhasil membatalkan status selesai.']);
     }
 
     public function head2(Request $r)

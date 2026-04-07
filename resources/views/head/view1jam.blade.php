@@ -50,6 +50,7 @@
                     <th>Harga</th>
                     <th>Time Order</th>
                     <th>Time Selesai</th>
+                    <th>Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -73,6 +74,16 @@
                     <?php $waktu2 = new DateTime($t->j_selesai); ?>
                     <td><?= $waktu1->format('h:i A') ?></td>
                     <td><?= $waktu2->format('h:i A') ?></td>
+                    <td>
+                        @if ($t->cek_bayar)
+                            <span class="badge badge-secondary p-2">Sudah Dibayar</span>
+                        @else
+                            <button type="button" class="btn btn-sm btn-warning btn_cancel_selesai"
+                                kode="{{ $t->id_order }}">
+                                <i class="fas fa-undo"></i> Batal Selesai
+                            </button>
+                        @endif
+                    </td>
                 </tr>
                 <?php endforeach ?>
 
@@ -89,9 +100,51 @@
                 // Ambil text dari kolom No Order (index 1) dan Table (index 2)
                 var noOrder = $(this).find('td').eq(1).text().toLowerCase();
                 var table = $(this).find('td').eq(2).text().toLowerCase();
-                
+
                 // Cari kecocokan di kedua kolom tersebut
                 $(this).toggle(noOrder.indexOf(value) > -1 || table.indexOf(value) > -1);
+            });
+        });
+
+        $(document).on("click", ".btn_cancel_selesai", function() {
+            var kode = $(this).attr('kode');
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: "Status akan dikembalikan ke sedang dimasak!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, Batal Selesai!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "{{ route('head_cancel') }}",
+                        type: "GET",
+                        data: {
+                            kode: kode
+                        },
+                        success: function(data) {
+                            if (data.status == 'success') {
+                                Swal.fire(
+                                    'Berhasil!',
+                                    data.message,
+                                    'success'
+                                ).then(() => {
+                                    // Refresh data history
+                                    load_history();
+                                });
+                            } else {
+                                Swal.fire(
+                                    'Gagal!',
+                                    data.message,
+                                    'error'
+                                );
+                            }
+                        }
+                    });
+                }
             });
         });
     });
