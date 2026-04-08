@@ -137,7 +137,7 @@ class OrderanController extends Controller
         FROM tb_pembelian AS a
         LEFT JOIN tb_produk AS b ON b.id_produk = a.id_produk
         left join tb_meja as c on c.id_meja = a.no_meja
-        WHERE a.no_nota= '$no' and a.bayar = 'T'
+        WHERE a.no_nota= '$no' and a.bayar = 'T' and a.no_meja = '" . $order[0]->id_meja . "'
         ");
         $now = date('Y-m-d');
         $disc = DB::table('tb_discount')
@@ -433,7 +433,7 @@ class OrderanController extends Controller
         FROM tb_pembelian AS a
         LEFT JOIN tb_produk AS b ON b.id_produk = a.id_produk
         left join tb_meja as c on c.id_meja = a.no_meja
-        WHERE  a.no_nota2 = '$no'
+        WHERE  a.no_nota2 = '$no' and a.no_meja = '$meja->id_meja'
         ");
 
         $labels = [
@@ -480,19 +480,20 @@ class OrderanController extends Controller
         GROUP BY a.id_harga
         ");
 
-        $majo = DB::select("SELECT a.id_pembelian, a.tanggal, a.no_nota, c.nm_meja,
-        a.nm_karyawan, b.nm_produk, a.id_karyawan, a.jumlah, a.harga, a.total
-        FROM tb_pembelian AS a
-        LEFT JOIN tb_produk AS b ON b.id_produk = a.id_produk
-        left join tb_meja as c on c.id_meja = a.no_meja
-        WHERE a.no_nota2= '$no'
-        ");
         $pesan_2 = DB::select("SELECT a.*, sum(a.qty) as sum_qty ,  c.no_meja as nm_meja , c.j_mulai, c.j_selesai, c.wait,c.orang, c.no_meja as meja_order, c.id_distribusi as distribusi_order
             FROM tb_order2 as a 
             left join tb_meja as b on a.id_meja = b.id_meja 
             LEFT JOIN tb_order AS c ON c.id_order = a.id_order1
             where a.no_order2 = '$no' 
             group by a.no_order2");
+
+        $majo = DB::select("SELECT a.id_pembelian, a.tanggal, a.no_nota, c.nm_meja,
+        a.nm_karyawan, b.nm_produk, a.id_karyawan, a.jumlah, a.harga, a.total
+        FROM tb_pembelian AS a
+        LEFT JOIN tb_produk AS b ON b.id_produk = a.id_produk
+        left join tb_meja as c on c.id_meja = a.no_meja
+        WHERE a.no_nota2= '$no' and a.no_meja = '" . $pesan_2[0]->id_meja . "'
+        ");
 
         $labels = [
             1 => 'Meja',

@@ -34,17 +34,37 @@ class InvoiceController extends Controller
                 $tgl2 = $tl2;
             }
 
-            $data = [
-                'title'    => 'Invoice',
-                'logout' => $request->session()->get('logout'),
-                'invoice' => DB::select("SELECT a.*, d.nm_meja
+            $pembayaran_akun = DB::table('akun_pembayaran as a')
+    ->leftJoin('klasifikasi_pembayaran as b', 'a.id_klasifikasi', '=', 'b.id_klasifikasi_pembayaran')
+    ->select('a.*', 'b.nm_klasifikasi')
+    ->get();
+            
+            $invoice = DB::select("SELECT a.*, c.no_meja AS nm_meja, e.pembayaran_details
                 FROM tb_transaksi AS a
                 LEFT JOIN tb_order2 AS b ON b.no_order2 = a.no_order
                 LEFT JOIN tb_order AS c ON c.no_order = b.no_order
-                LEFT JOIN tb_meja AS d ON d.id_meja = c.id_meja
-                WHERE a.tgl_transaksi between '$tgl1' and '$tgl2' and a.id_lokasi = '$loc'
+                LEFT JOIN (
+                    SELECT no_nota, 
+                    JSON_OBJECTAGG(id_akun_pembayaran, nominal) as pembayaran_details
+                    FROM pembayaran 
+                    GROUP BY no_nota
+                ) AS e ON e.no_nota = a.no_order
+                WHERE a.tgl_transaksi BETWEEN '$tgl1' AND '$tgl2' AND a.id_lokasi = '$loc'
                 GROUP BY a.no_order
-                ")
+            ");
+
+            // Map payment details for easier access in Blade
+            foreach ($invoice as $inv) {
+                $inv->pembayaran_details = json_decode($inv->pembayaran_details, true) ?? [];
+            }
+
+            $data = [
+                'title'    => 'Invoice',
+                'logout'   => $request->session()->get('logout'),
+                'invoice'  => $invoice,
+                'pembayaran_akun' => $pembayaran_akun,
+                'tgl1'     => $tgl1,
+                'tgl2'     => $tgl2,
             ];
 
             return view('invoice.invoice', $data);
