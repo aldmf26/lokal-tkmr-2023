@@ -125,9 +125,14 @@ class MejaController extends Controller
                 '=',
                 'o_ref.no_order'
             )
-            ->leftJoin('tb_transaksi as t_legacy', 't_legacy.no_order', '=', 'o_ref.no_order')
-            ->leftJoin('tb_order2 as o2', 'o2.no_order', '=', 'o_ref.no_order')
-            ->leftJoin('tb_transaksi as t2', 't2.no_order', '=', 'o2.no_order2')
+            ->leftJoin('tb_order2 as o2', function ($join) {
+                $join->on('o2.no_order', '=', 'o_ref.no_order')
+                     ->where('o2.tgl', date('Y-m-d'));
+            })
+            ->leftJoin('tb_transaksi as t2', function ($join) {
+                $join->on('t2.no_order', '=', 'o2.no_order2')
+                     ->where('t2.tgl_transaksi', date('Y-m-d'));
+            })
             ->select(
                 'c.id_meja',
                 DB::raw('MAX(o2.no_order2) as no_order2'),
@@ -136,19 +141,13 @@ class MejaController extends Controller
                 DB::raw("RIGHT(o_ref.no_order, 2) AS kd"),
                 DB::raw("SUM(a.qty) AS qty1"),
                 DB::raw("
-    CASE 
-        WHEN (
-            MAX(t2.id_transaksi) IS NOT NULL
-            AND COUNT(CASE 
-                WHEN a.aktif = '1' 
-                AND a.void = 0 
-                AND IFNULL(a.selesai, 'dimasak') != 'selesai' 
-            THEN 1 END) = 0
-        )
-        THEN o_ref.no_order 
-        ELSE NULL 
-    END as paid_order
-"),
+                    CASE 
+                        WHEN (MAX(t2.id_transaksi) IS NOT NULL)
+                             AND COUNT(CASE WHEN a.aktif = '1' AND a.void = 0 AND IFNULL(a.selesai, 'dimasak') != 'selesai' THEN 1 END) = 0
+                        THEN o_ref.no_order 
+                        ELSE NULL 
+                    END as paid_order
+                "),
                 DB::raw("SUM(a.qty * a.harga) + MAX(IFNULL(m.total_majo, 0)) as subtotal"),
                 DB::raw("COUNT(CASE WHEN IFNULL(a.selesai, 'dimasak') != 'selesai' THEN 1 END) as items_cooking"),
                 DB::raw("MIN(a.j_mulai) as j_mulai"),
