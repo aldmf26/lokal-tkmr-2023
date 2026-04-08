@@ -39,19 +39,25 @@ class InvoiceController extends Controller
     ->select('a.*', 'b.nm_klasifikasi')
     ->get();
             
-            $invoice = DB::select("SELECT a.*, c.no_meja AS nm_meja, e.pembayaran_details
-                FROM tb_transaksi AS a
-                LEFT JOIN tb_order2 AS b ON b.no_order2 = a.no_order
-                LEFT JOIN tb_order AS c ON c.no_order = b.no_order
-                LEFT JOIN (
-                    SELECT no_nota, 
-                    JSON_OBJECTAGG(id_akun_pembayaran, nominal) as pembayaran_details
-                    FROM pembayaran 
-                    GROUP BY no_nota
-                ) AS e ON e.no_nota = a.no_order
-                WHERE a.tgl_transaksi BETWEEN '$tgl1' AND '$tgl2' AND a.id_lokasi = '$loc'
-                GROUP BY a.no_order
-            ");
+            $invoice = DB::select("
+    SELECT a.*, 
+           c.no_meja AS nm_meja, 
+           e.pembayaran_details
+    FROM tb_transaksi AS a
+    LEFT JOIN tb_order2 AS b ON b.no_order2 = a.no_order
+    LEFT JOIN tb_order AS c ON c.no_order = b.no_order
+    LEFT JOIN (
+        SELECT 
+            no_nota, 
+            CONCAT('{', GROUP_CONCAT(CONCAT('\"', id_akun_pembayaran, '\":', nominal)), '}') 
+            AS pembayaran_details
+        FROM pembayaran 
+        GROUP BY no_nota
+    ) AS e ON e.no_nota = a.no_order
+    WHERE a.tgl_transaksi BETWEEN '$tgl1' AND '$tgl2' 
+      AND a.id_lokasi = '$loc'
+    GROUP BY a.no_order
+");
 
             // Map payment details for easier access in Blade
             foreach ($invoice as $inv) {
