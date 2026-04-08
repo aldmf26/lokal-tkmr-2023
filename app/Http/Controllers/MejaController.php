@@ -136,13 +136,19 @@ class MejaController extends Controller
                 DB::raw("RIGHT(o_ref.no_order, 2) AS kd"),
                 DB::raw("SUM(a.qty) AS qty1"),
                 DB::raw("
-                    CASE 
-                        WHEN (MAX(t_legacy.id_transaksi) IS NOT NULL OR MAX(t2.id_transaksi) IS NOT NULL)
-                             AND COUNT(CASE WHEN a.aktif = '1' AND a.void = 0 AND IFNULL(a.selesai, 'dimasak') != 'selesai' THEN 1 END) = 0
-                        THEN o_ref.no_order 
-                        ELSE NULL 
-                    END as paid_order
-                "),
+    CASE 
+        WHEN (
+            MAX(t2.id_transaksi) IS NOT NULL
+            AND COUNT(CASE 
+                WHEN a.aktif = '1' 
+                AND a.void = 0 
+                AND IFNULL(a.selesai, 'dimasak') != 'selesai' 
+            THEN 1 END) = 0
+        )
+        THEN o_ref.no_order 
+        ELSE NULL 
+    END as paid_order
+"),
                 DB::raw("SUM(a.qty * a.harga) + MAX(IFNULL(m.total_majo, 0)) as subtotal"),
                 DB::raw("COUNT(CASE WHEN IFNULL(a.selesai, 'dimasak') != 'selesai' THEN 1 END) as items_cooking"),
                 DB::raw("MIN(a.j_mulai) as j_mulai"),
