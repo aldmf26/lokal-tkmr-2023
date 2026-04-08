@@ -216,14 +216,12 @@ class OrderanController extends Controller
             $voucher = $request->voucher;
             $disc = $request->disc;
 
-            // Memperoleh data distribusi
+            // Memproses data distribusi
             $dis = DB::table('tb_distribusi')->where('id_distribusi', $id_distribusi)->first();
             $kode = substr($dis->nm_distribusi, 0, 2);
 
-            // Membangun nomor invoice
-            $kd = $this->generateInvoiceNumber($lokasi, $id_distribusi);
-            $no_invoice = date('ymd') . $kd;
-            $hasil = $this->buildInvoiceNumber($lokasi, $kode, $no_invoice);
+            // Invoice number is identical to Order number because split bill feature is no longer used
+            $hasil = $no_order;
 
             // Membuat Invoice2
             $data = [
