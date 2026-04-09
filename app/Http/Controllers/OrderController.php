@@ -402,7 +402,8 @@ class OrderController extends Controller
                                 'aktif' => '1',
                                 'orang' => $orang,
                                 'no_meja' => $no_meja,
-                                'warna' => ''
+                                'warna' => '',
+                                'request' => $c->options->req,
                             ];
                             Orderan::create($data);
                         }
@@ -420,7 +421,9 @@ class OrderController extends Controller
                             'aktif' => '1',
                             'orang' => $orang,
                             'no_meja' => $no_meja,
-                            'warna' => ''
+                            'warna' => '',
+                            'request' => $c->options->req,
+
                         ];
                         Orderan::create($data);
                     }
