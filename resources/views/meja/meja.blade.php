@@ -298,7 +298,7 @@
 
 
     <input type="hidden" id="id_distribusi" value="{{ $id }}">
-    <div class="modal fade" id="view_menu" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal" id="view_menu" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
 
             <div class="modal-content">
@@ -317,7 +317,7 @@
 
     <form method="post" action="{{ route('save_pesanan_new') }}" id="save_tambah_pesanan">
         @csrf
-        <div class="modal fade" id="tbh_menu" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal" id="tbh_menu" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg" role="document">
 
                 <div class="modal-content">
@@ -356,7 +356,7 @@
 
     <form action="{{ route('edit_pembayaran') }}" method="post">
         @csrf
-        <div class="modal fade" id="edit_pembayaran" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal" id="edit_pembayaran" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header bg-info">
@@ -377,7 +377,7 @@
     </form>
     <form id="tambah_pesanan_new_majo">
         @csrf
-        <div class="modal fade" id="tbh_menu_majo" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal" id="tbh_menu_majo" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg" role="document">
 
                 <div class="modal-content">
