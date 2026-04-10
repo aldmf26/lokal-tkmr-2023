@@ -268,7 +268,7 @@
                 </tr>
             </table>
             <input type="hidden" name="ongkir" value="{{ $ongkir }}">
-            <button type="submit" class="btn btn-success bg-gradient btn-block">SEND TO KITCHEN</button>
+            <button type="button" id="btn_send_kitchen" class="btn btn-success bg-gradient btn-block">SEND TO KITCHEN</button>
         </div>
     </div>
 </div>

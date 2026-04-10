@@ -178,7 +178,7 @@
                                 <hr>
 
                                 <center>
-                                    <button type="submit" class="btn " id="save_btn"
+                                    <button type="button" class="btn " id="save_btn"
                                         style="background-color: #363D4B;color:white">Submit</button>
                                     <a href="order" class="btn btn-danger"> Cancel</a>
                                 </center>
@@ -199,13 +199,14 @@
 <script>
     $(document).ready(function() {
         let isSubmitted = false;
-        $(document).on('submit', '#form_save_percobaan', function(event) {
+        $(document).on('click', '#save_btn', function(event) {
             if (isSubmitted) {
                 event.preventDefault();
                 return false;
             }
             isSubmitted = true;
-            $('#save_btn').prop('disabled', true).html('Processing...');
+            $(this).prop('disabled', true).html('Processing...');
+            $('#form_save_percobaan').submit();
         });
         $(document).on('click', '#tes', function() {
             //   event.preventDefault();

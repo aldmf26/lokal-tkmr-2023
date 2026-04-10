@@ -693,6 +693,16 @@
                     }
                 });
             }
+
+            let isOrderSubmitted = false;
+            $(document).on('click', '#btn_send_kitchen', function(event) {
+                if (isOrderSubmitted) {
+                    return false;
+                }
+                isOrderSubmitted = true;
+                $(this).prop('disabled', true).html('Processing...');
+                $(this).closest('form').submit();
+            });
         });
     </script>
     <script>
