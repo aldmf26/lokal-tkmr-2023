@@ -3,7 +3,7 @@
     <?php
     $dt = date('Y-m-d');
     date_default_timezone_set('Asia/Jakarta');
-                ?>
+                        ?>
     <style>
         .nav-pills .nav-link.active {
             color: #fff;
@@ -191,8 +191,8 @@
 
 
         /* .buying-selling.active .radio-dot:after {
-                                                                                                         background-image: linear-gradient(to right, #f78ca0 0%, #f9748f 19%, #fd868c 60%, #fe9a8b 100%);
-                                                                                                        } */
+                                                                                                                 background-image: linear-gradient(to right, #f78ca0 0%, #f9748f 19%, #fd868c 60%, #fe9a8b 100%);
+                                                                                                                } */
 
         /* dot */
         .buying-selling:hover .radio-dot:after {
@@ -200,9 +200,9 @@
         }
 
         /* .buying-selling.active:hover .radio-dot:after {
-                                                                                                         background-image: linear-gradient(to right, #f78ca0 0%, #f9748f 19%, #fd868c 60%, #fe9a8b 100%);
+                                                                                                                 background-image: linear-gradient(to right, #f78ca0 0%, #f9748f 19%, #fd868c 60%, #fe9a8b 100%);
 
-                                                                                                        } */
+                                                                                                                } */
 
         .quick_add:hover .card-order {
             background-color: #f8f9fa;
@@ -402,11 +402,11 @@
                                         </div>
                                         <div class="col-lg-4">
                                             <label for="">No Meja</label>
-                                            <input type="number" name="no_meja" required class="form-control">
+                                            <input type="number" min="1" name="no_meja" required class="form-control">
                                         </div>
                                         <div class="col-lg-4">
                                             <label for="">Orang</label>
-                                            <input type="number" name="orang" class="form-control" value="1">
+                                            <input type="number" min="1" name="orang" class="form-control" value="1">
                                             <input type="hidden" class="form-control id_distribusi"
                                                 value="{{ $id_distri->id_distribusi }}">
                                         </div>
@@ -460,7 +460,8 @@
                     </div>
                     <!-- Modal footer -->
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-info btn-block" style="font-weight: bold;">Masukkan Keranjang</button>
+                        <button type="submit" class="btn btn-info btn-block" style="font-weight: bold;">Masukkan
+                            Keranjang</button>
                     </div>
                 </div>
             </div>
@@ -695,7 +696,7 @@
             }
 
             let isOrderSubmitted = false;
-            $(document).on('click', '#btn_send_kitchen', function(event) {
+            $(document).on('click', '#btn_send_kitchen', function (event) {
                 if (isOrderSubmitted) {
                     return false;
                 }
