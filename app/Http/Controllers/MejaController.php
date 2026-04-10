@@ -302,26 +302,43 @@ class MejaController extends Controller
 
     public function edit_pembayaran(Request $request)
     {
-        $no_order = $request->no_order;
-        $id_akun = $request->id_akun;
-        $nominal = $request->nominal;
-        $lokasi = $request->session()->get('id_lokasi');
+        $no_order   = $request->no_order;
+        $lokasi     = $request->session()->get('id_lokasi');
+        $nominal_akun = $request->nominal_akun ?? []; // array: [id_akun_pembayaran => nominal]
 
-        // Hapus pembayaran lama
+        // Hapus semua pembayaran lama untuk nota ini
         DB::table('pembayaran')->where('no_nota', $no_order)->delete();
 
-        // Input pembayaran baru (Single payment method)
-        $data = [
-            'id_akun_pembayaran' => $id_akun,
-            'no_nota' => $no_order,
-            'nominal' => $nominal,
-            'tgl' => date('Y-m-d'),
-            'id_lokasi' => $lokasi
-        ];
-        DB::table('pembayaran')->insert($data);
+        $total_dibayar = 0;
+
+        // Insert pembayaran baru per metode (skip yang nominalnya 0)
+        foreach ($nominal_akun as $id_akun => $nominal) {
+            $nominal = (int) $nominal;
+            if ($nominal > 0) {
+                DB::table('pembayaran')->insert([
+                    'id_akun_pembayaran' => $id_akun,
+                    'no_nota'            => $no_order,
+                    'nominal'            => $nominal,
+                    'tgl'                => date('Y-m-d'),
+                    'id_lokasi'          => $lokasi,
+                    'tgl_waktu'          => now(),
+                ]);
+                $total_dibayar += $nominal;
+            }
+        }
+
+        // Hitung kembalian berdasarkan total_bayar di tb_transaksi
+        $transaksi = DB::table('tb_transaksi')->where('no_order', $no_order)->first();
+        if ($transaksi) {
+            $kembalian = max(0, $total_dibayar - $transaksi->total_bayar);
+            DB::table('tb_transaksi')
+                ->where('no_order', $no_order)
+                ->update(['kembalian' => $kembalian]);
+        }
 
         return redirect()->route('meja');
     }
+
 
     public function get_pembayaran(Request $request)
     {

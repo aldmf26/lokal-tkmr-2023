@@ -456,45 +456,11 @@
             });
 
             $(document).on('submit', '#e_pembayaran', function (event) {
-                event.preventDefault();
-                var no_order = $("#no_order").val();
-                var total_tagihan = parseInt($('#total_tagihan').val());
-                var cash = parseInt($('#cash').val());
-                var d_bca = parseInt($('#d_bca').val());
-                var k_bca = parseInt($('#k_bca').val());
-                var d_mandiri = parseInt($('#d_mandiri').val());
-                var k_mandiri = parseInt($('#k_mandiri').val());
-
-                var total_bayar = cash + d_bca + k_bca + d_mandiri + k_mandiri;
-                $('#btn_e_pembayaran').hide();
-                $.ajax({
-                    url: `{{ route('edit_pembayaran') }}?no_order=${no_order}&cash=${cash}&d_bca=${d_bca}&k_bca=${k_bca}&d_mandiri=${d_mandiri}&k_mandiri=${k_mandiri}&total_bayar=${total_bayar}`,
-                    type: 'GET',
-                    contentType: false,
-                    processData: false,
-                    success: function (data) {
-                        $('#edit_pembayaran').hide();
-                        setTimeout(function () {
-                            $("[data-dismiss=modal]").trigger({
-                                type: "click"
-                            });
-                        }, 50);
-                        Swal.fire({
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 3000,
-                            icon: 'success',
-                            title: 'Pembayaran berhasil diedit'
-                        });
-
-                        $('#btn_e_pembayaran').show();
-
-
-                    }
-                });
-
+                // Biarkan form POST berjalan normal (array nominal_akun dikirim ke controller)
+                var $btn = $('#btn_e_pembayaran');
+                $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i>Menyimpan...');
             });
+
 
             $(document).on('keyup', '.input_edit_pembayaran', function () {
                 var total_tagihan = parseInt($('#total_tagihan').val());
