@@ -446,12 +446,14 @@
                 });
             });
 
+            let isTambahPesananSubmitted = false;
             $(document).on('submit', '#save_tambah_pesanan', function(event) {
-                //   event.preventDefault();
-
-                $('.btn-hide').hide();
-                // $('.save_loading').show();
-
+                if (isTambahPesananSubmitted) {
+                    event.preventDefault();
+                    return false;
+                }
+                isTambahPesananSubmitted = true;
+                $('.btn-hide').prop('disabled', true).html('Processing...');
             });
 
             $(document).on('submit', '#e_pembayaran', function(event) {

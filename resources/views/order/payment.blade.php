@@ -198,12 +198,14 @@
 <script src="{{ asset_custom('') }}/plugins/jquery/jquery.min.js"></script>
 <script>
     $(document).ready(function() {
+        let isSubmitted = false;
         $(document).on('submit', '#form_save_percobaan', function(event) {
-            //   event.preventDefault();
-
-            $('#save_btn').hide();
-            // $('.save_loading').show();
-
+            if (isSubmitted) {
+                event.preventDefault();
+                return false;
+            }
+            isSubmitted = true;
+            $('#save_btn').prop('disabled', true).html('Processing...');
         });
         $(document).on('click', '#tes', function() {
             //   event.preventDefault();

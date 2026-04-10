@@ -97,11 +97,11 @@ class MejaController extends Controller
         $meja = DB::table('tb_meja as c')
             ->joinSub(
                 DB::table('tb_order')
-                    ->select('id_meja', DB::raw('MAX(id_order) as last_id_order'))
+                    ->select('id_meja', 'no_order', DB::raw('MAX(id_order) as last_id_order'))
                     ->where('aktif', '1')
                     ->where('void', 0)
                     ->where('id_lokasi', $loc)
-                    ->groupBy('id_meja'),
+                    ->groupBy('id_meja', 'no_order'),
                 'o_last',
                 'c.id_meja',
                 '=',
