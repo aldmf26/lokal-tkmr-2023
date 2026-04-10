@@ -821,11 +821,12 @@ class MejaController extends Controller
     public function load_waitress_selesai(Request $r)
     {
         $loc = $r->session()->get('id_lokasi');
-        $menu2 = DB::select("SELECT a.*, b.nm_menu, b.tipe 
+        $menu2 = DB::select("SELECT a.*, b.nm_menu, b.tipe,sum(a.qty) as qty 
             FROM tb_order as a 
             LEFT JOIN tb_harga as h ON a.id_harga = h.id_harga
             LEFT JOIN tb_menu as b ON h.id_menu = b.id_menu
-            WHERE a.id_meja = '$r->id_meja' AND a.no_order = '$r->no_order' AND a.aktif = '1' AND a.void = 0");
+            WHERE a.id_meja = '$r->id_meja' AND a.no_order = '$r->no_order' AND a.aktif = '1' AND a.void = 0
+            group by b.id_menu");
         $majo_hide = DB::select("SELECT a.*, c.nm_produk
                             FROM tb_pembelian AS a
                             LEFT JOIN tb_produk AS c ON c.id_produk = a.id_produk
