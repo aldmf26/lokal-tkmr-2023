@@ -333,7 +333,7 @@ foreach ($majo as $m):
         </tr>
         <tr>
             <td style="text-align: left;" width="6%"></td>
-            <td style="font-size: 20px;">
+            <td>
                 {{--
                 <?php if (empty($transaksi->cash)) : ?>
                 <?php else : ?>
@@ -357,7 +357,7 @@ foreach ($majo as $m):
                 <?php endif ?> --}}
 
                 @foreach ($pembayaran as $p)
-                    {{ $p->nm_akun }} {{ $p->nm_klasifikasi }}
+                    {{ $p->nm_akun }} <br />{{ $p->nm_klasifikasi }}
                     <div style="margin-top: 5px;"></div>
                 @endforeach
             </td>
@@ -405,14 +405,14 @@ foreach ($majo as $m):
         </tr>
         <tr>
             <td style="text-align: left;" width="6%"></td>
-            <td style="font-size: 20px;">
+            <td>
                 @foreach ($pembayaran as $p)
-                    {{ $p->pengirim }}
+                    {!! ucwords(strtolower(str_replace('_', '<br/>', $p->pengirim))) !!}
                     <div style="margin-top: 5px;"></div>
                 @endforeach
             </td>
 
-            <td width="22%" style="font-size: 20px;">
+            <td width="22%" style="">
 
             </td>
             <td width="15%" align="right">
