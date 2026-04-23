@@ -133,6 +133,7 @@
                         <option value="3">Tampil 3 Meja</option>
                         <option value="5">Tampil 5 Meja</option>
                         <option value="7">Tampil 7 Meja</option>
+                        <option value="15">Tampil 15 Meja</option>
                     </select>
                 </div>
             </div>
