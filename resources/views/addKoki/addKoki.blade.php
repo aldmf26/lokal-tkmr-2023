@@ -63,7 +63,7 @@
                     <div class="input-group-prepend">
                         <span class="input-group-text bg-info text-white"><i class="fas fa-search"></i></span>
                     </div>
-                    <input type="text" id="search_meja" class="form-control" placeholder="Cari Meja..." style="font-weight: bold;">
+                    <input type="text" id="search_meja" class="form-control" placeholder="Cari Meja/Menu..." style="font-weight: bold;">
                 </div>
             </div>
             <div class="col-lg-2 mt-2 mt-lg-0">

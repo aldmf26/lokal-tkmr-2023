@@ -123,7 +123,7 @@ class HeadController extends Controller
 
         $whereMeja = '';
         if ($meja_search != '') {
-            $whereMeja = " AND a.no_meja LIKE '%$meja_search%' ";
+            $whereMeja = " AND (a.no_meja LIKE '%$meja_search%' OR m_table.nm_menu LIKE '%$meja_search%') ";
         }
         $cat_bev_ongkir = implode(',', cat_beverages_ongkir());
 

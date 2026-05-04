@@ -41,7 +41,7 @@ class AddKokiController extends Controller
 
         $whereMeja = '';
         if ($meja_search != '') {
-            $whereMeja = " AND a.no_meja LIKE '%$meja_search%' ";
+            $whereMeja = " AND (a.no_meja LIKE '%$meja_search%' OR m_table.nm_menu LIKE '%$meja_search%') ";
         }
         $lokasi = $request->session()->get('id_lokasi');
         $tgl = date('Y-m-d');
