@@ -706,6 +706,7 @@ class MejaController extends Controller
             LEFT JOIN (
             SELECT d.id_produk, SUM(d.debit) AS debit, SUM(d.kredit) AS kredit
             FROM tb_stok_produk AS d 
+            where d.ket != 'Penjualan'
             GROUP BY d.id_produk
             ) AS d ON d.id_produk = a.id_produk
 
@@ -725,6 +726,7 @@ class MejaController extends Controller
             LEFT JOIN (
             SELECT d.id_produk, SUM(d.debit) AS debit, SUM(d.kredit) AS kredit
             FROM tb_stok_produk AS d 
+            where d.ket != 'Penjualan'
             GROUP BY d.id_produk
             ) AS d ON d.id_produk = a.id_produk
 

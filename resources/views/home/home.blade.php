@@ -285,7 +285,7 @@
                 </div>
                 </a>
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-4 d-none">
                 <a href="">
                     <div class="card card-signin my-5">
                         <a href="{{ route('loginSoondobu') }}">

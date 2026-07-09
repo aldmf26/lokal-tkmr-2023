@@ -314,6 +314,28 @@ class DownloadController extends Controller
             ];
             DB::table('tb_stok_produk')->insert($data);
         }
+         foreach ($tb_majo['stok_masuk_sdb'] as $v) {
+            $data = [
+                'id_stok_produk' => $v['id_stok_produk'],
+                'kode_stok_produk' => $v['kode_stok_produk'],
+                'id_produk' => $v['id_produk'],
+                'stok_program' => $v['stok_program'],
+                'harga' => $v['harga'],
+                'debit' => $v['debit'],
+                'kredit' => $v['kredit'],
+                'ttl_stok' => $v['ttl_stok'],
+                'tgl' => $v['tgl'],
+                'tgl_input' => $v['tgl_input'],
+                'ket' => $v['ket'],
+                // 'admin' => $v['admin'],
+                // 'jenis' => $v['jenis'],
+                'status' => $v['status'],
+                'id_lokasi' => $v['id_lokasi'],
+                'catatan' => $v['catatan'],
+                'stok_aktual' => $v['stok_aktual'],
+            ];
+            DB::table('tb_stok_produk')->insert($data);
+        }
 
         return redirect()->route('sukses2')->with('sukses', 'Sukses');
 
@@ -392,6 +414,25 @@ class DownloadController extends Controller
         }
 
         foreach ($dt_menu['produk_majo_tkm'] as $v) {
+            $data = [
+                'id_produk' => $v['id_produk'],
+                'id_kategori' => $v['id_kategori'],
+                'id_satuan' => $v['id_satuan'],
+                'sku' => $v['sku'],
+                'nm_produk' => $v['nm_produk'],
+                'harga_modal' => $v['harga_modal'],
+                'harga' => $v['harga'],
+                'stok' => $v['stok'],
+                'terjual' => $v['terjual'],
+                'foto' => $v['foto'],
+                'diskon' => $v['diskon'],
+                'komisi' => $v['komisi'],
+                'monitoring' => $v['monitoring'],
+                'id_lokasi' => $v['id_lokasi'],
+            ];
+            DB::table('tb_produk')->insert($data);
+        }
+        foreach ($dt_menu['produk_majo_sdb'] as $v) {
             $data = [
                 'id_produk' => $v['id_produk'],
                 'id_kategori' => $v['id_kategori'],
